@@ -29,6 +29,7 @@ const musicInput = document.getElementById("musicInput");
 const metronomeToggle = document.getElementById("metronomeToggle");
 const bgm = document.getElementById("bgm");
 const DEFAULT_BGM_PATH = "assets/Steel_Against_Night.mp3";
+const FALLBACK_BGM_PATH = "Steel_Against_Night.mp3";
 const DEFAULT_BGM_NAME = "Steel Against Night";
 
 const state = {
@@ -701,6 +702,21 @@ musicInput.addEventListener("change", (event) => {
   beatStatus.textContent = `변경한 음악: ${file.name} · ENTER로 시작`;
 });
 
+bgm.addEventListener("error", () => {
+  if (state.selectedMusicUrl) return;
+  if (bgm.getAttribute("src") === FALLBACK_BGM_PATH) return;
+
+  bgm.src = FALLBACK_BGM_PATH;
+  bgm.loop = true;
+  bgm.load();
+
+  if (state.running && !state.paused && !state.gameOver) {
+    bgm.play().catch(() => {
+      beatStatus.textContent = "기본 음악 파일을 찾는 중입니다. assets 폴더 또는 같은 폴더의 MP3 위치를 확인해주세요.";
+    });
+  }
+});
+
 bgm.addEventListener("ended", () => {
   if (state.running && !state.gameOver) {
     bgm.currentTime = 0;
@@ -737,3 +753,5 @@ updateStartNotice("ready");
 showJudgement("ENTER로 시작", "good");
 timingTip.textContent = "ENTER를 누르면 음악과 함께 시작";
 beatStatus.textContent = "ENTER를 누르면 Steel Against Night가 게임 종료까지 무한 반복 재생됩니다";
+
+// v16: 기본 BGM 경로가 assets 폴더와 루트 폴더 둘 다 대응되도록 fallback 처리 추가

@@ -1259,7 +1259,7 @@ button.need-music {
 
 /* v13: 성공 판정 시 노트가 세로로 '챙!' 하고 좌우 반쪽으로 갈라지는 이펙트 */
 .ki-note.hit.vertical-sliced {
-  animation: verticalSlicedNoteHold .7s steps(5, end) forwards;
+  animation: verticalSlicedNoteHold 1.35s steps(7, end) forwards;
   background: transparent;
   border-color: transparent;
   box-shadow: none;
@@ -1297,7 +1297,7 @@ button.need-music {
   left: auto;
   border-right: 0;
   transform-origin: right center;
-  animation: verticalSliceLeft .64s steps(5, end) forwards;
+  animation: verticalSliceLeft 1.28s steps(8, end) forwards;
 }
 
 .ki-note.vertical-sliced .note-half-right {
@@ -1305,7 +1305,7 @@ button.need-music {
   right: auto;
   border-left: 0;
   transform-origin: left center;
-  animation: verticalSliceRight .64s steps(5, end) forwards;
+  animation: verticalSliceRight 1.28s steps(8, end) forwards;
 }
 
 .ki-note.heavy.vertical-sliced .note-half {
@@ -1351,29 +1351,33 @@ button.need-music {
 .ki-note.vertical-sliced .note-cut-vertical {
   left: 50%;
   top: 50%;
-  width: 10px;
-  height: 92px;
+  width: 14px;
+  height: 210px;
   background: #ffffff;
   box-shadow:
-    0 0 0 5px rgba(255,255,255,.24),
-    0 0 22px #ffffff,
-    0 0 40px #8fd7ff;
+    0 0 0 7px rgba(255,255,255,.24),
+    0 0 0 14px rgba(143,215,255,.18),
+    0 0 26px #ffffff,
+    0 0 58px #8fd7ff,
+    0 0 92px rgba(143,215,255,.72);
   transform: translate(-50%, -50%) scaleY(0);
   transform-origin: center center;
   z-index: 7;
-  animation: noteVerticalCutFlash .28s steps(3, end) forwards;
+  animation: noteVerticalCutFlash .42s steps(4, end) forwards;
 }
 
 .ki-note.vertical-sliced .note-cut-vertical::before {
   content: "";
   position: absolute;
-  left: -13px;
+  left: -22px;
   top: 50%;
-  width: 36px;
-  height: 10px;
+  width: 58px;
+  height: 12px;
   background: #ffffff;
   transform: translateY(-50%);
-  box-shadow: 0 0 24px #ffffff;
+  box-shadow:
+    0 0 24px #ffffff,
+    0 0 42px #8fd7ff;
 }
 
 .ki-note.vertical-sliced .cut-chang {
@@ -1408,7 +1412,7 @@ button.need-music {
   box-shadow: 0 0 12px #ffffff;
   transform: translate(-50%, -50%);
   z-index: 6;
-  animation: cutSparkBurst .48s steps(4, end) forwards;
+  animation: cutSparkBurst .7s steps(5, end) forwards;
 }
 
 .ki-note.vertical-sliced .spark-1 { --spark-x: -34px; --spark-y: -28px; background: #ffffff; }
@@ -1420,29 +1424,31 @@ button.need-music {
 
 @keyframes verticalSlicedNoteHold {
   0% { opacity: 1; }
-  78% { opacity: 1; }
+  82% { opacity: 1; }
   100% { opacity: 0; }
 }
 
 @keyframes noteVerticalCutFlash {
   0% { opacity: 0; transform: translate(-50%, -50%) scaleY(0); }
-  22% { opacity: 1; transform: translate(-50%, -50%) scaleY(1.18); }
-  54% { opacity: 1; transform: translate(-50%, -50%) scaleY(1); }
-  100% { opacity: 0; transform: translate(-50%, -50%) scaleY(.12); }
+  18% { opacity: 1; transform: translate(-50%, -50%) scaleY(1.22); }
+  55% { opacity: 1; transform: translate(-50%, -50%) scaleY(1); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scaleY(.08); }
 }
 
 @keyframes verticalSliceLeft {
-  0% { opacity: 1; transform: translateY(-50%) translateX(0) rotate(0deg); }
-  20% { opacity: 1; transform: translateY(-50%) translateX(-7px) rotate(-2deg); }
-  55% { opacity: 1; transform: translateY(-56%) translateX(-28px) rotate(-10deg); }
-  100% { opacity: 0; transform: translateY(-62%) translateX(-52px) rotate(-18deg); }
+  0% { opacity: 1; transform: translateY(-50%) translateX(0) rotate(0deg); filter: brightness(1.35); }
+  18% { opacity: 1; transform: translateY(-50%) translateX(-10px) rotate(-4deg); filter: brightness(1.65); }
+  42% { opacity: 1; transform: translateY(-32%) translateX(-34px) rotate(-14deg); filter: brightness(1.15); }
+  72% { opacity: 1; transform: translateY(118px) translateX(-58px) rotate(-28deg); }
+  100% { opacity: 0; transform: translateY(238px) translateX(-78px) rotate(-42deg); }
 }
 
 @keyframes verticalSliceRight {
-  0% { opacity: 1; transform: translateY(-50%) translateX(0) rotate(0deg); }
-  20% { opacity: 1; transform: translateY(-50%) translateX(7px) rotate(2deg); }
-  55% { opacity: 1; transform: translateY(-44%) translateX(28px) rotate(10deg); }
-  100% { opacity: 0; transform: translateY(-38%) translateX(52px) rotate(18deg); }
+  0% { opacity: 1; transform: translateY(-50%) translateX(0) rotate(0deg); filter: brightness(1.35); }
+  18% { opacity: 1; transform: translateY(-50%) translateX(10px) rotate(4deg); filter: brightness(1.65); }
+  42% { opacity: 1; transform: translateY(-22%) translateX(34px) rotate(14deg); filter: brightness(1.15); }
+  72% { opacity: 1; transform: translateY(132px) translateX(58px) rotate(28deg); }
+  100% { opacity: 0; transform: translateY(254px) translateX(78px) rotate(42deg); }
 }
 
 @keyframes cutChangPop {
@@ -1568,3 +1574,276 @@ button.need-music {
 /* v14: 기본 BGM 자동 시작 안내 문구 적용. 음악 선택 버튼은 선택 변경용으로만 사용됩니다. */
 
 /* v15: 기본 BGM을 Steel Against Night로 교체하고 ENTER 시작 후 게임 종료까지 무한 반복되도록 조정했습니다. */
+
+
+/* v16: 세로 참격을 길게 확장하고, 성공 판정 노트가 반으로 갈라진 뒤 아래로 낙하하도록 강화 */
+
+
+/* v17: 판정원 세로 참격이 직사각형 레인을 뚫고 지나가며, 잘린 노트 조각이 화면 아래로 낙하 */
+.beat-area.note-mode,
+.rhythm-lane,
+.note-container {
+  overflow: visible;
+}
+
+.note-container {
+  z-index: 16;
+}
+
+.hit-circle {
+  z-index: 14;
+}
+
+.ki-note.hit.vertical-sliced {
+  z-index: 22;
+  animation: verticalSlicedNoteHold 1.75s steps(9, end) forwards;
+}
+
+.ki-note.vertical-sliced .note-cut-vertical {
+  left: 50%;
+  top: 50%;
+  width: 18px;
+  height: 360px;
+  background:
+    linear-gradient(90deg, rgba(143,215,255,.35) 0 16%, #ffffff 16% 84%, rgba(143,215,255,.35) 84% 100%);
+  box-shadow:
+    0 0 0 7px rgba(255,255,255,.24),
+    0 0 0 18px rgba(0,211,255,.18),
+    0 0 30px #ffffff,
+    0 0 72px #00d8ff,
+    0 0 118px rgba(0,216,255,.78);
+  transform: translate(-50%, -50%) scaleY(0);
+  transform-origin: center center;
+  z-index: 30;
+  animation: noteVerticalCutFlash .58s steps(5, end) forwards;
+}
+
+.ki-note.vertical-sliced .note-cut-vertical::before {
+  content: "";
+  position: absolute;
+  left: -35px;
+  top: 50%;
+  width: 88px;
+  height: 16px;
+  background: #ffffff;
+  transform: translateY(-50%);
+  box-shadow:
+    0 0 26px #ffffff,
+    0 0 50px #00d8ff,
+    0 0 78px rgba(143,215,255,.7);
+}
+
+.ki-note.vertical-sliced .note-cut-vertical::after {
+  content: "";
+  position: absolute;
+  left: -42px;
+  top: 0;
+  width: 102px;
+  height: 100%;
+  background:
+    linear-gradient(90deg,
+      transparent 0%,
+      rgba(0,216,255,.08) 18%,
+      rgba(255,255,255,.26) 48%,
+      rgba(0,216,255,.08) 82%,
+      transparent 100%);
+  opacity: .95;
+  z-index: -1;
+}
+
+.ki-note.vertical-sliced .note-half {
+  z-index: 24;
+}
+
+.ki-note.vertical-sliced .note-half-left {
+  animation: verticalSliceLeft 1.68s steps(10, end) forwards;
+}
+
+.ki-note.vertical-sliced .note-half-right {
+  animation: verticalSliceRight 1.68s steps(10, end) forwards;
+}
+
+.ki-note.vertical-sliced .cut-spark {
+  width: 10px;
+  height: 10px;
+  animation: cutSparkBurst .82s steps(6, end) forwards;
+}
+
+.ki-note.vertical-sliced .spark-1 { --spark-x: -54px; --spark-y: -64px; }
+.ki-note.vertical-sliced .spark-2 { --spark-x: 54px; --spark-y: -58px; }
+.ki-note.vertical-sliced .spark-3 { --spark-x: -62px; --spark-y: 76px; }
+.ki-note.vertical-sliced .spark-4 { --spark-x: 62px; --spark-y: 84px; }
+.ki-note.vertical-sliced .spark-5 { --spark-x: -24px; --spark-y: -110px; }
+.ki-note.vertical-sliced .spark-6 { --spark-x: 24px; --spark-y: 118px; }
+
+@keyframes verticalSlicedNoteHold {
+  0% { opacity: 1; }
+  88% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes noteVerticalCutFlash {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scaleY(0);
+    filter: brightness(1);
+  }
+  12% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scaleY(1.22);
+    filter: brightness(1.8);
+  }
+  36% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scaleY(1.05);
+    filter: brightness(1.45);
+  }
+  72% {
+    opacity: .9;
+    transform: translate(-50%, -50%) scaleY(.92);
+    filter: brightness(1.15);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scaleY(.06);
+    filter: brightness(1);
+  }
+}
+
+@keyframes verticalSliceLeft {
+  0% {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0) rotate(0deg);
+    filter: brightness(1.45);
+  }
+  15% {
+    opacity: 1;
+    transform: translateY(-50%) translateX(-13px) rotate(-6deg);
+    filter: brightness(1.85);
+  }
+  34% {
+    opacity: 1;
+    transform: translateY(-30%) translateX(-44px) rotate(-17deg);
+    filter: brightness(1.25);
+  }
+  58% {
+    opacity: 1;
+    transform: translateY(165px) translateX(-72px) rotate(-34deg);
+  }
+  82% {
+    opacity: .9;
+    transform: translateY(330px) translateX(-96px) rotate(-52deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(470px) translateX(-118px) rotate(-68deg);
+  }
+}
+
+@keyframes verticalSliceRight {
+  0% {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0) rotate(0deg);
+    filter: brightness(1.45);
+  }
+  15% {
+    opacity: 1;
+    transform: translateY(-50%) translateX(13px) rotate(6deg);
+    filter: brightness(1.85);
+  }
+  34% {
+    opacity: 1;
+    transform: translateY(-22%) translateX(44px) rotate(17deg);
+    filter: brightness(1.25);
+  }
+  58% {
+    opacity: 1;
+    transform: translateY(182px) translateX(72px) rotate(34deg);
+  }
+  82% {
+    opacity: .9;
+    transform: translateY(355px) translateX(96px) rotate(52deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(500px) translateX(118px) rotate(68deg);
+  }
+}
+
+/* v17 mobile: 모바일 화면에서도 참격이 레인을 뚫고 보이도록 높이를 유지 */
+@media (max-width: 900px) {
+  .beat-area.note-mode,
+  .rhythm-lane,
+  .note-container {
+    overflow: visible;
+  }
+
+  .ki-note.vertical-sliced .note-cut-vertical {
+    height: 300px;
+    width: 15px;
+  }
+
+  @keyframes verticalSliceLeft {
+    0% { opacity: 1; transform: translateY(-50%) translateX(0) rotate(0deg); filter: brightness(1.45); }
+    15% { opacity: 1; transform: translateY(-50%) translateX(-10px) rotate(-6deg); filter: brightness(1.85); }
+    34% { opacity: 1; transform: translateY(-30%) translateX(-34px) rotate(-17deg); filter: brightness(1.25); }
+    58% { opacity: 1; transform: translateY(130px) translateX(-52px) rotate(-34deg); }
+    82% { opacity: .9; transform: translateY(260px) translateX(-70px) rotate(-52deg); }
+    100% { opacity: 0; transform: translateY(380px) translateX(-88px) rotate(-68deg); }
+  }
+
+  @keyframes verticalSliceRight {
+    0% { opacity: 1; transform: translateY(-50%) translateX(0) rotate(0deg); filter: brightness(1.45); }
+    15% { opacity: 1; transform: translateY(-50%) translateX(10px) rotate(6deg); filter: brightness(1.85); }
+    34% { opacity: 1; transform: translateY(-22%) translateX(34px) rotate(17deg); filter: brightness(1.25); }
+    58% { opacity: 1; transform: translateY(144px) translateX(52px) rotate(34deg); }
+    82% { opacity: .9; transform: translateY(280px) translateX(70px) rotate(52deg); }
+    100% { opacity: 0; transform: translateY(410px) translateX(88px) rotate(68deg); }
+  }
+}
+
+/* v18: 세로 참격 길이 재조정 - 직사각형 라인을 살짝만 뚫는 정도로 축소 */
+.ki-note.vertical-sliced .note-cut-vertical {
+  width: 14px;
+  height: 146px;
+  box-shadow:
+    0 0 0 5px rgba(255,255,255,.2),
+    0 0 0 11px rgba(0,211,255,.14),
+    0 0 24px #ffffff,
+    0 0 50px #00d8ff,
+    0 0 78px rgba(0,216,255,.62);
+  animation: noteVerticalCutFlash .46s steps(5, end) forwards;
+}
+
+.ki-note.vertical-sliced .note-cut-vertical::before {
+  left: -27px;
+  width: 68px;
+  height: 13px;
+  box-shadow:
+    0 0 22px #ffffff,
+    0 0 38px #00d8ff,
+    0 0 56px rgba(143,215,255,.58);
+}
+
+.ki-note.vertical-sliced .note-cut-vertical::after {
+  left: -32px;
+  width: 78px;
+}
+
+@media (max-width: 900px) {
+  .ki-note.vertical-sliced .note-cut-vertical {
+    width: 12px;
+    height: 132px;
+  }
+
+  .ki-note.vertical-sliced .note-cut-vertical::before {
+    left: -24px;
+    width: 60px;
+    height: 11px;
+  }
+
+  .ki-note.vertical-sliced .note-cut-vertical::after {
+    left: -28px;
+    width: 68px;
+  }
+}
