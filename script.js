@@ -28,6 +28,8 @@ const musicButton = document.getElementById("musicButton");
 const musicInput = document.getElementById("musicInput");
 const metronomeToggle = document.getElementById("metronomeToggle");
 const bgm = document.getElementById("bgm");
+const DEFAULT_BGM_PATH = "assets/Iron_Petal_Strike.mp3";
+const DEFAULT_BGM_NAME = "Iron Petal Strike";
 
 const state = {
   running: false,
@@ -41,8 +43,8 @@ const state = {
   power: 100,
   bpm: 122,
   selectedMusicUrl: null,
-  musicReady: false,
-  selectedMusicName: "",
+  musicReady: true,
+  selectedMusicName: DEFAULT_BGM_NAME,
   audioContext: null,
   notes: [],
   nextNoteId: 0,
@@ -124,7 +126,7 @@ function updateHud() {
 }
 
 
-function updateStartNotice(mode = "need") {
+function updateStartNotice(mode = "ready") {
   if (!startNotice) return;
 
   startNotice.classList.remove("hidden", "ready");
@@ -135,29 +137,27 @@ function updateStartNotice(mode = "need") {
     return;
   }
 
-  if (mode === "ready") {
-    startNotice.classList.add("ready");
-    startNotice.innerHTML = `
-      <strong>음악 선택 완료</strong>
-      <span>${state.selectedMusicName || "선택한 음악"} · ENTER를 눌러 게임을 시작하세요.</span>
-    `;
-    return;
-  }
-
-  startButton.classList.add("need-music");
+  startNotice.classList.add("ready");
   startNotice.innerHTML = `
-    <strong>게임음악을 골라주세요</strong>
-    <span>음악 선택 버튼으로 MP3/WAV 파일을 고른 뒤 ENTER를 눌러 시작합니다.</span>
+    <strong>전투 BGM 준비 완료</strong>
+    <span>${state.selectedMusicName || DEFAULT_BGM_NAME} · ENTER를 누르면 음악이 자동 재생되며 게임이 시작됩니다.</span>
   `;
 }
 
+function ensureDefaultMusic() {
+  if (!bgm) return false;
+
+  if (!state.selectedMusicUrl) {
+    bgm.src = DEFAULT_BGM_PATH;
+    state.selectedMusicName = DEFAULT_BGM_NAME;
+  }
+
+  state.musicReady = true;
+  return true;
+}
+
 function requireMusicBeforeStart() {
-  if (state.musicReady) return true;
-  updateStartNotice("need");
-  showJudgement("음악을 먼저 선택", "miss");
-  timingTip.textContent = "게임 시작 전에 음악을 골라주세요";
-  beatStatus.textContent = "음악 선택 버튼을 눌러 MP3 또는 WAV 파일을 선택하세요";
-  return false;
+  return ensureDefaultMusic();
 }
 
 function resetVisuals() {
@@ -275,15 +275,16 @@ function playTick(isTarget = false) {
 }
 
 function tryPlayMusic() {
-  if (!state.musicReady) return false;
+  if (!ensureDefaultMusic()) return false;
 
   bgm.pause();
   bgm.currentTime = 0;
+  bgm.volume = 0.8;
 
   const playPromise = bgm.play();
   if (playPromise && typeof playPromise.catch === "function") {
     playPromise.catch(() => {
-      beatStatus.textContent = "음악 재생이 막혔습니다. 음악 선택 후 ENTER로 다시 시작해보세요.";
+      beatStatus.textContent = "음악 재생이 막혔습니다. 화면을 한 번 클릭한 뒤 ENTER를 다시 눌러주세요.";
     });
   }
 
@@ -559,7 +560,7 @@ function endGame(reason = "게임 종료") {
   state.gameOver = true;
   pauseButton.textContent = "일시정지";
   pauseButton.classList.remove("pause-active");
-  updateStartNotice(state.musicReady ? "ready" : "need");
+  updateStartNotice("ready");
   bgm.pause();
   resetVisuals();
   noteContainer.innerHTML = "";
@@ -693,8 +694,8 @@ musicInput.addEventListener("change", (event) => {
   bgm.load();
   updateStartNotice("ready");
   showJudgement("ENTER로 시작", "good");
-  timingTip.textContent = "음악 선택 완료 · ENTER로 시작";
-  beatStatus.textContent = `선택한 음악: ${file.name} · ENTER로 시작`;
+  timingTip.textContent = "음악 변경 완료 · ENTER로 시작";
+  beatStatus.textContent = `변경한 음악: ${file.name} · ENTER로 시작`;
 });
 
 bgm.addEventListener("ended", () => {
@@ -725,5 +726,8 @@ window.addEventListener("keydown", (event) => {
 updateTimer(0);
 updateHud();
 spawnEnemySquad();
-updateStartNotice("need");
-showJudgement("음악을 골라주세요", "");
+ensureDefaultMusic();
+updateStartNotice("ready");
+showJudgement("ENTER로 시작", "good");
+timingTip.textContent = "ENTER를 누르면 음악과 함께 시작";
+beatStatus.textContent = "ENTER를 누르면 Iron Petal Strike가 재생되며 게임이 시작됩니다";

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>검무전기 - 음악 선택 후 시작 버전</title>
+  <title>검무전기 - 자동 BGM 시작 버전</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -25,7 +25,7 @@
     <section class="hud">
       <div class="title-block">
         <div class="game-title">검무전기</div>
-        <div class="subtitle">검기 노트 · 음악 선택 후 시작</div>
+        <div class="subtitle">검기 노트 · ENTER 시작 자동 BGM</div>
       </div>
       <div class="stat-panel">
         <div class="stat"><span>점수</span><strong id="score">0</strong></div>
@@ -71,10 +71,10 @@
       <div class="slash-flash" id="slashFlash"></div>
       <div class="blood-spark" id="bloodSpark"></div>
 
-      <div class="judgement" id="judgement">음악을 골라주세요</div>
-      <div class="start-notice" id="startNotice">
-        <strong>게임음악을 골라주세요</strong>
-        <span>음악 선택 버튼으로 MP3/WAV 파일을 고른 뒤 ENTER를 눌러 시작합니다.</span>
+      <div class="judgement" id="judgement">ENTER로 시작</div>
+      <div class="start-notice ready" id="startNotice">
+        <strong>전투 BGM 준비 완료</strong>
+        <span>배포 링크 접속 후 ENTER를 누르면 Iron Petal Strike가 자동 재생되며 게임이 시작됩니다.</span>
       </div>
       <div class="score-board hidden" id="scoreBoard" aria-live="polite">
         <strong>점수 보드</strong>
@@ -84,7 +84,7 @@
         <div class="score-row"><span>등급</span><b id="finalRank">수련생</b></div>
         <em>ENTER로 재시작</em>
       </div>
-      <div class="timing-tip" id="timingTip">음악 선택 후 ENTER로 시작</div>
+      <div class="timing-tip" id="timingTip">ENTER를 누르면 음악과 함께 시작</div>
     </section>
 
     <section class="beat-area note-mode">
@@ -97,20 +97,20 @@
         </div>
         <div class="note-container" id="noteContainer"></div>
       </div>
-      <div class="beat-status" id="beatStatus">게임 시작 전에 음악을 골라주세요</div>
+      <div class="beat-status" id="beatStatus">ENTER를 누르면 기본 전투 BGM과 함께 시작됩니다</div>
     </section>
 
     <section class="controls">
       <button id="startButton">시작 / 재시작</button>
       <button id="pauseButton">일시정지</button>
-      <button id="musicButton">음악 선택</button>
+      <button id="musicButton">음악 변경</button>
       <label class="metronome-toggle"><input type="checkbox" id="metronomeToggle" checked /> 박자음</label>
       <input type="file" id="musicInput" accept="audio/*" hidden />
-      <audio id="bgm" preload="auto" src="assets/bgm.mp3"></audio>
+      <audio id="bgm" preload="auto" src="assets/Iron_Petal_Strike.mp3" loop></audio>
     </section>
 
     <footer class="guide">
-      <span>음악 선택 후 ENTER 시작/재시작</span>
+      <span>ENTER 자동 BGM 시작/재시작</span>
       <span>ESC 일시정지</span>
       <span>SPACE 검기 발사</span>
       <span>노트가 왼쪽 끝 판정원에 겹치는 순간 검기를 날려라</span>
