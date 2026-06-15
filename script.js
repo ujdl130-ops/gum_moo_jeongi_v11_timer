@@ -304,7 +304,7 @@ function createNote(hitTime) {
   state.nextNoteId += 1;
 
   note.el.className = `ki-note ${note.type}`;
-  note.el.innerHTML = `<span></span>`;
+  note.el.innerHTML = `<span class="note-core"></span>`;
   note.el.style.top = "50%";
   noteContainer.appendChild(note.el);
   state.notes.push(note);
@@ -328,7 +328,12 @@ function updateNotes(gameTime) {
   for (const note of [...state.notes]) {
     const diff = note.hitTime - gameTime;
     const x = HIT_X + diff * NOTE_SPEED;
-    note.el.style.left = `${x}%`;
+
+    if (note.resolved && note.lockedX) {
+      note.el.style.left = note.lockedX;
+    } else {
+      note.el.style.left = `${x}%`;
+    }
 
     const abs = Math.abs(diff);
     note.el.classList.toggle("near", abs <= GOOD_WINDOW && !note.resolved);
@@ -414,12 +419,40 @@ function defeatEnemies(count = 1) {
   }, 760);
 }
 
+function playNoteVerticalSliceEffect(note, kind) {
+  if (!note?.el) return;
+
+  const isPerfect = kind === "일섬";
+
+  note.lockedX = `${HIT_X}%`;
+  note.el.style.left = note.lockedX;
+  note.el.classList.remove("near", "perfect-zone", "good-hit", "perfect-hit");
+  note.el.classList.add(
+    "hit",
+    "vertical-sliced",
+    isPerfect ? "slice-perfect" : "slice-good"
+  );
+
+  note.el.innerHTML = `
+    <span class="cut-chang">챙!</span>
+    <span class="note-cut-vertical"></span>
+    <span class="note-half note-half-left"><span class="half-core"></span></span>
+    <span class="note-half note-half-right"><span class="half-core"></span></span>
+    <span class="cut-spark spark-1"></span>
+    <span class="cut-spark spark-2"></span>
+    <span class="cut-spark spark-3"></span>
+    <span class="cut-spark spark-4"></span>
+    <span class="cut-spark spark-5"></span>
+    <span class="cut-spark spark-6"></span>
+  `;
+}
+
 function resolveSuccess(note, kind, scoreGain) {
   if (note.resolved) return;
 
   note.resolved = true;
   note.scored = true;
-  note.el.classList.add("hit", kind === "일섬" ? "perfect-hit" : "good-hit");
+  playNoteVerticalSliceEffect(note, kind);
 
   state.combo += 1;
   state.maxCombo = Math.max(state.maxCombo, state.combo);
