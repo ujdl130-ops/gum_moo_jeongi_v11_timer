@@ -28,8 +28,8 @@ const musicButton = document.getElementById("musicButton");
 const musicInput = document.getElementById("musicInput");
 const metronomeToggle = document.getElementById("metronomeToggle");
 const bgm = document.getElementById("bgm");
-const DEFAULT_BGM_PATH = "assets/Iron_Petal_Strike.mp3";
-const DEFAULT_BGM_NAME = "Iron Petal Strike";
+const DEFAULT_BGM_PATH = "assets/Steel_Against_Night.mp3";
+const DEFAULT_BGM_NAME = "Steel Against Night";
 
 const state = {
   running: false,
@@ -152,6 +152,7 @@ function ensureDefaultMusic() {
     state.selectedMusicName = DEFAULT_BGM_NAME;
   }
 
+  bgm.loop = true;
   state.musicReady = true;
   return true;
 }
@@ -280,6 +281,7 @@ function tryPlayMusic() {
   bgm.pause();
   bgm.currentTime = 0;
   bgm.volume = 0.8;
+  bgm.loop = true;
 
   const playPromise = bgm.play();
   if (playPromise && typeof playPromise.catch === "function") {
@@ -691,6 +693,7 @@ musicInput.addEventListener("change", (event) => {
   state.musicReady = true;
   state.selectedMusicName = file.name;
   bgm.src = state.selectedMusicUrl;
+  bgm.loop = true;
   bgm.load();
   updateStartNotice("ready");
   showJudgement("ENTER로 시작", "good");
@@ -700,7 +703,10 @@ musicInput.addEventListener("change", (event) => {
 
 bgm.addEventListener("ended", () => {
   if (state.running && !state.gameOver) {
-    beatStatus.textContent = "음악이 끝났습니다 · 3분 수련은 계속 진행됩니다";
+    bgm.currentTime = 0;
+    bgm.play().catch(() => {
+      beatStatus.textContent = "음악 반복 재생이 막혔습니다. 화면을 한 번 클릭한 뒤 ENTER를 다시 눌러주세요.";
+    });
   }
 });
 
@@ -730,4 +736,4 @@ ensureDefaultMusic();
 updateStartNotice("ready");
 showJudgement("ENTER로 시작", "good");
 timingTip.textContent = "ENTER를 누르면 음악과 함께 시작";
-beatStatus.textContent = "ENTER를 누르면 Iron Petal Strike가 재생되며 게임이 시작됩니다";
+beatStatus.textContent = "ENTER를 누르면 Steel Against Night가 게임 종료까지 무한 반복 재생됩니다";

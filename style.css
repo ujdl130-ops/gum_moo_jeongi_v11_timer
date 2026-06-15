@@ -1566,3 +1566,5 @@ button.need-music {
 
 
 /* v14: 기본 BGM 자동 시작 안내 문구 적용. 음악 선택 버튼은 선택 변경용으로만 사용됩니다. */
+
+/* v15: 기본 BGM을 Steel Against Night로 교체하고 ENTER 시작 후 게임 종료까지 무한 반복되도록 조정했습니다. */
