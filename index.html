@@ -3,84 +3,119 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>검무전기 - 웹 리듬 액션</title>
+  <title>검무전기 - 음악 선택 후 시작 버전</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="game-shell">
-    <header class="top-ui">
-      <div class="ui-box">
-        <span class="label">무공 점수</span>
-        <strong id="score">0</strong>
+  <main class="game" id="game">
+    <div class="pixel-noise"></div>
+    <div class="room-wall">
+      <div class="lantern lantern-left"><span></span></div>
+      <div class="lantern lantern-right"><span></span></div>
+      <div class="window-panel">
+        <div class="moon"></div>
+        <div class="mountain m1"></div>
+        <div class="mountain m2"></div>
+        <div class="bamboo-silhouette"></div>
       </div>
-      <div class="ui-box">
-        <span class="label">연참</span>
-        <strong id="combo">0</strong>
-      </div>
-      <div class="ui-box">
-        <span class="label">남은 시간</span>
-        <strong id="timer">03:00</strong>
-      </div>
-      <div class="ui-box">
-        <span class="label">내공</span>
-        <strong id="hp">5</strong>
-      </div>
-    </header>
-
-    <main id="gameArea" class="game-area" tabindex="-1">
-      <div class="moon"></div>
-      <div class="mountains"></div>
-      <div id="noteLayer" class="note-layer"></div>
-      <div id="slashEffect" class="slash-effect"></div>
-      <div id="judgementText" class="judgement-text">검무전기</div>
-      <div class="hit-line">
-        <span>참격선</span>
-      </div>
-      <div class="swordsman">
-        <div class="head"></div>
-        <div class="body"></div>
-        <div class="sword"></div>
-      </div>
-    </main>
-
-    <footer class="bottom-ui">
-      <p id="message">Enter: 시작 / 재시작 · Space: 베기</p>
-      <div class="audio-row">
-        <label class="music-button" for="musicInput">음악 선택</label>
-        <input id="musicInput" type="file" accept="audio/*" />
-        <span id="musicName">기본 음악 없음</span>
-      </div>
-      <div class="keycap">SPACE</div>
-    </footer>
-  </div>
-
-  <div id="startOverlay" class="overlay">
-    <div class="panel">
-      <h1>검무전기</h1>
-      <p>음악을 선택한 뒤, 박자에 맞춰 자객들을 베어내는 웹 리듬 액션</p>
-      <div class="controls">
-        <span>Enter</span> 시작
-        <span>Space</span> 베기
-      </div>
-      <div id="resultBoard" class="result-board hidden">
-        <div class="result-row">
-          <span>최종 점수</span>
-          <strong id="finalScore">0</strong>
-        </div>
-        <div class="result-row">
-          <span>최고 연참</span>
-          <strong id="finalCombo">0</strong>
-        </div>
-        <div class="result-row">
-          <span>남은 내공</span>
-          <strong id="finalHp">0</strong>
-        </div>
-        <div class="result-rank" id="finalRank">등급 D</div>
-      </div>
-      <button id="startButton" type="button">시작하기</button>
+      <div class="wall-shelf"></div>
+      <div class="hanging-scroll"></div>
     </div>
-  </div>
 
+    <section class="hud">
+      <div class="title-block">
+        <div class="game-title">검무전기</div>
+        <div class="subtitle">검기 노트 · 음악 선택 후 시작</div>
+      </div>
+      <div class="stat-panel">
+        <div class="stat"><span>점수</span><strong id="score">0</strong></div>
+        <div class="stat"><span>연참</span><strong id="combo">0</strong></div>
+        <div class="stat timer-stat"><span>남은 시간</span><strong id="timerText">03:00</strong></div>
+        <div class="stat power-stat">
+          <span>내공</span>
+          <div class="power-wrap"><div class="power-bar" id="powerBar"></div></div>
+          <strong id="powerText">100</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="scene" id="scene">
+      <div class="tatami tatami-a"></div>
+      <div class="tatami tatami-b"></div>
+      <div class="tatami tatami-c"></div>
+      <div class="pixel-shadow hero-floor-shadow"></div>
+      <div class="pixel-shadow enemy-floor-shadow"></div>
+
+      <div class="hero idle" id="hero" aria-label="하얀 무복 주인공">
+        <div class="hero-shadow"></div>
+        <div class="ponytail"></div>
+        <div class="hair"></div>
+        <div class="head"><span class="eye"></span></div>
+        <div class="neck"></div>
+        <div class="robe robe-back"></div>
+        <div class="robe robe-front"></div>
+        <div class="sash"></div>
+        <div class="arm arm-left"></div>
+        <div class="arm arm-right"></div>
+        <div class="hand"></div>
+        <div class="leg leg-left"></div>
+        <div class="leg leg-right"></div>
+        <div class="sheath-glow"></div>
+        <div class="sheath"></div>
+        <div class="blade"></div>
+      </div>
+
+      <div class="enemy-group" id="enemyGroup" aria-label="검은 무복 자객 무리"></div>
+
+      <div class="slash-effect" id="slashEffect"></div>
+      <div class="slash-flash" id="slashFlash"></div>
+      <div class="blood-spark" id="bloodSpark"></div>
+
+      <div class="judgement" id="judgement">음악을 골라주세요</div>
+      <div class="start-notice" id="startNotice">
+        <strong>게임음악을 골라주세요</strong>
+        <span>음악 선택 버튼으로 MP3/WAV 파일을 고른 뒤 ENTER를 눌러 시작합니다.</span>
+      </div>
+      <div class="score-board hidden" id="scoreBoard" aria-live="polite">
+        <strong>점수 보드</strong>
+        <div class="score-row"><span>최종 점수</span><b id="finalScore">0</b></div>
+        <div class="score-row"><span>최고 연참</span><b id="finalCombo">0</b></div>
+        <div class="score-row"><span>남은 내공</span><b id="finalPower">0</b></div>
+        <div class="score-row"><span>등급</span><b id="finalRank">수련생</b></div>
+        <em>ENTER로 재시작</em>
+      </div>
+      <div class="timing-tip" id="timingTip">음악 선택 후 ENTER로 시작</div>
+    </section>
+
+    <section class="beat-area note-mode">
+      <div class="lane-title">검기 궤도</div>
+      <div class="rhythm-lane" id="rhythmLane" aria-label="오른쪽에서 왼쪽 끝 판정원으로 수평으로 날아오는 검기 노트">
+        <div class="lane-line"></div>
+        <div class="hit-circle" id="hitCircle">
+          <div class="hit-core"></div>
+          <span>SPACE</span>
+        </div>
+        <div class="note-container" id="noteContainer"></div>
+      </div>
+      <div class="beat-status" id="beatStatus">게임 시작 전에 음악을 골라주세요</div>
+    </section>
+
+    <section class="controls">
+      <button id="startButton">시작 / 재시작</button>
+      <button id="pauseButton">일시정지</button>
+      <button id="musicButton">음악 선택</button>
+      <label class="metronome-toggle"><input type="checkbox" id="metronomeToggle" checked /> 박자음</label>
+      <input type="file" id="musicInput" accept="audio/*" hidden />
+      <audio id="bgm" preload="auto" src="assets/bgm.mp3"></audio>
+    </section>
+
+    <footer class="guide">
+      <span>음악 선택 후 ENTER 시작/재시작</span>
+      <span>ESC 일시정지</span>
+      <span>SPACE 검기 발사</span>
+      <span>노트가 왼쪽 끝 판정원에 겹치는 순간 검기를 날려라</span>
+    </footer>
+  </main>
   <script src="script.js"></script>
 </body>
 </html>

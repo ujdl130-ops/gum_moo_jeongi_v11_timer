@@ -1,416 +1,696 @@
-const gameArea = document.getElementById('gameArea');
-const noteLayer = document.getElementById('noteLayer');
-const scoreEl = document.getElementById('score');
-const comboEl = document.getElementById('combo');
-const hpEl = document.getElementById('hp');
-const timerEl = document.getElementById('timer');
-const judgementText = document.getElementById('judgementText');
-const slashEffect = document.getElementById('slashEffect');
-const startOverlay = document.getElementById('startOverlay');
-const startButton = document.getElementById('startButton');
-const message = document.getElementById('message');
-const keycap = document.querySelector('.keycap');
-const swordsman = document.querySelector('.swordsman');
-const musicInput = document.getElementById('musicInput');
-const musicName = document.getElementById('musicName');
-const resultBoard = document.getElementById('resultBoard');
-const finalScoreEl = document.getElementById('finalScore');
-const finalComboEl = document.getElementById('finalCombo');
-const finalHpEl = document.getElementById('finalHp');
-const finalRankEl = document.getElementById('finalRank');
+const game = document.getElementById("game");
+const scene = document.getElementById("scene");
+const hero = document.getElementById("hero");
+const enemyGroup = document.getElementById("enemyGroup");
+const slashEffect = document.getElementById("slashEffect");
+const slashFlash = document.getElementById("slashFlash");
+const bloodSpark = document.getElementById("bloodSpark");
+const judgement = document.getElementById("judgement");
+const timingTip = document.getElementById("timingTip");
+const startNotice = document.getElementById("startNotice");
+const scoreBoard = document.getElementById("scoreBoard");
+const finalScore = document.getElementById("finalScore");
+const finalCombo = document.getElementById("finalCombo");
+const finalPower = document.getElementById("finalPower");
+const finalRank = document.getElementById("finalRank");
+const scoreEl = document.getElementById("score");
+const comboEl = document.getElementById("combo");
+const timerText = document.getElementById("timerText");
+const powerBar = document.getElementById("powerBar");
+const powerText = document.getElementById("powerText");
+const beatStatus = document.getElementById("beatStatus");
+const rhythmLane = document.getElementById("rhythmLane");
+const hitCircle = document.getElementById("hitCircle");
+const noteContainer = document.getElementById("noteContainer");
+const startButton = document.getElementById("startButton");
+const pauseButton = document.getElementById("pauseButton");
+const musicButton = document.getElementById("musicButton");
+const musicInput = document.getElementById("musicInput");
+const metronomeToggle = document.getElementById("metronomeToggle");
+const bgm = document.getElementById("bgm");
 
-let bgm = new Audio();
-bgm.loop = false;
-bgm.volume = 0.55;
+const state = {
+  running: false,
+  paused: false,
+  pauseStart: 0,
+  gameOver: false,
+  startTime: 0,
+  score: 0,
+  combo: 0,
+  maxCombo: 0,
+  power: 100,
+  bpm: 122,
+  selectedMusicUrl: null,
+  musicReady: false,
+  selectedMusicName: "",
+  audioContext: null,
+  notes: [],
+  nextNoteId: 0,
+  nextHitTime: 0,
+  patternIndex: 0,
+  enemies: [],
+  lastEnemyRespawn: 0,
+};
 
-const HIT_LINE_FROM_BOTTOM = 150;
-const SPAWN_INTERVAL = 760;
-const BASE_NOTE_SPEED = 300;
-const NOTE_SPEED_VARIANTS = [0.82, 0.92, 1.0, 1.1, 1.22, 1.34];
-const PERFECT_RANGE = 28;
-const GOOD_RANGE = 68;
-const MISS_RANGE = 105;
-const MAX_HP = 5;
-const GAME_DURATION = 180; // 3분
+const PERFECT_WINDOW = 0.075;
+const GOOD_WINDOW = 0.17;
+const BAD_INPUT_DAMAGE = 7;
+const MISS_DAMAGE = 12;
+const HIT_X = 7;
+const NOTE_SPEED = 66;
+const NOTE_LEAD = 1.42;
+const NOTE_REMOVE_AFTER = 2.9;
+const ENEMY_ROWS = [20, 54, 82, 35, 68];
+const NOTE_PATTERN = [1, 1, 0.5, 0.5, 1, 0.75, 0.75, 1.25, 0.5, 1, 1.5];
+const GAME_DURATION_SECONDS = 180;
 
-let notes = [];
-let score = 0;
-let combo = 0;
-let bestCombo = 0;
-let hp = MAX_HP;
-let timeRemaining = GAME_DURATION;
-let running = false;
-let lastTime = 0;
-let spawnTimer = 0;
-let animationId = null;
-let beatIndex = 0;
-
-function getHitLineY() {
-  return gameArea.clientHeight - HIT_LINE_FROM_BOTTOM;
+function beatDuration() {
+  return 60 / state.bpm;
 }
 
-function formatTime(seconds) {
-  const safeSeconds = Math.max(0, Math.ceil(seconds));
-  const minutes = Math.floor(safeSeconds / 60);
-  const secs = safeSeconds % 60;
-  return `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(max, value));
 }
 
-function getRank(finalScore) {
-  if (finalScore >= 12000) return 'S';
-  if (finalScore >= 9000) return 'A';
-  if (finalScore >= 6000) return 'B';
-  if (finalScore >= 3000) return 'C';
-  return 'D';
+function setText(el, value) {
+  el.textContent = value;
 }
 
-function loadDefaultMusic() {
-  // assets/bgm.mp3 파일을 넣어두면 자동으로 기본 음악으로 사용합니다.
-  bgm.src = 'assets/bgm.mp3';
-  bgm.addEventListener('error', () => {
-    if (!musicInput.files.length) {
-      musicName.textContent = '기본 음악 없음';
-    }
-  }, { once: true });
+function formatTime(totalSeconds) {
+  const safeSeconds = Math.max(0, Math.ceil(totalSeconds));
+  const minutes = String(Math.floor(safeSeconds / 60)).padStart(2, "0");
+  const seconds = String(safeSeconds % 60).padStart(2, "0");
+  return `${minutes}:${seconds}`;
 }
 
-function releaseFocusedButton() {
-  // 시작 버튼을 클릭한 뒤 포커스가 버튼에 남아 있으면
-  // Space 입력이 버튼 클릭으로 한 번 더 처리되어 게임/음악이 재시작될 수 있습니다.
-  // 게임 영역으로 포커스를 옮겨 Space가 오직 베기 입력으로만 동작하게 합니다.
-  if (document.activeElement && typeof document.activeElement.blur === 'function') {
-    document.activeElement.blur();
+function updateTimer(gameTime = 0) {
+  const remaining = Math.max(0, GAME_DURATION_SECONDS - gameTime);
+  if (timerText) {
+    timerText.textContent = formatTime(remaining);
+    timerText.parentElement.classList.toggle("timer-warning", remaining <= 30);
+  }
+}
+
+function getRank(score) {
+  if (score >= 40000) return "천하제일";
+  if (score >= 30000) return "절정고수";
+  if (score >= 20000) return "일류검객";
+  if (score >= 10000) return "무림검객";
+  return "수련생";
+}
+
+function hideScoreBoard() {
+  if (scoreBoard) scoreBoard.classList.add("hidden");
+}
+
+function showScoreBoard(reason = "게임 종료") {
+  if (!scoreBoard) return;
+  if (startNotice) startNotice.classList.add("hidden");
+
+  finalScore.textContent = `${state.score.toLocaleString("ko-KR")}점`;
+  finalCombo.textContent = `${state.maxCombo}`;
+  finalPower.textContent = `${state.power}`;
+  finalRank.textContent = getRank(state.score);
+
+  scoreBoard.querySelector("strong").textContent = reason === "수련 종료" ? "수련 종료" : "점수 보드";
+  scoreBoard.classList.remove("hidden");
+}
+
+function updateHud() {
+  setText(scoreEl, state.score.toLocaleString("ko-KR"));
+  setText(comboEl, state.combo);
+  setText(powerText, state.power);
+  powerBar.style.width = `${clamp(state.power, 0, 100)}%`;
+}
+
+
+function updateStartNotice(mode = "need") {
+  if (!startNotice) return;
+
+  startNotice.classList.remove("hidden", "ready");
+  startButton.classList.remove("need-music");
+
+  if (mode === "hide") {
+    startNotice.classList.add("hidden");
+    return;
   }
 
-  if (gameArea && typeof gameArea.focus === 'function') {
-    gameArea.focus({ preventScroll: true });
+  if (mode === "ready") {
+    startNotice.classList.add("ready");
+    startNotice.innerHTML = `
+      <strong>음악 선택 완료</strong>
+      <span>${state.selectedMusicName || "선택한 음악"} · ENTER를 눌러 게임을 시작하세요.</span>
+    `;
+    return;
+  }
+
+  startButton.classList.add("need-music");
+  startNotice.innerHTML = `
+    <strong>게임음악을 골라주세요</strong>
+    <span>음악 선택 버튼으로 MP3/WAV 파일을 고른 뒤 ENTER를 눌러 시작합니다.</span>
+  `;
+}
+
+function requireMusicBeforeStart() {
+  if (state.musicReady) return true;
+  updateStartNotice("need");
+  showJudgement("음악을 먼저 선택", "miss");
+  timingTip.textContent = "게임 시작 전에 음악을 골라주세요";
+  beatStatus.textContent = "음악 선택 버튼을 눌러 MP3 또는 WAV 파일을 선택하세요";
+  return false;
+}
+
+function resetVisuals() {
+  hero.classList.remove("slash", "hurt", "ready-glow", "input-flash");
+  slashEffect.classList.remove("active", "weak");
+  slashFlash.classList.remove("active");
+  bloodSpark.classList.remove("active");
+  scene.classList.remove("shake");
+  game.classList.remove("flash-success", "flash-damage");
+  hitCircle.classList.remove("pulse", "danger", "perfect-flash", "miss-flash");
+}
+
+function showJudgement(text, type = "") {
+  judgement.className = "judgement";
+  if (type) judgement.classList.add(type);
+  judgement.textContent = text;
+  void judgement.offsetWidth;
+  judgement.classList.add("pop");
+}
+
+function makeEnemy(index) {
+  const enemy = document.createElement("div");
+  enemy.className = "assassin";
+  enemy.dataset.index = String(index);
+  enemy.dataset.row = String(ENEMY_ROWS[index % ENEMY_ROWS.length]);
+  enemy.dataset.scale = String(0.82 + (index % 3) * 0.06);
+  enemy.style.zIndex = String(10 + index);
+  enemy.innerHTML = `
+    <div class="shadow"></div>
+    <div class="head"><span class="eye"></span></div>
+    <div class="body"></div>
+    <div class="belt"></div>
+    <div class="arm a1"></div>
+    <div class="arm a2"></div>
+    <div class="knife"></div>
+    <div class="leg l1"></div>
+    <div class="leg l2"></div>
+  `;
+  return enemy;
+}
+
+function spawnEnemySquad() {
+  enemyGroup.innerHTML = "";
+  state.enemies = [];
+  const count = state.combo >= 18 ? 5 : 4;
+
+  for (let i = 0; i < count; i += 1) {
+    const enemy = makeEnemy(i);
+    enemyGroup.appendChild(enemy);
+    state.enemies.push(enemy);
   }
 }
 
-function playMusic(restart = false) {
-  if (!bgm.src) return;
+function activeEnemies() {
+  return state.enemies.filter((enemy) => !enemy.classList.contains("defeated"));
+}
 
-  // 게임 시작 때만 음악을 처음으로 되돌립니다.
-  // Space 입력으로 공격할 때는 이 함수를 호출하지 않도록 해서 음악이 끊기지 않게 합니다.
-  if (restart) {
-    bgm.currentTime = 0;
-  }
+function updateEnemySquad(gameTime) {
+  const unresolved = state.notes.filter((note) => !note.resolved);
+  const nearest = unresolved.length
+    ? Math.min(...unresolved.map((note) => Math.abs(note.hitTime - gameTime)))
+    : 999;
+  const pressure = clamp(1 - nearest / 1.0, 0, 1);
 
-  bgm.play().catch(() => {
-    message.textContent = '브라우저 정책 때문에 음악 재생이 막혔습니다. 시작 버튼을 클릭해 다시 시작해보세요.';
+  state.enemies.forEach((enemy, index) => {
+    if (enemy.classList.contains("defeated")) return;
+
+    const row = Number(enemy.dataset.row);
+    const baseScale = Number(enemy.dataset.scale);
+    const baseX = 70 + index * 6.3;
+    const x = baseX - pressure * (8 + index * 1.1) + Math.sin(gameTime * 3.6 + index) * 0.7;
+    const bob = Math.sin(gameTime * 11 + index) * 4;
+    const scale = baseScale + pressure * 0.12;
+
+    enemy.style.left = `${x}%`;
+    enemy.style.bottom = `${row + bob}px`;
+    enemy.style.transform = `scale(${scale})`;
+    enemy.style.opacity = "1";
+    enemy.style.filter = pressure > 0.72
+      ? "brightness(1.22) drop-shadow(4px 8px 0 rgba(0,0,0,.26))"
+      : "drop-shadow(4px 8px 0 rgba(0,0,0,.26))";
   });
 }
 
-function stopMusic() {
+function playTick(isTarget = false) {
+  if (!metronomeToggle.checked) return;
+
+  try {
+    if (!state.audioContext) {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      state.audioContext = new AudioContext();
+    }
+
+    const ctx = state.audioContext;
+    if (ctx.state === "suspended") ctx.resume();
+
+    const oscillator = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    oscillator.type = isTarget ? "square" : "triangle";
+    oscillator.frequency.value = isTarget ? 980 : 430;
+    gain.gain.value = isTarget ? 0.07 : 0.032;
+
+    oscillator.connect(gain);
+    gain.connect(ctx.destination);
+
+    const now = ctx.currentTime;
+    gain.gain.setValueAtTime(gain.gain.value, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+    oscillator.start(now);
+    oscillator.stop(now + 0.07);
+  } catch (error) {
+    console.warn("박자음 재생 실패:", error);
+  }
+}
+
+function tryPlayMusic() {
+  if (!state.musicReady) return false;
+
   bgm.pause();
   bgm.currentTime = 0;
+
+  const playPromise = bgm.play();
+  if (playPromise && typeof playPromise.catch === "function") {
+    playPromise.catch(() => {
+      beatStatus.textContent = "음악 재생이 막혔습니다. 음악 선택 후 ENTER로 다시 시작해보세요.";
+    });
+  }
+
+  return true;
 }
 
-function resetGame() {
-  notes.forEach(note => note.el.remove());
-  notes = [];
-  score = 0;
-  combo = 0;
-  bestCombo = 0;
-  hp = MAX_HP;
-  timeRemaining = GAME_DURATION;
-  spawnTimer = 0;
-  beatIndex = 0;
-  lastTime = performance.now();
-  timerEl.classList.remove('timer-warning');
-  resultBoard.classList.add('hidden');
-  updateUI();
-  setJudgement('준비', false);
+function createNote(hitTime) {
+  const note = {
+    id: state.nextNoteId,
+    hitTime,
+    resolved: false,
+    scored: false,
+    ticked: false,
+    yOffset: 0,
+    type: state.nextNoteId % 4 === 3 ? "heavy" : "normal",
+    el: document.createElement("div"),
+  };
+  state.nextNoteId += 1;
+
+  note.el.className = `ki-note ${note.type}`;
+  note.el.innerHTML = `<span></span>`;
+  note.el.style.top = "50%";
+  noteContainer.appendChild(note.el);
+  state.notes.push(note);
 }
 
-function prepareStartOverlay() {
-  startOverlay.querySelector('h1').textContent = '검무전기';
-  startOverlay.querySelector('p').textContent = '음악을 선택한 뒤, 3분 동안 박자에 맞춰 자객들을 베어내는 웹 리듬 액션';
-  startButton.textContent = '시작하기';
-  resultBoard.classList.add('hidden');
+function scheduleNotes(gameTime) {
+  while (state.nextHitTime - gameTime <= NOTE_LEAD) {
+    createNote(state.nextHitTime);
+    const intervalBeats = NOTE_PATTERN[state.patternIndex % NOTE_PATTERN.length];
+    state.patternIndex += 1;
+    state.nextHitTime += intervalBeats * beatDuration();
+  }
+}
+
+function removeNote(note) {
+  note.el.remove();
+  state.notes = state.notes.filter((item) => item !== note);
+}
+
+function updateNotes(gameTime) {
+  for (const note of [...state.notes]) {
+    const diff = note.hitTime - gameTime;
+    const x = HIT_X + diff * NOTE_SPEED;
+    note.el.style.left = `${x}%`;
+
+    const abs = Math.abs(diff);
+    note.el.classList.toggle("near", abs <= GOOD_WINDOW && !note.resolved);
+    note.el.classList.toggle("perfect-zone", abs <= PERFECT_WINDOW && !note.resolved);
+
+    if (!note.ticked && gameTime >= note.hitTime - 0.018) {
+      note.ticked = true;
+      playTick(true);
+      hitCircle.classList.remove("pulse");
+      void hitCircle.offsetWidth;
+      hitCircle.classList.add("pulse");
+    }
+
+    if (!note.resolved && gameTime > note.hitTime + GOOD_WINDOW) {
+      resolveNoteMiss(note);
+    }
+
+    if (note.resolved && gameTime > note.hitTime + NOTE_REMOVE_AFTER) {
+      removeNote(note);
+    }
+  }
+}
+
+function updateTimingText(gameTime) {
+  const unresolved = state.notes.filter((note) => !note.resolved);
+  if (!unresolved.length) {
+    timingTip.textContent = "오른쪽에서 검기 노트가 온다";
+    hitCircle.classList.remove("danger");
+    return;
+  }
+
+  const nearest = unresolved.reduce((best, note) => {
+    const a = Math.abs(note.hitTime - gameTime);
+    const b = Math.abs(best.hitTime - gameTime);
+    return a < b ? note : best;
+  });
+  const diff = gameTime - nearest.hitTime;
+  const abs = Math.abs(diff);
+
+  hitCircle.classList.toggle("danger", abs <= GOOD_WINDOW && !nearest.resolved);
+  hero.classList.toggle("ready-glow", abs <= 0.28 && !nearest.resolved);
+
+  if (abs <= PERFECT_WINDOW) timingTip.textContent = "지금! 검기를 날려라";
+  else if (abs <= GOOD_WINDOW) timingTip.textContent = diff < 0 ? "조금만 더 기다려" : "조금 늦었다";
+  else if (diff < -0.55) timingTip.textContent = "원형 노트가 판정원으로 접근 중";
+  else if (diff < 0) timingTip.textContent = "곧 겹친다";
+  else timingTip.textContent = "놓쳤다";
+}
+
+function clearTimedVisuals() {
+  setTimeout(() => {
+    hero.classList.remove("slash", "input-flash");
+    slashEffect.classList.remove("active", "weak");
+    slashFlash.classList.remove("active");
+    bloodSpark.classList.remove("active");
+    game.classList.remove("flash-success");
+    hitCircle.classList.remove("perfect-flash", "miss-flash");
+  }, 500);
+}
+
+function launchSwordAura(isWeak = false) {
+  hero.classList.remove("slash", "input-flash");
+  slashEffect.classList.remove("active", "weak");
+  slashFlash.classList.remove("active");
+  void hero.offsetWidth;
+
+  hero.classList.add("slash", "input-flash");
+  slashEffect.classList.add("active");
+  if (isWeak) slashEffect.classList.add("weak");
+  if (!isWeak) slashFlash.classList.add("active");
+}
+
+function defeatEnemies(count = 1) {
+  const targets = activeEnemies().slice(0, count);
+  targets.forEach((enemy, index) => {
+    setTimeout(() => enemy.classList.add("defeated"), index * 55);
+  });
+
+  setTimeout(() => {
+    if (state.running && !state.paused && activeEnemies().length < 2) {
+      spawnEnemySquad();
+    }
+  }, 760);
+}
+
+function resolveSuccess(note, kind, scoreGain) {
+  if (note.resolved) return;
+
+  note.resolved = true;
+  note.scored = true;
+  note.el.classList.add("hit", kind === "일섬" ? "perfect-hit" : "good-hit");
+
+  state.combo += 1;
+  state.maxCombo = Math.max(state.maxCombo, state.combo);
+  const comboBonus = Math.floor(state.combo / 5) * 10;
+  state.score += scoreGain + comboBonus;
+
+  updateHud();
+  launchSwordAura(false);
+  bloodSpark.classList.add("active");
+  game.classList.add("flash-success");
+  hitCircle.classList.add("perfect-flash");
+  defeatEnemies(kind === "일섬" ? 2 : 1);
+
+  showJudgement(kind, kind === "일섬" ? "perfect" : "good");
+  beatStatus.textContent = kind === "일섬"
+    ? `검기가 꿰뚫었다! +${scoreGain + comboBonus}`
+    : `자객을 밀어냈다. +${scoreGain + comboBonus}`;
+
+  clearTimedVisuals();
+}
+
+function damagePlayer(message, damage) {
+  state.combo = 0;
+  state.power = clamp(state.power - damage, 0, 100);
+  updateHud();
+
+  hero.classList.remove("ready-glow");
+  hero.classList.add("hurt", "input-flash");
+  activeEnemies().slice(0, 2).forEach((enemy) => enemy.classList.add("attack"));
+  scene.classList.add("shake");
+  game.classList.add("flash-damage");
+  hitCircle.classList.add("miss-flash");
+
+  showJudgement(message, "miss");
+  beatStatus.textContent = `내공 -${damage}`;
+
+  setTimeout(() => {
+    hero.classList.remove("hurt", "input-flash");
+    state.enemies.forEach((enemy) => enemy.classList.remove("attack"));
+    scene.classList.remove("shake");
+    game.classList.remove("flash-damage");
+    hitCircle.classList.remove("miss-flash");
+  }, 450);
+
+  if (state.power <= 0) {
+    setTimeout(() => endGame("내공 고갈"), 520);
+  }
+}
+
+function resolveNoteMiss(note) {
+  if (note.resolved) return;
+  note.resolved = true;
+  note.el.classList.add("miss");
+  damagePlayer("피격", MISS_DAMAGE);
+}
+
+function resolveBadSlash() {
+  launchSwordAura(true);
+  damagePlayer("헛검기", BAD_INPUT_DAMAGE);
+  clearTimedVisuals();
 }
 
 function startGame() {
-  releaseFocusedButton();
-  prepareStartOverlay();
-  resetGame();
-  running = true;
-  startOverlay.classList.add('hidden');
-  message.textContent = '3분 동안 Space로 참격선의 자객을 베어내세요!';
-  playMusic(true);
-  if (animationId) cancelAnimationFrame(animationId);
-  animationId = requestAnimationFrame(gameLoop);
+  if (!requireMusicBeforeStart()) return;
+
+  updateStartNotice("hide");
+  state.running = true;
+  state.paused = false;
+  state.pauseStart = 0;
+  state.gameOver = false;
+  state.startTime = performance.now() + 350;
+  state.score = 0;
+  state.combo = 0;
+  state.maxCombo = 0;
+  state.power = 100;
+  state.bpm = 122;
+  state.notes = [];
+  state.nextNoteId = 0;
+  state.nextHitTime = 1.55;
+  state.patternIndex = 0;
+  noteContainer.innerHTML = "";
+
+  hideScoreBoard();
+  updateTimer(0);
+  updateHud();
+  resetVisuals();
+  spawnEnemySquad();
+  showJudgement("검기를 준비해라", "");
+  timingTip.textContent = "노트가 왼쪽 끝 판정원에 겹칠 때 SPACE";
+  beatStatus.textContent = "오른쪽에서 날아온 노트가 왼쪽 끝 판정원에 겹치면 SPACE";
+  pauseButton.textContent = "일시정지";
+  pauseButton.classList.remove("pause-active");
+
+  tryPlayMusic();
+  requestAnimationFrame(update);
 }
 
-function showResultBoard(reason) {
-  const rank = getRank(score);
-  finalScoreEl.textContent = `${score}점`;
-  finalComboEl.textContent = `${bestCombo}연참`;
-  finalHpEl.textContent = `${Math.max(0, hp)}`;
-  finalRankEl.textContent = `등급 ${rank}`;
-  resultBoard.classList.remove('hidden');
+function endGame(reason = "게임 종료") {
+  if (state.gameOver && !state.running) return;
 
-  if (reason === 'time') {
-    startOverlay.querySelector('h1').textContent = '수련 종료';
-    startOverlay.querySelector('p').textContent = '3분 수련이 끝났습니다. 아래 점수보드를 확인하세요.';
-  } else {
-    startOverlay.querySelector('h1').textContent = '게임오버';
-    startOverlay.querySelector('p').textContent = '내공이 모두 소진되었습니다. 아래 점수보드를 확인하세요.';
-  }
-
-  startButton.textContent = '다시 시작하기';
+  state.running = false;
+  state.paused = false;
+  state.pauseStart = 0;
+  state.gameOver = true;
+  pauseButton.textContent = "일시정지";
+  pauseButton.classList.remove("pause-active");
+  updateStartNotice(state.musicReady ? "ready" : "need");
+  bgm.pause();
+  resetVisuals();
+  noteContainer.innerHTML = "";
+  enemyGroup.innerHTML = "";
+  showJudgement(reason, reason === "수련 종료" ? "perfect" : "miss");
+  beatStatus.textContent = `최종 점수 ${state.score.toLocaleString("ko-KR")}점 · ENTER로 재시작`;
+  updateHud();
+  showScoreBoard(reason);
 }
 
-function endGame(reason = 'hp') {
-  if (!running && reason !== 'manual') return;
+function pauseGame() {
+  if (!state.running || state.gameOver || state.paused) return;
 
-  running = false;
-  if (animationId) {
-    cancelAnimationFrame(animationId);
-    animationId = null;
-  }
-  stopMusic();
-
-  if (reason === 'time') {
-    setJudgement('수련 완료', true);
-    message.textContent = `3분 종료 · 최종 점수 ${score}점 · Enter로 재도전`;
-  } else {
-    setJudgement('패배', true);
-    message.textContent = `게임오버 · 최종 점수 ${score}점 · Enter로 재도전`;
-  }
-
-  timerEl.classList.remove('timer-warning');
-  updateUI();
-  showResultBoard(reason);
-  startOverlay.classList.remove('hidden');
+  state.paused = true;
+  state.pauseStart = performance.now();
+  bgm.pause();
+  pauseButton.textContent = "계속하기";
+  pauseButton.classList.add("pause-active");
+  hero.classList.remove("ready-glow");
+  showJudgement("일시정지", "");
+  timingTip.textContent = "ESC 또는 계속하기 버튼으로 재개";
+  beatStatus.textContent = "검객이 호흡을 고르는 중";
 }
 
-function spawnNote() {
-  const el = document.createElement('div');
-  el.className = 'enemy-note';
+function resumeGame() {
+  if (!state.running || state.gameOver || !state.paused) return;
 
-  const lanes = [0.36, 0.5, 0.64];
-  const xRatio = lanes[beatIndex % lanes.length];
-  const x = gameArea.clientWidth * xRatio;
+  const pauseDuration = performance.now() - state.pauseStart;
+  state.startTime += pauseDuration;
+  state.paused = false;
+  state.pauseStart = 0;
+  pauseButton.textContent = "일시정지";
+  pauseButton.classList.remove("pause-active");
+  showJudgement("다시 집중", "");
+  beatStatus.textContent = "왼쪽 끝 판정원에 겹치면 SPACE";
 
-  const speedMultiplier = NOTE_SPEED_VARIANTS[Math.floor(Math.random() * NOTE_SPEED_VARIANTS.length)];
-  const difficultyBoost = Math.min(beatIndex * 1.5, 90);
-  const speed = BASE_NOTE_SPEED * speedMultiplier + difficultyBoost;
-
-  const note = {
-    el,
-    x,
-    y: -40,
-    speed,
-    judged: false,
-  };
-
-  if (speedMultiplier >= 1.2) {
-    el.classList.add('fast');
-  } else if (speedMultiplier <= 0.92) {
-    el.classList.add('slow');
+  const playPromise = bgm.play();
+  if (playPromise && typeof playPromise.catch === "function") {
+    playPromise.catch(() => {
+      beatStatus.textContent = "음악은 멈춘 상태입니다. 박자음으로 진행합니다.";
+    });
   }
 
-  el.style.left = `${x}px`;
-  el.style.top = `${note.y}px`;
-  noteLayer.appendChild(el);
-  notes.push(note);
-  beatIndex++;
+  requestAnimationFrame(update);
 }
 
-function gameLoop(now) {
-  if (!running) return;
+function togglePause() {
+  if (!state.running || state.gameOver) return;
+  if (state.paused) resumeGame();
+  else pauseGame();
+}
 
-  const dt = Math.min((now - lastTime) / 1000, 0.05);
-  lastTime = now;
-  timeRemaining -= dt;
-  spawnTimer += dt * 1000;
+function pulseSheath() {
+  hero.classList.remove("input-flash");
+  void hero.offsetWidth;
+  hero.classList.add("input-flash");
+  setTimeout(() => hero.classList.remove("input-flash"), 240);
+}
 
-  if (timeRemaining <= 0) {
-    timeRemaining = 0;
-    updateUI();
-    endGame('time');
+function handleSlashInput() {
+  if (!state.running || state.gameOver || state.paused) return;
+
+  pulseSheath();
+
+  const gameTime = (performance.now() - state.startTime) / 1000;
+  if (gameTime < 0) return;
+
+  const candidates = state.notes.filter((note) => !note.resolved);
+  if (!candidates.length) {
+    resolveBadSlash();
     return;
   }
 
-  if (spawnTimer >= SPAWN_INTERVAL) {
-    spawnTimer -= SPAWN_INTERVAL;
-    spawnNote();
-  }
+  const closest = candidates.reduce((best, note) => {
+    return Math.abs(note.hitTime - gameTime) < Math.abs(best.hitTime - gameTime) ? note : best;
+  });
+  const abs = Math.abs(closest.hitTime - gameTime);
 
-  const hitY = getHitLineY();
-
-  for (const note of notes) {
-    note.y += note.speed * dt;
-    note.el.style.top = `${note.y}px`;
-
-    if (!note.judged && note.y > hitY + MISS_RANGE) {
-      note.judged = true;
-      note.el.remove();
-      registerMiss('피격');
-    }
-  }
-
-  notes = notes.filter(note => !note.judged && note.y < gameArea.clientHeight + 90);
-
-  if (hp <= 0) {
-    endGame('hp');
-    return;
-  }
-
-  updateUI();
-  animationId = requestAnimationFrame(gameLoop);
-}
-
-function attack() {
-  if (!running) return;
-
-  animateAttack();
-
-  const hitY = getHitLineY();
-  let closest = null;
-  let closestDistance = Infinity;
-
-  for (const note of notes) {
-    if (note.judged) continue;
-    const distance = Math.abs(note.y - hitY);
-    if (distance < closestDistance) {
-      closestDistance = distance;
-      closest = note;
-    }
-  }
-
-  if (!closest || closestDistance > MISS_RANGE) {
-    registerMiss('허공베기');
-    return;
-  }
-
-  closest.judged = true;
-  closest.el.remove();
-
-  if (closestDistance <= PERFECT_RANGE) {
-    score += 100 + combo * 3;
-    combo += 1;
-    bestCombo = Math.max(bestCombo, combo);
-    setJudgement('일섬', true);
-  } else if (closestDistance <= GOOD_RANGE) {
-    score += 50 + combo;
-    combo += 1;
-    bestCombo = Math.max(bestCombo, combo);
-    setJudgement('참격', true);
+  if (abs <= PERFECT_WINDOW) {
+    resolveSuccess(closest, "일섬", 110);
+  } else if (abs <= GOOD_WINDOW) {
+    resolveSuccess(closest, "참격", 55);
   } else {
-    registerMiss('피격');
+    resolveBadSlash();
+  }
+}
+
+function update(now) {
+  if (!state.running || state.paused) return;
+
+  const gameTime = (now - state.startTime) / 1000;
+  if (gameTime < 0) {
+    requestAnimationFrame(update);
     return;
   }
 
-  updateUI();
-}
-
-function registerMiss(text) {
-  combo = 0;
-  hp -= 1;
-  setJudgement(text, true);
-  updateUI();
-}
-
-function updateUI() {
-  scoreEl.textContent = score;
-  comboEl.textContent = combo;
-  hpEl.textContent = Math.max(0, hp);
-  timerEl.textContent = formatTime(timeRemaining);
-
-  if (running && timeRemaining <= 30) {
-    timerEl.classList.add('timer-warning');
-  } else {
-    timerEl.classList.remove('timer-warning');
+  updateTimer(gameTime);
+  if (gameTime >= GAME_DURATION_SECONDS) {
+    updateTimer(GAME_DURATION_SECONDS);
+    endGame("수련 종료");
+    return;
   }
+
+  scheduleNotes(gameTime);
+  updateNotes(gameTime);
+  updateEnemySquad(gameTime);
+  updateTimingText(gameTime);
+
+  requestAnimationFrame(update);
 }
 
-function setJudgement(text, pop) {
-  judgementText.textContent = text;
-  if (pop) {
-    judgementText.classList.remove('pop');
-    void judgementText.offsetWidth;
-    judgementText.classList.add('pop');
-  }
-}
+startButton.addEventListener("click", startGame);
+pauseButton.addEventListener("click", togglePause);
 
-function animateAttack() {
-  slashEffect.classList.remove('active');
-  swordsman.classList.remove('attack');
-  keycap.classList.add('pressed');
-  void slashEffect.offsetWidth;
-  slashEffect.classList.add('active');
-  swordsman.classList.add('attack');
-  setTimeout(() => keycap.classList.remove('pressed'), 90);
-}
+musicButton.addEventListener("click", () => {
+  musicInput.click();
+});
 
-function handleMusicEnded() {
-  // 게임 길이는 3분 타이머가 기준입니다.
-  // 선택한 음악이 먼저 끝나도 게임은 타이머가 끝날 때까지 계속됩니다.
-  if (running) {
-    message.textContent = '음악 종료 · 남은 시간까지 계속 플레이됩니다.';
-  }
-}
-
-musicInput.addEventListener('change', () => {
-  const file = musicInput.files[0];
+musicInput.addEventListener("change", (event) => {
+  const file = event.target.files?.[0];
   if (!file) return;
 
-  const url = URL.createObjectURL(file);
-  bgm.pause();
-  bgm = new Audio(url);
-  bgm.loop = false;
-  bgm.volume = 0.55;
-  bgm.addEventListener('ended', handleMusicEnded);
-  musicName.textContent = file.name;
-  message.textContent = '음악 선택 완료 · Enter로 시작하세요';
-});
-
-bgm.addEventListener('ended', handleMusicEnded);
-
-loadDefaultMusic();
-updateUI();
-
-function handleKeyDown(event) {
-  if (event.code === 'Space') {
-    event.preventDefault();
-    event.stopPropagation();
-
-    // Space를 꾹 누르고 있을 때 브라우저가 반복 입력을 발생시키면
-    // 공격이 여러 번 들어가며 미스/게임오버가 빠르게 발생할 수 있으니 1회만 처리합니다.
-    if (!event.repeat) {
-      attack();
-    }
-    return;
+  if (state.selectedMusicUrl) {
+    URL.revokeObjectURL(state.selectedMusicUrl);
   }
 
-  if (event.code === 'Enter') {
-    event.preventDefault();
-    event.stopPropagation();
-
-    if (!event.repeat) {
-      startGame();
-    }
-  }
-}
-
-function handleKeyUp(event) {
-  if (event.code === 'Space') {
-    // 버튼이나 라벨에 포커스가 남아 있어도 Space가 클릭 이벤트로 번지지 않게 막습니다.
-    event.preventDefault();
-    event.stopPropagation();
-  }
-}
-
-window.addEventListener('keydown', handleKeyDown, true);
-window.addEventListener('keyup', handleKeyUp, true);
-
-startButton.addEventListener('click', () => {
-  releaseFocusedButton();
-  startGame();
+  state.selectedMusicUrl = URL.createObjectURL(file);
+  state.musicReady = true;
+  state.selectedMusicName = file.name;
+  bgm.src = state.selectedMusicUrl;
+  bgm.load();
+  updateStartNotice("ready");
+  showJudgement("ENTER로 시작", "good");
+  timingTip.textContent = "음악 선택 완료 · ENTER로 시작";
+  beatStatus.textContent = `선택한 음악: ${file.name} · ENTER로 시작`;
 });
 
-window.addEventListener('blur', () => {
-  keycap.classList.remove('pressed');
+bgm.addEventListener("ended", () => {
+  if (state.running && !state.gameOver) {
+    beatStatus.textContent = "음악이 끝났습니다 · 3분 수련은 계속 진행됩니다";
+  }
 });
+
+window.addEventListener("keydown", (event) => {
+  if (event.repeat) return;
+
+  if (event.code === "Enter") {
+    event.preventDefault();
+    startGame();
+  }
+
+  if (event.code === "Escape") {
+    event.preventDefault();
+    togglePause();
+  }
+
+  if (event.code === "Space") {
+    event.preventDefault();
+    handleSlashInput();
+  }
+});
+
+updateTimer(0);
+updateHud();
+spawnEnemySquad();
+updateStartNotice("need");
+showJudgement("음악을 골라주세요", "");
