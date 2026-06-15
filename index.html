@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>검무전기 - 웹 리듬 액션</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="game-shell">
+    <header class="top-ui">
+      <div class="ui-box">
+        <span class="label">무공 점수</span>
+        <strong id="score">0</strong>
+      </div>
+      <div class="ui-box">
+        <span class="label">연참</span>
+        <strong id="combo">0</strong>
+      </div>
+      <div class="ui-box">
+        <span class="label">남은 시간</span>
+        <strong id="timer">03:00</strong>
+      </div>
+      <div class="ui-box">
+        <span class="label">내공</span>
+        <strong id="hp">5</strong>
+      </div>
+    </header>
+
+    <main id="gameArea" class="game-area" tabindex="-1">
+      <div class="moon"></div>
+      <div class="mountains"></div>
+      <div id="noteLayer" class="note-layer"></div>
+      <div id="slashEffect" class="slash-effect"></div>
+      <div id="judgementText" class="judgement-text">검무전기</div>
+      <div class="hit-line">
+        <span>참격선</span>
+      </div>
+      <div class="swordsman">
+        <div class="head"></div>
+        <div class="body"></div>
+        <div class="sword"></div>
+      </div>
+    </main>
+
+    <footer class="bottom-ui">
+      <p id="message">Enter: 시작 / 재시작 · Space: 베기</p>
+      <div class="audio-row">
+        <label class="music-button" for="musicInput">음악 선택</label>
+        <input id="musicInput" type="file" accept="audio/*" />
+        <span id="musicName">기본 음악 없음</span>
+      </div>
+      <div class="keycap">SPACE</div>
+    </footer>
+  </div>
+
+  <div id="startOverlay" class="overlay">
+    <div class="panel">
+      <h1>검무전기</h1>
+      <p>음악을 선택한 뒤, 박자에 맞춰 자객들을 베어내는 웹 리듬 액션</p>
+      <div class="controls">
+        <span>Enter</span> 시작
+        <span>Space</span> 베기
+      </div>
+      <div id="resultBoard" class="result-board hidden">
+        <div class="result-row">
+          <span>최종 점수</span>
+          <strong id="finalScore">0</strong>
+        </div>
+        <div class="result-row">
+          <span>최고 연참</span>
+          <strong id="finalCombo">0</strong>
+        </div>
+        <div class="result-row">
+          <span>남은 내공</span>
+          <strong id="finalHp">0</strong>
+        </div>
+        <div class="result-rank" id="finalRank">등급 D</div>
+      </div>
+      <button id="startButton" type="button">시작하기</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
