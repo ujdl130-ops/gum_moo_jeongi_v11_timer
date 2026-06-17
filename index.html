@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>검무전기 - 타이틀 화면 버전</title>
+  <title>검무전기 - 스테이지 선택 버전</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -18,7 +18,7 @@
         <p class="title-label">MARTIAL RHYTHM ACTION</p>
         <h1>검무전기</h1>
         <p class="title-subcopy">검기 노트가 판정원에 겹치는 순간, 한 번의 발도로 베어라.</p>
-        <button class="title-start-button" id="titleStartButton" type="button">ENTER · 게임 시작</button>
+        <button class="title-start-button" id="titleStartButton" type="button">ENTER · 스테이지 선택</button>
         <div class="title-guide-row">
           <span>SPACE 검기 발사</span>
           <span>ESC 일시정지</span>
@@ -26,6 +26,27 @@
         </div>
       </div>
     </section>
+
+    <section class="stage-screen hidden" id="stageScreen" aria-label="검무전기 스테이지 선택 화면" aria-hidden="true">
+      <div class="stage-moon"></div>
+      <div class="stage-frame">
+        <p class="stage-label">SELECT STAGE</p>
+        <h2>스테이지 선택</h2>
+        <p class="stage-subcopy">타이틀 이후 현재 플레이 가능한 곡은 Stage 1입니다.</p>
+
+        <button class="stage-card" id="stageOneCard" type="button" data-stage="1">
+          <span class="stage-number">STAGE 1</span>
+          <strong>검무전기</strong>
+          <em>Steel Against Night</em>
+          <span class="stage-difficulty">난이도 · 입문</span>
+          <span class="stage-hover-guide">마우스를 올리면 미리듣기 · 클릭하면 시작</span>
+        </button>
+
+        <p class="stage-preview-hint" id="stagePreviewHint">Stage 1에 마우스를 올리면 해당 노래가 흘러나옵니다.</p>
+        <button class="stage-back-button" id="stageBackButton" type="button">타이틀로 돌아가기</button>
+      </div>
+    </section>
+
     <div class="pixel-noise"></div>
     <div class="room-wall">
       <div class="lantern lantern-left"><span></span></div>
@@ -92,7 +113,7 @@
       <div class="judgement" id="judgement">ENTER로 시작</div>
       <div class="start-notice ready" id="startNotice">
         <strong>전투 BGM 준비 완료</strong>
-        <span>배포 링크 접속 후 ENTER를 누르면 Steel Against Night가 자동 재생되며 게임이 끝날 때까지 무한 반복됩니다.</span>
+        <span>타이틀 화면에서 ENTER를 누른 뒤 Stage 1을 선택하면 Steel Against Night가 자동 재생됩니다.</span>
       </div>
       <div class="score-board hidden" id="scoreBoard" aria-live="polite">
         <strong>점수 보드</strong>
@@ -115,7 +136,7 @@
         </div>
         <div class="note-container" id="noteContainer"></div>
       </div>
-      <div class="beat-status" id="beatStatus">ENTER를 누르면 Steel Against Night가 무한 반복 재생되며 시작됩니다</div>
+      <div class="beat-status" id="beatStatus">타이틀 → 스테이지 선택 → Stage 1 클릭 순서로 시작됩니다</div>
     </section>
 
     <section class="controls">
@@ -128,7 +149,7 @@
     </section>
 
     <footer class="guide">
-      <span>ENTER 자동 BGM 시작/재시작</span>
+      <span>ENTER 타이틀 진행</span>
       <span>ESC 일시정지</span>
       <span>SPACE 검기 발사</span>
       <span>노트가 왼쪽 끝 판정원에 겹치는 순간 검기를 날려라</span>

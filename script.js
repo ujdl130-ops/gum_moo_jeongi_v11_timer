@@ -30,6 +30,10 @@ const metronomeToggle = document.getElementById("metronomeToggle");
 const bgm = document.getElementById("bgm");
 const titleScreen = document.getElementById("titleScreen");
 const titleStartButton = document.getElementById("titleStartButton");
+const stageScreen = document.getElementById("stageScreen");
+const stageOneCard = document.getElementById("stageOneCard");
+const stageBackButton = document.getElementById("stageBackButton");
+const stagePreviewHint = document.getElementById("stagePreviewHint");
 const DEFAULT_BGM_PATH = "assets/Steel_Against_Night.mp3";
 const DEFAULT_BGM_NAME = "Steel Against Night";
 
@@ -39,6 +43,9 @@ const state = {
   pauseStart: 0,
   gameOver: false,
   titleOpen: true,
+  stageSelectOpen: false,
+  selectedStage: null,
+  previewingStage: false,
   startTime: 0,
   score: 0,
   combo: 0,
@@ -118,10 +125,107 @@ function hideTitleScreen() {
 
 function showTitleScreen() {
   state.titleOpen = true;
-  if (!titleScreen) return;
+  state.stageSelectOpen = false;
+  stopStagePreview();
 
+  if (stageScreen) {
+    stageScreen.classList.add("hidden");
+    stageScreen.setAttribute("aria-hidden", "true");
+  }
+
+  if (!titleScreen) return;
   titleScreen.classList.remove("hidden");
   titleScreen.setAttribute("aria-hidden", "false");
+}
+
+function showStageSelectScreen() {
+  state.titleOpen = false;
+  state.stageSelectOpen = true;
+  state.selectedStage = null;
+  stopStagePreview();
+
+  if (titleScreen) {
+    titleScreen.classList.add("hidden");
+    titleScreen.setAttribute("aria-hidden", "true");
+  }
+
+  if (stageScreen) {
+    stageScreen.classList.remove("hidden");
+    stageScreen.setAttribute("aria-hidden", "false");
+  }
+
+  if (startNotice) startNotice.classList.add("hidden");
+  if (scoreBoard) scoreBoard.classList.add("hidden");
+  showJudgement("STAGE SELECT", "good");
+  timingTip.textContent = "Stage 1을 클릭하면 수련이 시작된다";
+  beatStatus.textContent = "Stage 1에 마우스를 올리면 Steel Against Night 미리듣기";
+}
+
+function hideStageSelectScreen() {
+  state.stageSelectOpen = false;
+  if (!stageScreen) return;
+
+  stageScreen.classList.add("hidden");
+  stageScreen.setAttribute("aria-hidden", "true");
+}
+
+function playStagePreview() {
+  if (state.running || state.gameOver && !state.stageSelectOpen) return;
+  if (!ensureDefaultMusic()) return;
+
+  try {
+    bgm.pause();
+    bgm.currentTime = 0;
+    bgm.loop = true;
+    bgm.volume = 0.34;
+    state.previewingStage = true;
+
+    const playPromise = bgm.play();
+    if (playPromise && typeof playPromise.catch === "function") {
+      playPromise.catch(() => {
+        state.previewingStage = false;
+        if (stagePreviewHint) {
+          stagePreviewHint.textContent = "브라우저가 미리듣기를 막았습니다. Stage 1을 클릭하면 음악과 함께 시작됩니다.";
+        }
+      });
+    }
+
+    if (stagePreviewHint) {
+      stagePreviewHint.textContent = "미리듣기 중 · Stage 1을 클릭하면 처음부터 게임이 시작됩니다.";
+    }
+  } catch (error) {
+    console.warn("스테이지 미리듣기 실패:", error);
+  }
+}
+
+function stopStagePreview() {
+  if (!bgm || state.running) return;
+
+  if (state.previewingStage) {
+    bgm.pause();
+    bgm.currentTime = 0;
+  }
+
+  state.previewingStage = false;
+  if (stagePreviewHint && state.stageSelectOpen) {
+    stagePreviewHint.textContent = "Stage 1에 마우스를 올리면 해당 노래가 흘러나옵니다.";
+  }
+}
+
+function selectStageOneAndStart() {
+  state.selectedStage = 1;
+  stopStagePreview();
+  startGame();
+}
+
+function handleStartFlow() {
+  if (state.running && !state.gameOver) {
+    startGame();
+    return;
+  }
+
+  if (state.stageSelectOpen) return;
+  showStageSelectScreen();
 }
 
 function showScoreBoard(reason = "게임 종료") {
@@ -291,80 +395,6 @@ function playTick(isTarget = false) {
     oscillator.stop(now + 0.07);
   } catch (error) {
     console.warn("박자음 재생 실패:", error);
-  }
-}
-
-function playSwordCutSound(kind = "참격") {
-  try {
-    if (!state.audioContext) {
-      const AudioContext = window.AudioContext || window.webkitAudioContext;
-      state.audioContext = new AudioContext();
-    }
-
-    const ctx = state.audioContext;
-    if (ctx.state === "suspended") ctx.resume();
-
-    const now = ctx.currentTime;
-    const isPerfect = kind === "일섬";
-    const masterGain = ctx.createGain();
-    const masterVolume = isPerfect ? 0.24 : 0.17;
-
-    masterGain.gain.setValueAtTime(masterVolume, now);
-    masterGain.gain.exponentialRampToValueAtTime(0.001, now + 0.42);
-    masterGain.connect(ctx.destination);
-
-    const noiseLength = Math.floor(ctx.sampleRate * 0.24);
-    const noiseBuffer = ctx.createBuffer(1, noiseLength, ctx.sampleRate);
-    const noiseData = noiseBuffer.getChannelData(0);
-
-    for (let i = 0; i < noiseLength; i += 1) {
-      const progress = i / noiseLength;
-      noiseData[i] = (Math.random() * 2 - 1) * Math.pow(1 - progress, 2.4);
-    }
-
-    const noise = ctx.createBufferSource();
-    noise.buffer = noiseBuffer;
-
-    const highPass = ctx.createBiquadFilter();
-    highPass.type = "highpass";
-    highPass.frequency.setValueAtTime(isPerfect ? 950 : 760, now);
-
-    const slashBand = ctx.createBiquadFilter();
-    slashBand.type = "bandpass";
-    slashBand.frequency.setValueAtTime(isPerfect ? 3200 : 2500, now);
-    slashBand.Q.setValueAtTime(0.9, now);
-
-    noise.connect(highPass);
-    highPass.connect(slashBand);
-    slashBand.connect(masterGain);
-    noise.start(now);
-    noise.stop(now + 0.24);
-
-    const bladeTone = ctx.createOscillator();
-    const bladeGain = ctx.createGain();
-    bladeTone.type = "sawtooth";
-    bladeTone.frequency.setValueAtTime(isPerfect ? 1650 : 1180, now);
-    bladeTone.frequency.exponentialRampToValueAtTime(isPerfect ? 420 : 340, now + 0.28);
-    bladeGain.gain.setValueAtTime(isPerfect ? 0.13 : 0.09, now);
-    bladeGain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
-    bladeTone.connect(bladeGain);
-    bladeGain.connect(masterGain);
-    bladeTone.start(now);
-    bladeTone.stop(now + 0.31);
-
-    const metalRing = ctx.createOscillator();
-    const ringGain = ctx.createGain();
-    metalRing.type = "triangle";
-    metalRing.frequency.setValueAtTime(isPerfect ? 2850 : 2300, now + 0.018);
-    metalRing.frequency.exponentialRampToValueAtTime(isPerfect ? 920 : 760, now + 0.16);
-    ringGain.gain.setValueAtTime(isPerfect ? 0.08 : 0.055, now + 0.018);
-    ringGain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
-    metalRing.connect(ringGain);
-    ringGain.connect(masterGain);
-    metalRing.start(now + 0.018);
-    metalRing.stop(now + 0.22);
-  } catch (error) {
-    console.warn("칼 베기 효과음 재생 실패:", error);
   }
 }
 
@@ -549,7 +579,6 @@ function resolveSuccess(note, kind, scoreGain) {
   note.resolved = true;
   note.scored = true;
   playNoteVerticalSliceEffect(note, kind);
-  playSwordCutSound(kind);
 
   state.combo += 1;
   state.maxCombo = Math.max(state.maxCombo, state.combo);
@@ -616,6 +645,8 @@ function startGame() {
   if (!requireMusicBeforeStart()) return;
 
   hideTitleScreen();
+  hideStageSelectScreen();
+  stopStagePreview();
   updateStartNotice("hide");
   state.running = true;
   state.paused = false;
@@ -663,7 +694,7 @@ function endGame(reason = "게임 종료") {
   noteContainer.innerHTML = "";
   enemyGroup.innerHTML = "";
   showJudgement(reason, reason === "수련 종료" ? "perfect" : "miss");
-  beatStatus.textContent = `최종 점수 ${state.score.toLocaleString("ko-KR")}점 · ENTER로 재시작`;
+  beatStatus.textContent = `최종 점수 ${state.score.toLocaleString("ko-KR")}점 · ENTER로 스테이지 선택`;
   updateHud();
   showScoreBoard(reason);
 }
@@ -769,8 +800,16 @@ function update(now) {
   requestAnimationFrame(update);
 }
 
-startButton.addEventListener("click", startGame);
-if (titleStartButton) titleStartButton.addEventListener("click", startGame);
+startButton.addEventListener("click", handleStartFlow);
+if (titleStartButton) titleStartButton.addEventListener("click", showStageSelectScreen);
+if (stageOneCard) {
+  stageOneCard.addEventListener("mouseenter", playStagePreview);
+  stageOneCard.addEventListener("focus", playStagePreview);
+  stageOneCard.addEventListener("mouseleave", stopStagePreview);
+  stageOneCard.addEventListener("blur", stopStagePreview);
+  stageOneCard.addEventListener("click", selectStageOneAndStart);
+}
+if (stageBackButton) stageBackButton.addEventListener("click", showTitleScreen);
 pauseButton.addEventListener("click", togglePause);
 
 musicButton.addEventListener("click", () => {
@@ -811,7 +850,18 @@ window.addEventListener("keydown", (event) => {
 
   if (event.code === "Enter") {
     event.preventDefault();
-    startGame();
+
+    if (state.titleOpen) {
+      showStageSelectScreen();
+      return;
+    }
+
+    if (state.stageSelectOpen) {
+      return;
+    }
+
+    handleStartFlow();
+    return;
   }
 
   if (event.code === "Escape") {
@@ -831,7 +881,7 @@ spawnEnemySquad();
 ensureDefaultMusic();
 updateStartNotice("ready");
 showJudgement("ENTER로 시작", "good");
-timingTip.textContent = "ENTER를 누르면 음악과 함께 시작";
-beatStatus.textContent = "타이틀 화면에서 ENTER를 누르면 Steel Against Night가 무한 반복 재생됩니다";
+timingTip.textContent = "ENTER를 누르면 스테이지 선택으로 이동";
+beatStatus.textContent = "타이틀 화면에서 ENTER → Stage 1 클릭 순서로 시작됩니다";
 
-// v20: GitHub 배포 진입 시 검무전기 타이틀 화면이 먼저 나오고 ENTER/버튼으로 게임이 시작되도록 추가
+// v21: 타이틀 화면 다음에 스테이지 선택 화면을 추가하고, Stage 1 마우스 hover 미리듣기 및 클릭 시작 흐름을 구현

@@ -1570,8 +1570,9 @@ button.need-music {
 /* v15: 기본 BGM을 Steel Against Night로 교체하고 ENTER 시작 후 게임 종료까지 무한 반복되도록 조정했습니다. */
 
 
-/* v20: GitHub 배포 진입용 타이틀 화면 */
-.title-screen {
+/* v21: 타이틀 → 스테이지 선택 → Stage 1 클릭 → 게임 플레이 흐름 */
+.title-screen,
+.stage-screen {
   position: absolute;
   inset: 0;
   z-index: 60;
@@ -1590,13 +1591,17 @@ button.need-music {
   transition: opacity .34s steps(4, end), visibility .34s steps(4, end);
 }
 
-.title-screen.hidden {
+.stage-screen { z-index: 59; }
+
+.title-screen.hidden,
+.stage-screen.hidden {
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
 }
 
-.title-screen::before {
+.title-screen::before,
+.stage-screen::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -1606,7 +1611,8 @@ button.need-music {
   opacity: .75;
 }
 
-.title-screen::after {
+.title-screen::after,
+.stage-screen::after {
   content: "";
   position: absolute;
   left: -10%;
@@ -1620,7 +1626,8 @@ button.need-music {
     0 0 26px rgba(143,215,255,.32);
 }
 
-.title-moon {
+.title-moon,
+.stage-moon {
   position: absolute;
   right: 130px;
   top: 72px;
@@ -1656,7 +1663,8 @@ button.need-music {
   opacity: .24;
 }
 
-.title-frame {
+.title-frame,
+.stage-frame {
   position: relative;
   z-index: 2;
   width: min(700px, calc(100% - 40px));
@@ -1686,7 +1694,8 @@ button.need-music {
   font-weight: 900;
 }
 
-.title-label {
+.title-label,
+.stage-label {
   margin: 0 0 10px;
   color: #8fd7ff;
   font-size: 14px;
@@ -1707,7 +1716,8 @@ button.need-music {
     0 0 34px rgba(143,215,255,.3);
 }
 
-.title-subcopy {
+.title-subcopy,
+.stage-subcopy {
   margin: 22px auto 26px;
   max-width: 560px;
   color: #dfd0b6;
@@ -1716,7 +1726,8 @@ button.need-music {
   text-shadow: 2px 2px 0 #0a0810;
 }
 
-.title-start-button {
+.title-start-button,
+.stage-back-button {
   min-width: 250px;
   padding: 14px 24px;
   border-color: #ffe184;
@@ -1730,7 +1741,8 @@ button.need-music {
   animation: titleStartPulse 1.05s steps(2, end) infinite;
 }
 
-.title-start-button:hover {
+.title-start-button:hover,
+.stage-back-button:hover {
   background: #fff5c9;
   transform: translateY(-3px);
 }
@@ -1752,12 +1764,118 @@ button.need-music {
   font-weight: 900;
 }
 
-@keyframes titleStartPulse {
-  0%, 100% { box-shadow: 0 0 0 5px rgba(255,225,132,.13), 6px 6px 0 rgba(0,0,0,.4); }
-  50% { box-shadow: 0 0 0 9px rgba(255,225,132,.25), 6px 6px 0 rgba(0,0,0,.4); }
+.stage-frame {
+  width: min(760px, calc(100% - 40px));
 }
 
-/* v20: 세로 참격은 직사각형 레인을 살짝만 뚫는 길이로 보정 */
+.stage-frame h2 {
+  margin: 0;
+  color: white;
+  font-size: clamp(42px, 6vw, 68px);
+  letter-spacing: 6px;
+  text-shadow:
+    4px 4px 0 #24192c,
+    8px 8px 0 rgba(0,0,0,.38),
+    0 0 30px rgba(143,215,255,.24);
+}
+
+.stage-card {
+  position: relative;
+  display: grid;
+  gap: 8px;
+  width: min(560px, 100%);
+  margin: 0 auto 18px;
+  padding: 24px 28px 22px;
+  text-align: left;
+  background:
+    linear-gradient(135deg, rgba(255,225,132,.14), transparent 34%),
+    rgba(17, 12, 24, .95);
+  border: 5px solid #5d3c48;
+  color: #fff5c9;
+  box-shadow:
+    inset 0 0 0 4px rgba(255,255,255,.05),
+    8px 8px 0 rgba(0,0,0,.38);
+  cursor: pointer;
+  transition: none;
+}
+
+.stage-card::before {
+  content: "";
+  position: absolute;
+  right: 24px;
+  top: 24px;
+  width: 52px;
+  height: 52px;
+  background: #8fd7ff;
+  box-shadow:
+    inset 0 0 0 10px #fff5c9,
+    0 0 28px rgba(143,215,255,.65);
+}
+
+.stage-card:hover,
+.stage-card:focus-visible {
+  transform: translateY(-6px);
+  border-color: #ffe184;
+  background:
+    linear-gradient(135deg, rgba(255,225,132,.22), transparent 38%),
+    rgba(28, 20, 38, .98);
+  box-shadow:
+    inset 0 0 0 4px rgba(255,255,255,.08),
+    0 0 0 6px rgba(255,225,132,.14),
+    8px 14px 0 rgba(0,0,0,.38),
+    0 0 32px rgba(255,225,132,.22);
+  outline: none;
+}
+
+.stage-number {
+  color: #8fd7ff;
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 4px;
+}
+
+.stage-card strong {
+  display: block;
+  color: white;
+  font-size: 34px;
+  letter-spacing: 4px;
+  text-shadow: 3px 3px 0 #120d18;
+}
+
+.stage-card em {
+  color: #ffe184;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.stage-difficulty,
+.stage-hover-guide {
+  color: #dfd0b6;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.stage-preview-hint {
+  min-height: 22px;
+  margin: 12px 0 18px;
+  color: #8fd7ff;
+  font-size: 14px;
+  font-weight: 900;
+  text-shadow: 2px 2px 0 #0a0810;
+}
+
+.stage-back-button {
+  min-width: 190px;
+  padding: 10px 16px;
+  border-color: #5d3c48;
+  color: #fff2bf;
+  background: #22182a;
+  font-size: 14px;
+  animation: none;
+}
+
+/* v21: 세로 참격은 직사각형 레인을 살짝만 뚫는 길이로 유지 */
 .beat-area.note-mode,
 .rhythm-lane,
 .note-container {
@@ -1784,13 +1902,72 @@ button.need-music {
   height: 12px;
 }
 
+@keyframes titleStartPulse {
+  0%, 100% { box-shadow: 0 0 0 5px rgba(255,225,132,.13), 6px 6px 0 rgba(0,0,0,.4); }
+  50% { box-shadow: 0 0 0 9px rgba(255,225,132,.25), 6px 6px 0 rgba(0,0,0,.4); }
+}
+
 @media (max-width: 900px) {
-  .title-screen { padding: 22px; }
-  .title-frame { width: calc(100% - 20px); padding: 26px 18px 24px; }
-  .title-frame h1 { font-size: 50px; letter-spacing: 5px; }
-  .title-subcopy { font-size: 14px; }
-  .title-guide-row { gap: 6px; }
-  .title-guide-row span { font-size: 11px; padding: 6px 7px; }
-  .title-moon { right: 34px; top: 54px; width: 52px; height: 52px; }
-  .ki-note.vertical-sliced .note-cut-vertical { height: 132px; width: 13px; }
+  .title-screen,
+  .stage-screen {
+    padding: 22px;
+  }
+
+  .title-frame,
+  .stage-frame {
+    width: calc(100% - 20px);
+    padding: 26px 18px 24px;
+  }
+
+  .title-frame h1 {
+    font-size: 50px;
+    letter-spacing: 5px;
+  }
+
+  .stage-frame h2 {
+    font-size: 38px;
+    letter-spacing: 3px;
+  }
+
+  .title-subcopy,
+  .stage-subcopy {
+    font-size: 14px;
+  }
+
+  .title-guide-row {
+    gap: 6px;
+  }
+
+  .title-guide-row span {
+    font-size: 11px;
+    padding: 6px 7px;
+  }
+
+  .title-moon,
+  .stage-moon {
+    right: 34px;
+    top: 54px;
+    width: 52px;
+    height: 52px;
+  }
+
+  .stage-card {
+    padding: 20px 18px;
+  }
+
+  .stage-card strong {
+    font-size: 28px;
+  }
+
+  .stage-card::before {
+    width: 40px;
+    height: 40px;
+    right: 18px;
+    top: 20px;
+  }
+
+  .ki-note.vertical-sliced .note-cut-vertical {
+    height: 132px;
+    width: 13px;
+  }
 }
