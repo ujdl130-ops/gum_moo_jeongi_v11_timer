@@ -32,10 +32,352 @@ const titleScreen = document.getElementById("titleScreen");
 const titleStartButton = document.getElementById("titleStartButton");
 const stageScreen = document.getElementById("stageScreen");
 const stageOneCard = document.getElementById("stageOneCard");
+const stageTwoCard = document.getElementById("stageTwoCard");
 const stageBackButton = document.getElementById("stageBackButton");
 const stagePreviewHint = document.getElementById("stagePreviewHint");
-const DEFAULT_BGM_PATH = "assets/Steel_Against_Night.mp3";
-const DEFAULT_BGM_NAME = "Steel Against Night";
+
+const STORAGE_STAGE2_UNLOCKED = "gumMooJeongi_stage2_unlocked_v1";
+const DEFAULT_STAGE_ID = 1;
+
+const STAGE_TWO_CHART = [
+  {
+    "time": 1.138,
+    "type": "tap"
+  },
+  {
+    "time": 1.324,
+    "type": "tap"
+  },
+  {
+    "time": 1.881,
+    "type": "tap"
+  },
+  {
+    "time": 2.276,
+    "type": "tap"
+  },
+  {
+    "time": 2.647,
+    "type": "tap"
+  },
+  {
+    "time": 3.019,
+    "type": "tap"
+  },
+  {
+    "time": 3.204,
+    "type": "tap"
+  },
+  {
+    "time": 3.39,
+    "type": "double"
+  },
+  {
+    "time": 3.762,
+    "type": "tap"
+  },
+  {
+    "time": 3.947,
+    "type": "tap"
+  },
+  {
+    "time": 4.528,
+    "type": "tap"
+  },
+  {
+    "time": 4.899,
+    "type": "tap"
+  },
+  {
+    "time": 5.271,
+    "type": "tap"
+  },
+  {
+    "time": 5.457,
+    "type": "tap"
+  },
+  {
+    "time": 5.642,
+    "type": "tap"
+  },
+  {
+    "time": 6.385,
+    "type": "hold",
+    "duration": 0.62
+  },
+  {
+    "time": 7.152,
+    "type": "tap"
+  },
+  {
+    "time": 7.895,
+    "type": "tap"
+  },
+  {
+    "time": 8.266,
+    "type": "tap"
+  },
+  {
+    "time": 8.638,
+    "type": "tap"
+  },
+  {
+    "time": 9.009,
+    "type": "tap"
+  },
+  {
+    "time": 9.381,
+    "type": "tap"
+  },
+  {
+    "time": 9.59,
+    "type": "double"
+  },
+  {
+    "time": 9.961,
+    "type": "tap"
+  },
+  {
+    "time": 10.147,
+    "type": "tap"
+  },
+  {
+    "time": 10.333,
+    "type": "tap"
+  },
+  {
+    "time": 10.704,
+    "type": "tap"
+  },
+  {
+    "time": 10.89,
+    "type": "tap"
+  },
+  {
+    "time": 11.633,
+    "type": "hold",
+    "duration": 0.62
+  },
+  {
+    "time": 12.399,
+    "type": "tap"
+  },
+  {
+    "time": 12.585,
+    "type": "tap"
+  },
+  {
+    "time": 12.771,
+    "type": "tap"
+  },
+  {
+    "time": 13.142,
+    "type": "tap"
+  },
+  {
+    "time": 13.328,
+    "type": "tap"
+  },
+  {
+    "time": 13.886,
+    "type": "tap"
+  },
+  {
+    "time": 14.257,
+    "type": "tap"
+  },
+  {
+    "time": 15.023,
+    "type": "tap"
+  },
+  {
+    "time": 15.209,
+    "type": "tap"
+  },
+  {
+    "time": 15.395,
+    "type": "double"
+  },
+  {
+    "time": 15.766,
+    "type": "tap"
+  },
+  {
+    "time": 15.952,
+    "type": "tap"
+  },
+  {
+    "time": 16.324,
+    "type": "tap"
+  },
+  {
+    "time": 16.509,
+    "type": "tap"
+  },
+  {
+    "time": 16.881,
+    "type": "tap"
+  },
+  {
+    "time": 17.276,
+    "type": "tap"
+  },
+  {
+    "time": 17.461,
+    "type": "tap"
+  },
+  {
+    "time": 17.647,
+    "type": "hold",
+    "duration": 0.62
+  },
+  {
+    "time": 18.39,
+    "type": "tap"
+  },
+  {
+    "time": 18.576,
+    "type": "tap"
+  },
+  {
+    "time": 18.762,
+    "type": "tap"
+  },
+  {
+    "time": 19.133,
+    "type": "tap"
+  },
+  {
+    "time": 19.9,
+    "type": "tap"
+  },
+  {
+    "time": 20.271,
+    "type": "double"
+  },
+  {
+    "time": 20.643,
+    "type": "tap"
+  },
+  {
+    "time": 21.014,
+    "type": "tap"
+  },
+  {
+    "time": 21.386,
+    "type": "tap"
+  },
+  {
+    "time": 21.571,
+    "type": "hold",
+    "duration": 0.72
+  },
+  {
+    "time": 22.523,
+    "type": "tap"
+  },
+  {
+    "time": 22.895,
+    "type": "tap"
+  },
+  {
+    "time": 23.452,
+    "type": "tap"
+  },
+  {
+    "time": 23.638,
+    "type": "tap"
+  },
+  {
+    "time": 24.381,
+    "type": "tap"
+  },
+  {
+    "time": 24.59,
+    "type": "double"
+  },
+  {
+    "time": 25.147,
+    "type": "tap"
+  },
+  {
+    "time": 25.333,
+    "type": "tap"
+  },
+  {
+    "time": 25.89,
+    "type": "tap"
+  },
+  {
+    "time": 26.262,
+    "type": "tap"
+  },
+  {
+    "time": 26.633,
+    "type": "tap"
+  },
+  {
+    "time": 27.005,
+    "type": "tap"
+  },
+  {
+    "time": 27.585,
+    "type": "hold",
+    "duration": 0.72
+  },
+  {
+    "time": 28.514,
+    "type": "tap"
+  },
+  {
+    "time": 28.886,
+    "type": "tap"
+  },
+  {
+    "time": 29.629,
+    "type": "tap"
+  }
+];
+
+const STAGES = {
+  1: {
+    id: 1,
+    title: "검무전기",
+    subtitle: "도장 안의 첫 수련",
+    songName: "Steel Against Night",
+    musicPath: "assets/Steel_Against_Night.mp3",
+    fallbackPath: "Steel_Against_Night.mp3",
+    bpm: 122,
+    duration: 30.78,
+    noteMode: "pattern",
+    firstHitTime: 1.35,
+    noteLead: 1.42,
+    noteSpeed: 66,
+    notePattern: [1, 1, 0.5, 0.5, 1, 0.75, 0.75, 1.25, 0.5, 1, 1.5],
+    perfectWindow: 0.075,
+    goodWindow: 0.17,
+    backgroundClass: "stage-one-active",
+    clearUnlocks: 2
+  },
+  2: {
+    id: 2,
+    title: "월하죽림",
+    subtitle: "어두운 밤의 연무장",
+    songName: "Steel Against Bamboo",
+    musicPath: "assets/Steel_Against_Bamboo.mp3",
+    fallbackPath: "Steel_Against_Bamboo.mp3",
+    bpm: 161.5,
+    duration: 30.78,
+    noteMode: "chart",
+    noteLead: 1.36,
+    noteSpeed: 76,
+    chart: STAGE_TWO_CHART,
+    perfectWindow: 0.062,
+    goodWindow: 0.145,
+    backgroundClass: "stage-two-active",
+    clearUnlocks: null
+  }
+};
 
 const state = {
   running: false,
@@ -45,39 +387,83 @@ const state = {
   titleOpen: true,
   stageSelectOpen: false,
   selectedStage: null,
-  previewingStage: false,
+  currentStageId: null,
+  currentStage: null,
+  previewingStageId: null,
   startTime: 0,
   score: 0,
   combo: 0,
   maxCombo: 0,
   power: 100,
-  bpm: 122,
-  selectedMusicUrl: null,
+  bpm: STAGES[1].bpm,
   musicReady: true,
-  selectedMusicName: DEFAULT_BGM_NAME,
+  selectedMusicName: STAGES[1].songName,
   audioContext: null,
   notes: [],
   nextNoteId: 0,
   nextHitTime: 0,
   patternIndex: 0,
+  chartIndex: 0,
   enemies: [],
   lastEnemyRespawn: 0,
+  stage2Unlocked: false,
+  spaceDown: false,
+  activeHoldNote: null
 };
 
-const PERFECT_WINDOW = 0.075;
-const GOOD_WINDOW = 0.17;
 const BAD_INPUT_DAMAGE = 7;
 const MISS_DAMAGE = 12;
+const HOLD_EARLY_DAMAGE = 10;
 const HIT_X = 7;
-const NOTE_SPEED = 66;
-const NOTE_LEAD = 1.42;
-const NOTE_REMOVE_AFTER = 2.9;
 const ENEMY_ROWS = [20, 54, 82, 35, 68];
-const NOTE_PATTERN = [1, 1, 0.5, 0.5, 1, 0.75, 0.75, 1.25, 0.5, 1, 1.5];
-const GAME_DURATION_SECONDS = 180;
+
+function safeLocalStorageGet(key) {
+  try {
+    return window.localStorage.getItem(key);
+  } catch (error) {
+    return null;
+  }
+}
+
+function safeLocalStorageSet(key, value) {
+  try {
+    window.localStorage.setItem(key, value);
+  } catch (error) {
+    console.warn("진행도 저장 실패:", error);
+  }
+}
+
+function loadProgress() {
+  state.stage2Unlocked = safeLocalStorageGet(STORAGE_STAGE2_UNLOCKED) === "true";
+}
+
+function saveStage2Unlock() {
+  state.stage2Unlocked = true;
+  safeLocalStorageSet(STORAGE_STAGE2_UNLOCKED, "true");
+  updateStageCards();
+}
+
+function isStageUnlocked(stageId) {
+  if (stageId === 1) return true;
+  if (stageId === 2) return state.stage2Unlocked;
+  return false;
+}
+
+function getStage(stageId = state.currentStageId || DEFAULT_STAGE_ID) {
+  return STAGES[stageId] || STAGES[DEFAULT_STAGE_ID];
+}
 
 function beatDuration() {
-  return 60 / state.bpm;
+  const stage = getStage();
+  return 60 / (stage.bpm || state.bpm || 122);
+}
+
+function getPerfectWindow() {
+  return getStage().perfectWindow || 0.075;
+}
+
+function getGoodWindow() {
+  return getStage().goodWindow || 0.17;
 }
 
 function clamp(value, min, max) {
@@ -85,7 +471,7 @@ function clamp(value, min, max) {
 }
 
 function setText(el, value) {
-  el.textContent = value;
+  if (el) el.textContent = value;
 }
 
 function formatTime(totalSeconds) {
@@ -96,23 +482,97 @@ function formatTime(totalSeconds) {
 }
 
 function updateTimer(gameTime = 0) {
-  const remaining = Math.max(0, GAME_DURATION_SECONDS - gameTime);
+  const duration = getStage().duration || 30.78;
+  const remaining = Math.max(0, duration - gameTime);
   if (timerText) {
     timerText.textContent = formatTime(remaining);
-    timerText.parentElement.classList.toggle("timer-warning", remaining <= 30);
+    timerText.parentElement.classList.toggle("timer-warning", remaining <= 10);
   }
 }
 
 function getRank(score) {
-  if (score >= 40000) return "천하제일";
-  if (score >= 30000) return "절정고수";
-  if (score >= 20000) return "일류검객";
-  if (score >= 10000) return "무림검객";
+  if (score >= 12000) return "천하제일";
+  if (score >= 9000) return "절정고수";
+  if (score >= 6500) return "일류검객";
+  if (score >= 3500) return "무림검객";
   return "수련생";
 }
 
 function hideScoreBoard() {
   if (scoreBoard) scoreBoard.classList.add("hidden");
+}
+
+function updateStageCards() {
+  if (!stageTwoCard) return;
+
+  const unlocked = isStageUnlocked(2);
+  stageTwoCard.classList.toggle("stage-card-locked", !unlocked);
+  stageTwoCard.classList.toggle("stage-card-unlocked", unlocked);
+  stageTwoCard.setAttribute("aria-disabled", unlocked ? "false" : "true");
+
+  const guide = stageTwoCard.querySelector(".stage-two-guide");
+  const lockMark = stageTwoCard.querySelector(".stage-lock-mark");
+  if (guide) {
+    guide.textContent = unlocked
+      ? "마우스를 올리면 미리듣기 · 클릭하면 시작"
+      : "Stage 1 클리어 후 해금";
+  }
+  if (lockMark) {
+    lockMark.textContent = unlocked ? "解" : "🔒";
+  }
+}
+
+function applyStageClass(stageId) {
+  game.classList.remove("stage-one-active", "stage-two-active");
+  const stage = getStage(stageId);
+  if (stage.backgroundClass) game.classList.add(stage.backgroundClass);
+
+  const subtitle = document.querySelector(".subtitle");
+  if (subtitle) {
+    subtitle.textContent = stageId === 2
+      ? "Stage 2 · HOLD / 2연타 특수 노트"
+      : "Stage 1 · 기본 검기 노트";
+  }
+}
+
+function applyStageMusic(stageId, preview = false) {
+  if (!bgm) return false;
+
+  const stage = getStage(stageId);
+  const currentSrc = bgm.getAttribute("src");
+  if (currentSrc !== stage.musicPath) {
+    bgm.pause();
+    bgm.setAttribute("src", stage.musicPath);
+    bgm.load();
+  }
+
+  bgm.loop = preview;
+  bgm.volume = preview ? 0.34 : 0.82;
+  state.selectedMusicName = stage.songName;
+  state.musicReady = true;
+  return true;
+}
+
+function requireMusicBeforeStart(stageId) {
+  return applyStageMusic(stageId, false);
+}
+
+function resetVisuals() {
+  hero.classList.remove("slash", "hurt", "ready-glow", "input-flash");
+  slashEffect.classList.remove("active", "weak");
+  slashFlash.classList.remove("active");
+  bloodSpark.classList.remove("active");
+  scene.classList.remove("shake");
+  game.classList.remove("flash-success", "flash-damage");
+  hitCircle.classList.remove("pulse", "danger", "perfect-flash", "miss-flash");
+}
+
+function showJudgement(text, type = "") {
+  judgement.className = "judgement";
+  if (type) judgement.classList.add(type);
+  judgement.textContent = text;
+  void judgement.offsetWidth;
+  judgement.classList.add("pop");
 }
 
 function hideTitleScreen() {
@@ -133,9 +593,10 @@ function showTitleScreen() {
     stageScreen.setAttribute("aria-hidden", "true");
   }
 
-  if (!titleScreen) return;
-  titleScreen.classList.remove("hidden");
-  titleScreen.setAttribute("aria-hidden", "false");
+  if (titleScreen) {
+    titleScreen.classList.remove("hidden");
+    titleScreen.setAttribute("aria-hidden", "false");
+  }
 }
 
 function showStageSelectScreen() {
@@ -143,6 +604,7 @@ function showStageSelectScreen() {
   state.stageSelectOpen = true;
   state.selectedStage = null;
   stopStagePreview();
+  updateStageCards();
 
   if (titleScreen) {
     titleScreen.classList.add("hidden");
@@ -157,8 +619,8 @@ function showStageSelectScreen() {
   if (startNotice) startNotice.classList.add("hidden");
   if (scoreBoard) scoreBoard.classList.add("hidden");
   showJudgement("STAGE SELECT", "good");
-  timingTip.textContent = "Stage 1을 클릭하면 수련이 시작된다";
-  beatStatus.textContent = "Stage 1에 마우스를 올리면 Steel Against Night 미리듣기";
+  timingTip.textContent = "Stage 1 클리어 후 Stage 2가 열린다";
+  beatStatus.textContent = "Stage 카드에 마우스를 올리면 해당 곡을 미리들을 수 있습니다";
 }
 
 function hideStageSelectScreen() {
@@ -169,29 +631,52 @@ function hideStageSelectScreen() {
   stageScreen.setAttribute("aria-hidden", "true");
 }
 
-function playStagePreview() {
-  if (state.running || state.gameOver && !state.stageSelectOpen) return;
-  if (!ensureDefaultMusic()) return;
+function updateStartNotice(mode = "ready") {
+  if (!startNotice) return;
+
+  const stage = getStage(state.currentStageId || DEFAULT_STAGE_ID);
+  startNotice.classList.remove("hidden", "ready");
+
+  if (mode === "hide") {
+    startNotice.classList.add("hidden");
+    return;
+  }
+
+  startNotice.classList.add("ready");
+  startNotice.innerHTML = `
+    <strong>전투 BGM 준비 완료</strong>
+    <span>${stage.songName} · 스테이지 선택 후 클릭하면 음악과 함께 게임이 시작됩니다.</span>
+  `;
+}
+
+function playStagePreview(stageId) {
+  if (state.running) return;
+  if (!isStageUnlocked(stageId)) {
+    if (stagePreviewHint) stagePreviewHint.textContent = "Stage 2는 Stage 1을 클리어해야 해금됩니다.";
+    return;
+  }
+  if (!applyStageMusic(stageId, true)) return;
 
   try {
     bgm.pause();
     bgm.currentTime = 0;
     bgm.loop = true;
     bgm.volume = 0.34;
-    state.previewingStage = true;
+    state.previewingStageId = stageId;
 
     const playPromise = bgm.play();
     if (playPromise && typeof playPromise.catch === "function") {
       playPromise.catch(() => {
-        state.previewingStage = false;
+        state.previewingStageId = null;
         if (stagePreviewHint) {
-          stagePreviewHint.textContent = "브라우저가 미리듣기를 막았습니다. Stage 1을 클릭하면 음악과 함께 시작됩니다.";
+          stagePreviewHint.textContent = "브라우저가 미리듣기를 막았습니다. 스테이지를 클릭하면 음악과 함께 시작됩니다.";
         }
       });
     }
 
     if (stagePreviewHint) {
-      stagePreviewHint.textContent = "미리듣기 중 · Stage 1을 클릭하면 처음부터 게임이 시작됩니다.";
+      const stage = getStage(stageId);
+      stagePreviewHint.textContent = `${stage.songName} 미리듣기 중 · 클릭하면 처음부터 시작`;
     }
   } catch (error) {
     console.warn("스테이지 미리듣기 실패:", error);
@@ -201,30 +686,42 @@ function playStagePreview() {
 function stopStagePreview() {
   if (!bgm || state.running) return;
 
-  if (state.previewingStage) {
+  if (state.previewingStageId !== null) {
     bgm.pause();
     bgm.currentTime = 0;
   }
 
-  state.previewingStage = false;
+  state.previewingStageId = null;
   if (stagePreviewHint && state.stageSelectOpen) {
-    stagePreviewHint.textContent = "Stage 1에 마우스를 올리면 해당 노래가 흘러나옵니다.";
+    stagePreviewHint.textContent = "Stage 카드에 마우스를 올리면 해당 노래가 흘러나옵니다.";
   }
 }
 
-function selectStageOneAndStart() {
-  state.selectedStage = 1;
+function selectStageAndStart(stageId) {
+  if (!isStageUnlocked(stageId)) {
+    showJudgement("잠김", "miss");
+    if (stagePreviewHint) stagePreviewHint.textContent = "Stage 1을 클리어하면 Stage 2가 해금됩니다.";
+    return;
+  }
+
+  state.selectedStage = stageId;
   stopStagePreview();
-  startGame();
+  startGame(stageId);
 }
 
 function handleStartFlow() {
-  if (state.running && !state.gameOver) {
-    startGame();
+  if (state.titleOpen) {
+    showStageSelectScreen();
     return;
   }
 
   if (state.stageSelectOpen) return;
+
+  if (state.running && !state.gameOver) {
+    startGame(state.currentStageId || DEFAULT_STAGE_ID);
+    return;
+  }
+
   showStageSelectScreen();
 }
 
@@ -237,7 +734,17 @@ function showScoreBoard(reason = "게임 종료") {
   finalPower.textContent = `${state.power}`;
   finalRank.textContent = getRank(state.score);
 
-  scoreBoard.querySelector("strong").textContent = reason === "수련 종료" ? "수련 종료" : "점수 보드";
+  const title = scoreBoard.querySelector("strong");
+  if (title) {
+    if (reason === "수련 종료" && state.currentStageId === 1 && state.stage2Unlocked) {
+      title.textContent = "Stage 1 Clear · Stage 2 해금";
+    } else if (reason === "수련 종료" && state.currentStageId === 2) {
+      title.textContent = "Stage 2 Clear";
+    } else {
+      title.textContent = reason === "수련 종료" ? "수련 종료" : "점수 보드";
+    }
+  }
+
   scoreBoard.classList.remove("hidden");
 }
 
@@ -246,60 +753,6 @@ function updateHud() {
   setText(comboEl, state.combo);
   setText(powerText, state.power);
   powerBar.style.width = `${clamp(state.power, 0, 100)}%`;
-}
-
-
-function updateStartNotice(mode = "ready") {
-  if (!startNotice) return;
-
-  startNotice.classList.remove("hidden", "ready");
-  startButton.classList.remove("need-music");
-
-  if (mode === "hide") {
-    startNotice.classList.add("hidden");
-    return;
-  }
-
-  startNotice.classList.add("ready");
-  startNotice.innerHTML = `
-    <strong>전투 BGM 준비 완료</strong>
-    <span>${state.selectedMusicName || DEFAULT_BGM_NAME} · ENTER를 누르면 음악이 자동 재생되며 게임이 시작됩니다.</span>
-  `;
-}
-
-function ensureDefaultMusic() {
-  if (!bgm) return false;
-
-  if (!state.selectedMusicUrl) {
-    bgm.src = DEFAULT_BGM_PATH;
-    state.selectedMusicName = DEFAULT_BGM_NAME;
-  }
-
-  bgm.loop = true;
-  state.musicReady = true;
-  return true;
-}
-
-function requireMusicBeforeStart() {
-  return ensureDefaultMusic();
-}
-
-function resetVisuals() {
-  hero.classList.remove("slash", "hurt", "ready-glow", "input-flash");
-  slashEffect.classList.remove("active", "weak");
-  slashFlash.classList.remove("active");
-  bloodSpark.classList.remove("active");
-  scene.classList.remove("shake");
-  game.classList.remove("flash-success", "flash-damage");
-  hitCircle.classList.remove("pulse", "danger", "perfect-flash", "miss-flash");
-}
-
-function showJudgement(text, type = "") {
-  judgement.className = "judgement";
-  if (type) judgement.classList.add(type);
-  judgement.textContent = text;
-  void judgement.offsetWidth;
-  judgement.classList.add("pop");
 }
 
 function makeEnemy(index) {
@@ -326,7 +779,9 @@ function makeEnemy(index) {
 function spawnEnemySquad() {
   enemyGroup.innerHTML = "";
   state.enemies = [];
-  const count = state.combo >= 18 ? 5 : 4;
+  const count = state.currentStageId === 2
+    ? (state.combo >= 20 ? 6 : 5)
+    : (state.combo >= 18 ? 5 : 4);
 
   for (let i = 0; i < count; i += 1) {
     const enemy = makeEnemy(i);
@@ -344,17 +799,17 @@ function updateEnemySquad(gameTime) {
   const nearest = unresolved.length
     ? Math.min(...unresolved.map((note) => Math.abs(note.hitTime - gameTime)))
     : 999;
-  const pressure = clamp(1 - nearest / 1.0, 0, 1);
+  const pressure = clamp(1 - nearest / (state.currentStageId === 2 ? 0.82 : 1.0), 0, 1);
 
   state.enemies.forEach((enemy, index) => {
     if (enemy.classList.contains("defeated")) return;
 
     const row = Number(enemy.dataset.row);
     const baseScale = Number(enemy.dataset.scale);
-    const baseX = 70 + index * 6.3;
-    const x = baseX - pressure * (8 + index * 1.1) + Math.sin(gameTime * 3.6 + index) * 0.7;
+    const baseX = state.currentStageId === 2 ? 68 + index * 5.6 : 70 + index * 6.3;
+    const x = baseX - pressure * (state.currentStageId === 2 ? 12 + index * 1.4 : 8 + index * 1.1) + Math.sin(gameTime * 3.6 + index) * 0.7;
     const bob = Math.sin(gameTime * 11 + index) * 4;
-    const scale = baseScale + pressure * 0.12;
+    const scale = baseScale + pressure * (state.currentStageId === 2 ? 0.16 : 0.12);
 
     enemy.style.left = `${x}%`;
     enemy.style.bottom = `${row + bob}px`;
@@ -366,18 +821,21 @@ function updateEnemySquad(gameTime) {
   });
 }
 
+function ensureAudioContext() {
+  if (!state.audioContext) {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    state.audioContext = new AudioContext();
+  }
+
+  if (state.audioContext.state === "suspended") state.audioContext.resume();
+  return state.audioContext;
+}
+
 function playTick(isTarget = false) {
   if (!metronomeToggle.checked) return;
 
   try {
-    if (!state.audioContext) {
-      const AudioContext = window.AudioContext || window.webkitAudioContext;
-      state.audioContext = new AudioContext();
-    }
-
-    const ctx = state.audioContext;
-    if (ctx.state === "suspended") ctx.resume();
-
+    const ctx = ensureAudioContext();
     const oscillator = ctx.createOscillator();
     const gain = ctx.createGain();
 
@@ -398,48 +856,160 @@ function playTick(isTarget = false) {
   }
 }
 
-function tryPlayMusic() {
-  if (!ensureDefaultMusic()) return false;
+function playSwordCutSound(kind = "참격") {
+  try {
+    const ctx = ensureAudioContext();
+    const now = ctx.currentTime;
+    const isPerfect = kind === "일섬" || kind === "쌍격" || kind === "장참";
+    const masterGain = ctx.createGain();
+    const masterVolume = isPerfect ? 0.24 : 0.17;
+
+    masterGain.gain.setValueAtTime(masterVolume, now);
+    masterGain.gain.exponentialRampToValueAtTime(0.001, now + 0.42);
+    masterGain.connect(ctx.destination);
+
+    const noiseLength = Math.floor(ctx.sampleRate * 0.24);
+    const noiseBuffer = ctx.createBuffer(1, noiseLength, ctx.sampleRate);
+    const noiseData = noiseBuffer.getChannelData(0);
+
+    for (let i = 0; i < noiseLength; i += 1) {
+      const progress = i / noiseLength;
+      noiseData[i] = (Math.random() * 2 - 1) * Math.pow(1 - progress, 2.4);
+    }
+
+    const noise = ctx.createBufferSource();
+    noise.buffer = noiseBuffer;
+
+    const highPass = ctx.createBiquadFilter();
+    highPass.type = "highpass";
+    highPass.frequency.setValueAtTime(isPerfect ? 950 : 760, now);
+
+    const slashBand = ctx.createBiquadFilter();
+    slashBand.type = "bandpass";
+    slashBand.frequency.setValueAtTime(isPerfect ? 3200 : 2500, now);
+    slashBand.Q.setValueAtTime(0.9, now);
+
+    noise.connect(highPass);
+    highPass.connect(slashBand);
+    slashBand.connect(masterGain);
+    noise.start(now);
+    noise.stop(now + 0.24);
+
+    const bladeTone = ctx.createOscillator();
+    const bladeGain = ctx.createGain();
+    bladeTone.type = "sawtooth";
+    bladeTone.frequency.setValueAtTime(isPerfect ? 1650 : 1180, now);
+    bladeTone.frequency.exponentialRampToValueAtTime(isPerfect ? 420 : 340, now + 0.28);
+    bladeGain.gain.setValueAtTime(isPerfect ? 0.13 : 0.09, now);
+    bladeGain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+    bladeTone.connect(bladeGain);
+    bladeGain.connect(masterGain);
+    bladeTone.start(now);
+    bladeTone.stop(now + 0.31);
+
+    const metalRing = ctx.createOscillator();
+    const ringGain = ctx.createGain();
+    metalRing.type = "triangle";
+    metalRing.frequency.setValueAtTime(isPerfect ? 2850 : 2300, now + 0.018);
+    metalRing.frequency.exponentialRampToValueAtTime(isPerfect ? 920 : 760, now + 0.16);
+    ringGain.gain.setValueAtTime(isPerfect ? 0.08 : 0.055, now + 0.018);
+    ringGain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+    metalRing.connect(ringGain);
+    ringGain.connect(masterGain);
+    metalRing.start(now + 0.018);
+    metalRing.stop(now + 0.22);
+  } catch (error) {
+    console.warn("칼 베기 효과음 재생 실패:", error);
+  }
+}
+
+function tryPlayMusic(stageId = state.currentStageId || DEFAULT_STAGE_ID) {
+  if (!applyStageMusic(stageId, false)) return false;
 
   bgm.pause();
   bgm.currentTime = 0;
-  bgm.volume = 0.8;
-  bgm.loop = true;
+  bgm.volume = 0.82;
+  bgm.loop = false;
 
   const playPromise = bgm.play();
   if (playPromise && typeof playPromise.catch === "function") {
     playPromise.catch(() => {
-      beatStatus.textContent = "음악 재생이 막혔습니다. 화면을 한 번 클릭한 뒤 ENTER를 다시 눌러주세요.";
+      beatStatus.textContent = "음악 재생이 막혔습니다. 화면을 한 번 클릭한 뒤 스테이지를 다시 선택해주세요.";
     });
   }
 
   return true;
 }
 
-function createNote(hitTime) {
+function createNote(noteData) {
+  const data = typeof noteData === "number" ? { time: noteData, type: "tap" } : noteData;
+  const noteType = data.type || "tap";
   const note = {
     id: state.nextNoteId,
-    hitTime,
+    hitTime: data.time,
+    type: noteType,
+    holdDuration: data.duration || 0,
     resolved: false,
+    resolvedAt: null,
     scored: false,
     ticked: false,
-    yOffset: 0,
-    type: state.nextNoteId % 4 === 3 ? "heavy" : "normal",
-    el: document.createElement("div"),
+    lockedX: null,
+    holdStarted: false,
+    holdEndTime: null,
+    doubleStarted: false,
+    doubleDeadline: null,
+    tapCount: 0,
+    el: document.createElement("div")
   };
   state.nextNoteId += 1;
 
-  note.el.className = `ki-note ${note.type}`;
-  note.el.innerHTML = `<span class="note-core"></span>`;
+  const visualTone = state.currentStageId === 2 && state.nextNoteId % 3 === 0 ? "heavy" : "normal";
+  note.el.className = `ki-note ${visualTone} note-${noteType}`;
+
+  if (noteType === "hold") {
+    note.el.innerHTML = `
+      <span class="hold-tail"></span>
+      <span class="hold-progress"></span>
+      <span class="note-core"></span>
+      <span class="hold-label">HOLD</span>
+    `;
+  } else if (noteType === "double") {
+    note.el.innerHTML = `
+      <span class="note-core"></span>
+      <span class="double-label">2x</span>
+    `;
+  } else {
+    note.el.innerHTML = `<span class="note-core"></span>`;
+  }
+
   note.el.style.top = "50%";
   noteContainer.appendChild(note.el);
   state.notes.push(note);
 }
 
 function scheduleNotes(gameTime) {
-  while (state.nextHitTime - gameTime <= NOTE_LEAD) {
-    createNote(state.nextHitTime);
-    const intervalBeats = NOTE_PATTERN[state.patternIndex % NOTE_PATTERN.length];
+  const stage = getStage();
+  const lead = stage.noteLead || 1.42;
+
+  if (stage.noteMode === "chart") {
+    const chart = stage.chart || [];
+    while (
+      state.chartIndex < chart.length &&
+      chart[state.chartIndex].time - gameTime <= lead
+    ) {
+      createNote(chart[state.chartIndex]);
+      state.chartIndex += 1;
+    }
+    return;
+  }
+
+  while (
+    state.nextHitTime - gameTime <= lead &&
+    state.nextHitTime <= stage.duration - 0.4
+  ) {
+    createNote({ time: state.nextHitTime, type: "tap" });
+    const pattern = stage.notePattern || STAGES[1].notePattern;
+    const intervalBeats = pattern[state.patternIndex % pattern.length];
     state.patternIndex += 1;
     state.nextHitTime += intervalBeats * beatDuration();
   }
@@ -450,20 +1020,43 @@ function removeNote(note) {
   state.notes = state.notes.filter((item) => item !== note);
 }
 
+function updateHoldVisual(note, gameTime) {
+  if (!note.holdStarted || note.resolved) return;
+
+  note.lockedX = `${HIT_X}%`;
+  note.el.style.left = note.lockedX;
+  const progress = clamp((gameTime - note.hitTime) / note.holdDuration, 0, 1);
+  note.el.style.setProperty("--hold-progress", `${Math.floor(progress * 100)}%`);
+
+  if (state.spaceDown && progress >= 0.98) {
+    resolveHoldSuccess(note);
+  }
+
+  if (!state.spaceDown && gameTime < note.holdEndTime - 0.08) {
+    resolveNoteMiss(note, "조기 해제", HOLD_EARLY_DAMAGE);
+  }
+}
+
 function updateNotes(gameTime) {
+  const stage = getStage();
+  const speed = stage.noteSpeed || 66;
+  const goodWindow = getGoodWindow();
+
   for (const note of [...state.notes]) {
     const diff = note.hitTime - gameTime;
-    const x = HIT_X + diff * NOTE_SPEED;
+    const x = HIT_X + diff * speed;
 
     if (note.resolved && note.lockedX) {
+      note.el.style.left = note.lockedX;
+    } else if (note.lockedX) {
       note.el.style.left = note.lockedX;
     } else {
       note.el.style.left = `${x}%`;
     }
 
     const abs = Math.abs(diff);
-    note.el.classList.toggle("near", abs <= GOOD_WINDOW && !note.resolved);
-    note.el.classList.toggle("perfect-zone", abs <= PERFECT_WINDOW && !note.resolved);
+    note.el.classList.toggle("near", abs <= goodWindow && !note.resolved);
+    note.el.classList.toggle("perfect-zone", abs <= getPerfectWindow() && !note.resolved);
 
     if (!note.ticked && gameTime >= note.hitTime - 0.018) {
       note.ticked = true;
@@ -473,11 +1066,20 @@ function updateNotes(gameTime) {
       hitCircle.classList.add("pulse");
     }
 
-    if (!note.resolved && gameTime > note.hitTime + GOOD_WINDOW) {
+    if (note.type === "hold" && note.holdStarted && !note.resolved) {
+      updateHoldVisual(note, gameTime);
+    }
+
+    if (note.type === "double" && note.doubleStarted && !note.resolved && gameTime > note.doubleDeadline) {
+      resolveNoteMiss(note, "2연타 실패", MISS_DAMAGE);
+    }
+
+    if (!note.resolved && !note.holdStarted && !note.doubleStarted && gameTime > note.hitTime + goodWindow) {
       resolveNoteMiss(note);
     }
 
-    if (note.resolved && gameTime > note.hitTime + NOTE_REMOVE_AFTER) {
+    const removeAfter = note.resolvedAt ?? note.hitTime;
+    if (note.resolved && gameTime > removeAfter + 1.65) {
       removeNote(note);
     }
   }
@@ -486,7 +1088,9 @@ function updateNotes(gameTime) {
 function updateTimingText(gameTime) {
   const unresolved = state.notes.filter((note) => !note.resolved);
   if (!unresolved.length) {
-    timingTip.textContent = "오른쪽에서 검기 노트가 온다";
+    timingTip.textContent = state.currentStageId === 2
+      ? "대나무 그림자 사이로 검기 노트가 온다"
+      : "오른쪽에서 검기 노트가 온다";
     hitCircle.classList.remove("danger");
     return;
   }
@@ -498,15 +1102,30 @@ function updateTimingText(gameTime) {
   });
   const diff = gameTime - nearest.hitTime;
   const abs = Math.abs(diff);
+  const goodWindow = getGoodWindow();
 
-  hitCircle.classList.toggle("danger", abs <= GOOD_WINDOW && !nearest.resolved);
+  hitCircle.classList.toggle("danger", abs <= goodWindow && !nearest.resolved);
   hero.classList.toggle("ready-glow", abs <= 0.28 && !nearest.resolved);
 
-  if (abs <= PERFECT_WINDOW) timingTip.textContent = "지금! 검기를 날려라";
-  else if (abs <= GOOD_WINDOW) timingTip.textContent = diff < 0 ? "조금만 더 기다려" : "조금 늦었다";
-  else if (diff < -0.55) timingTip.textContent = "원형 노트가 판정원으로 접근 중";
-  else if (diff < 0) timingTip.textContent = "곧 겹친다";
-  else timingTip.textContent = "놓쳤다";
+  if (nearest.type === "hold" && abs <= goodWindow && !nearest.holdStarted) {
+    timingTip.textContent = "HOLD! SPACE를 누른 채 유지";
+  } else if (nearest.type === "hold" && nearest.holdStarted) {
+    timingTip.textContent = "계속 누르고 있어라";
+  } else if (nearest.type === "double" && nearest.doubleStarted) {
+    timingTip.textContent = "한 번 더! SPACE 2연타";
+  } else if (nearest.type === "double" && abs <= goodWindow) {
+    timingTip.textContent = "2연타 노트! 빠르게 두 번";
+  } else if (abs <= getPerfectWindow()) {
+    timingTip.textContent = "지금! 검기를 날려라";
+  } else if (abs <= goodWindow) {
+    timingTip.textContent = diff < 0 ? "조금만 더 기다려" : "조금 늦었다";
+  } else if (diff < -0.55) {
+    timingTip.textContent = "원형 노트가 판정원으로 접근 중";
+  } else if (diff < 0) {
+    timingTip.textContent = "곧 겹친다";
+  } else {
+    timingTip.textContent = "놓쳤다";
+  }
 }
 
 function clearTimedVisuals() {
@@ -548,11 +1167,11 @@ function defeatEnemies(count = 1) {
 function playNoteVerticalSliceEffect(note, kind) {
   if (!note?.el) return;
 
-  const isPerfect = kind === "일섬";
+  const isPerfect = kind === "일섬" || kind === "쌍격" || kind === "장참";
 
   note.lockedX = `${HIT_X}%`;
   note.el.style.left = note.lockedX;
-  note.el.classList.remove("near", "perfect-zone", "good-hit", "perfect-hit");
+  note.el.classList.remove("near", "perfect-zone", "good-hit", "perfect-hit", "hold-active", "double-armed");
   note.el.classList.add(
     "hit",
     "vertical-sliced",
@@ -577,12 +1196,15 @@ function resolveSuccess(note, kind, scoreGain) {
   if (note.resolved) return;
 
   note.resolved = true;
+  note.resolvedAt = (performance.now() - state.startTime) / 1000;
   note.scored = true;
+  if (state.activeHoldNote === note) state.activeHoldNote = null;
   playNoteVerticalSliceEffect(note, kind);
+  playSwordCutSound(kind);
 
   state.combo += 1;
   state.maxCombo = Math.max(state.maxCombo, state.combo);
-  const comboBonus = Math.floor(state.combo / 5) * 10;
+  const comboBonus = Math.floor(state.combo / 5) * (state.currentStageId === 2 ? 14 : 10);
   state.score += scoreGain + comboBonus;
 
   updateHud();
@@ -590,12 +1212,10 @@ function resolveSuccess(note, kind, scoreGain) {
   bloodSpark.classList.add("active");
   game.classList.add("flash-success");
   hitCircle.classList.add("perfect-flash");
-  defeatEnemies(kind === "일섬" ? 2 : 1);
+  defeatEnemies(kind === "일섬" || kind === "쌍격" || kind === "장참" ? 2 : 1);
 
-  showJudgement(kind, kind === "일섬" ? "perfect" : "good");
-  beatStatus.textContent = kind === "일섬"
-    ? `검기가 꿰뚫었다! +${scoreGain + comboBonus}`
-    : `자객을 밀어냈다. +${scoreGain + comboBonus}`;
+  showJudgement(kind, kind === "일섬" || kind === "쌍격" || kind === "장참" ? "perfect" : "good");
+  beatStatus.textContent = `${kind} 성공! +${scoreGain + comboBonus}`;
 
   clearTimedVisuals();
 }
@@ -628,11 +1248,13 @@ function damagePlayer(message, damage) {
   }
 }
 
-function resolveNoteMiss(note) {
+function resolveNoteMiss(note, message = "피격", damage = MISS_DAMAGE) {
   if (note.resolved) return;
   note.resolved = true;
+  note.resolvedAt = (performance.now() - state.startTime) / 1000;
+  if (state.activeHoldNote === note) state.activeHoldNote = null;
   note.el.classList.add("miss");
-  damagePlayer("피격", MISS_DAMAGE);
+  damagePlayer(message, damage);
 }
 
 function resolveBadSlash() {
@@ -641,51 +1263,194 @@ function resolveBadSlash() {
   clearTimedVisuals();
 }
 
-function startGame() {
-  if (!requireMusicBeforeStart()) return;
+function startHoldNote(note, gameTime, isPerfect) {
+  note.holdStarted = true;
+  note.holdEndTime = note.hitTime + note.holdDuration;
+  note.lockedX = `${HIT_X}%`;
+  state.activeHoldNote = note;
+  note.el.classList.remove("near", "perfect-zone");
+  note.el.classList.add("hold-active");
+  note.el.style.setProperty("--hold-progress", "0%");
+  launchSwordAura(false);
+  playSwordCutSound(isPerfect ? "일섬" : "참격");
+  showJudgement("장참 준비", isPerfect ? "perfect" : "good");
+  beatStatus.textContent = "SPACE를 떼지 말고 끝까지 유지";
+}
+
+function resolveHoldSuccess(note) {
+  resolveSuccess(note, "장참", 170);
+}
+
+function handleDoubleNote(note, gameTime, abs) {
+  const goodWindow = getGoodWindow();
+
+  if (!note.doubleStarted) {
+    if (abs > goodWindow) {
+      resolveBadSlash();
+      return;
+    }
+
+    note.doubleStarted = true;
+    note.tapCount = 1;
+    note.doubleDeadline = gameTime + 0.34;
+    note.lockedX = `${HIT_X}%`;
+    note.el.classList.add("double-armed");
+    launchSwordAura(true);
+    playSwordCutSound("참격");
+    showJudgement("한 번 더!", "good");
+    beatStatus.textContent = "2연타 노트 · SPACE를 한 번 더!";
+    clearTimedVisuals();
+    return;
+  }
+
+  if (gameTime <= note.doubleDeadline) {
+    resolveSuccess(note, "쌍격", 145);
+  } else {
+    resolveNoteMiss(note, "2연타 실패", MISS_DAMAGE);
+  }
+}
+
+function handleSlashInput() {
+  if (!state.running || state.gameOver || state.paused) return;
+
+  pulseSheath();
+
+  const gameTime = (performance.now() - state.startTime) / 1000;
+  if (gameTime < 0) return;
+
+  if (state.activeHoldNote && !state.activeHoldNote.resolved) {
+    return;
+  }
+
+  const candidates = state.notes.filter((note) => !note.resolved);
+  if (!candidates.length) {
+    resolveBadSlash();
+    return;
+  }
+
+  const closest = candidates.reduce((best, note) => {
+    return Math.abs(note.hitTime - gameTime) < Math.abs(best.hitTime - gameTime) ? note : best;
+  });
+  const abs = Math.abs(closest.hitTime - gameTime);
+  const perfectWindow = getPerfectWindow();
+  const goodWindow = getGoodWindow();
+
+  if (closest.type === "hold") {
+    if (!closest.holdStarted && abs <= goodWindow) {
+      startHoldNote(closest, gameTime, abs <= perfectWindow);
+    } else {
+      resolveBadSlash();
+    }
+    return;
+  }
+
+  if (closest.type === "double") {
+    handleDoubleNote(closest, gameTime, abs);
+    return;
+  }
+
+  if (abs <= perfectWindow) {
+    resolveSuccess(closest, "일섬", state.currentStageId === 2 ? 125 : 110);
+  } else if (abs <= goodWindow) {
+    resolveSuccess(closest, "참격", state.currentStageId === 2 ? 65 : 55);
+  } else {
+    resolveBadSlash();
+  }
+}
+
+function handleSpaceRelease() {
+  if (!state.running || state.gameOver || state.paused) return;
+
+  const note = state.activeHoldNote;
+  if (!note || note.resolved) return;
+
+  const gameTime = (performance.now() - state.startTime) / 1000;
+  if (gameTime >= note.holdEndTime - 0.08) {
+    resolveHoldSuccess(note);
+  } else {
+    resolveNoteMiss(note, "조기 해제", HOLD_EARLY_DAMAGE);
+  }
+}
+
+function pulseSheath() {
+  hero.classList.remove("input-flash");
+  void hero.offsetWidth;
+  hero.classList.add("input-flash");
+  setTimeout(() => hero.classList.remove("input-flash"), 240);
+}
+
+function startGame(stageId = state.selectedStage || DEFAULT_STAGE_ID) {
+  const stage = getStage(stageId);
+  if (!isStageUnlocked(stageId)) {
+    showJudgement("잠김", "miss");
+    if (stagePreviewHint) stagePreviewHint.textContent = "Stage 1을 클리어하면 Stage 2를 플레이할 수 있습니다.";
+    return;
+  }
+
+  if (!requireMusicBeforeStart(stageId)) return;
 
   hideTitleScreen();
   hideStageSelectScreen();
   stopStagePreview();
-  updateStartNotice("hide");
+
   state.running = true;
   state.paused = false;
   state.pauseStart = 0;
   state.gameOver = false;
-  state.startTime = performance.now() + 350;
+  state.currentStageId = stageId;
+  state.currentStage = stage;
+  state.selectedStage = stageId;
+  state.startTime = performance.now();
   state.score = 0;
   state.combo = 0;
   state.maxCombo = 0;
   state.power = 100;
-  state.bpm = 122;
+  state.bpm = stage.bpm;
   state.notes = [];
   state.nextNoteId = 0;
-  state.nextHitTime = 1.55;
+  state.nextHitTime = stage.firstHitTime || 1.35;
   state.patternIndex = 0;
+  state.chartIndex = 0;
+  state.spaceDown = false;
+  state.activeHoldNote = null;
   noteContainer.innerHTML = "";
 
+  applyStageClass(stageId);
   hideScoreBoard();
+  updateStartNotice("hide");
   updateTimer(0);
   updateHud();
   resetVisuals();
   spawnEnemySquad();
-  showJudgement("검기를 준비해라", "");
-  timingTip.textContent = "노트가 왼쪽 끝 판정원에 겹칠 때 SPACE";
-  beatStatus.textContent = "오른쪽에서 날아온 노트가 왼쪽 끝 판정원에 겹치면 SPACE";
+  showJudgement(stageId === 2 ? "월하죽림" : "검기를 준비해라", "");
+  timingTip.textContent = stageId === 2
+    ? "HOLD는 꾹 누르고, 2x는 빠르게 두 번"
+    : "노트가 왼쪽 끝 판정원에 겹칠 때 SPACE";
+  beatStatus.textContent = `${stage.songName} · ${stage.subtitle}`;
   pauseButton.textContent = "일시정지";
   pauseButton.classList.remove("pause-active");
 
-  tryPlayMusic();
+  tryPlayMusic(stageId);
   requestAnimationFrame(update);
+}
+
+function clearStageUnlocks(reason) {
+  if (reason === "수련 종료" && state.currentStageId === 1 && !state.stage2Unlocked) {
+    saveStage2Unlock();
+  }
 }
 
 function endGame(reason = "게임 종료") {
   if (state.gameOver && !state.running) return;
 
+  clearStageUnlocks(reason);
+
   state.running = false;
   state.paused = false;
   state.pauseStart = 0;
   state.gameOver = true;
+  state.spaceDown = false;
+  state.activeHoldNote = null;
   pauseButton.textContent = "일시정지";
   pauseButton.classList.remove("pause-active");
   updateStartNotice("ready");
@@ -694,7 +1459,9 @@ function endGame(reason = "게임 종료") {
   noteContainer.innerHTML = "";
   enemyGroup.innerHTML = "";
   showJudgement(reason, reason === "수련 종료" ? "perfect" : "miss");
-  beatStatus.textContent = `최종 점수 ${state.score.toLocaleString("ko-KR")}점 · ENTER로 스테이지 선택`;
+  beatStatus.textContent = reason === "수련 종료" && state.currentStageId === 1
+    ? "Stage 1 Clear · Stage 2가 해금되었습니다 · ENTER로 스테이지 선택"
+    : `최종 점수 ${state.score.toLocaleString("ko-KR")}점 · ENTER로 스테이지 선택`;
   updateHud();
   showScoreBoard(reason);
 }
@@ -741,41 +1508,6 @@ function togglePause() {
   else pauseGame();
 }
 
-function pulseSheath() {
-  hero.classList.remove("input-flash");
-  void hero.offsetWidth;
-  hero.classList.add("input-flash");
-  setTimeout(() => hero.classList.remove("input-flash"), 240);
-}
-
-function handleSlashInput() {
-  if (!state.running || state.gameOver || state.paused) return;
-
-  pulseSheath();
-
-  const gameTime = (performance.now() - state.startTime) / 1000;
-  if (gameTime < 0) return;
-
-  const candidates = state.notes.filter((note) => !note.resolved);
-  if (!candidates.length) {
-    resolveBadSlash();
-    return;
-  }
-
-  const closest = candidates.reduce((best, note) => {
-    return Math.abs(note.hitTime - gameTime) < Math.abs(best.hitTime - gameTime) ? note : best;
-  });
-  const abs = Math.abs(closest.hitTime - gameTime);
-
-  if (abs <= PERFECT_WINDOW) {
-    resolveSuccess(closest, "일섬", 110);
-  } else if (abs <= GOOD_WINDOW) {
-    resolveSuccess(closest, "참격", 55);
-  } else {
-    resolveBadSlash();
-  }
-}
-
 function update(now) {
   if (!state.running || state.paused) return;
 
@@ -785,9 +1517,10 @@ function update(now) {
     return;
   }
 
+  const stage = getStage();
   updateTimer(gameTime);
-  if (gameTime >= GAME_DURATION_SECONDS) {
-    updateTimer(GAME_DURATION_SECONDS);
+  if (gameTime >= stage.duration) {
+    updateTimer(stage.duration);
     endGame("수련 종료");
     return;
   }
@@ -802,46 +1535,67 @@ function update(now) {
 
 startButton.addEventListener("click", handleStartFlow);
 if (titleStartButton) titleStartButton.addEventListener("click", showStageSelectScreen);
+
 if (stageOneCard) {
-  stageOneCard.addEventListener("mouseenter", playStagePreview);
-  stageOneCard.addEventListener("focus", playStagePreview);
+  stageOneCard.addEventListener("mouseenter", () => playStagePreview(1));
+  stageOneCard.addEventListener("focus", () => playStagePreview(1));
   stageOneCard.addEventListener("mouseleave", stopStagePreview);
   stageOneCard.addEventListener("blur", stopStagePreview);
-  stageOneCard.addEventListener("click", selectStageOneAndStart);
+  stageOneCard.addEventListener("click", () => selectStageAndStart(1));
 }
+
+if (stageTwoCard) {
+  stageTwoCard.addEventListener("mouseenter", () => playStagePreview(2));
+  stageTwoCard.addEventListener("focus", () => playStagePreview(2));
+  stageTwoCard.addEventListener("mouseleave", stopStagePreview);
+  stageTwoCard.addEventListener("blur", stopStagePreview);
+  stageTwoCard.addEventListener("click", () => selectStageAndStart(2));
+}
+
 if (stageBackButton) stageBackButton.addEventListener("click", showTitleScreen);
 pauseButton.addEventListener("click", togglePause);
 
-musicButton.addEventListener("click", () => {
-  musicInput.click();
-});
+if (musicButton) {
+  musicButton.disabled = true;
+  musicButton.title = "스테이지별 고정 곡을 사용합니다.";
+}
 
-musicInput.addEventListener("change", (event) => {
-  const file = event.target.files?.[0];
-  if (!file) return;
+if (musicInput) {
+  musicInput.addEventListener("change", () => {
+    showJudgement("곡 고정", "good");
+    beatStatus.textContent = "Stage 1은 Night, Stage 2는 Bamboo로 고정되어 있습니다.";
+  });
+}
 
-  if (state.selectedMusicUrl) {
-    URL.revokeObjectURL(state.selectedMusicUrl);
-  }
+bgm.addEventListener("error", () => {
+  const stage = getStage(state.previewingStageId || state.currentStageId || DEFAULT_STAGE_ID);
+  if (bgm.getAttribute("src") === stage.fallbackPath) return;
 
-  state.selectedMusicUrl = URL.createObjectURL(file);
-  state.musicReady = true;
-  state.selectedMusicName = file.name;
-  bgm.src = state.selectedMusicUrl;
-  bgm.loop = true;
+  bgm.setAttribute("src", stage.fallbackPath);
   bgm.load();
-  updateStartNotice("ready");
-  showJudgement("ENTER로 시작", "good");
-  timingTip.textContent = "음악 변경 완료 · ENTER로 시작";
-  beatStatus.textContent = `변경한 음악: ${file.name} · ENTER로 시작`;
+
+  if (state.running && !state.paused && !state.gameOver) {
+    bgm.play().catch(() => {
+      beatStatus.textContent = `${stage.songName} 파일 위치를 확인해주세요. assets 폴더 또는 루트 폴더에 필요합니다.`;
+    });
+  }
 });
 
 bgm.addEventListener("ended", () => {
-  if (state.running && !state.gameOver) {
+  if (state.previewingStageId !== null) {
     bgm.currentTime = 0;
-    bgm.play().catch(() => {
-      beatStatus.textContent = "음악 반복 재생이 막혔습니다. 화면을 한 번 클릭한 뒤 ENTER를 다시 눌러주세요.";
-    });
+    bgm.play().catch(() => {});
+    return;
+  }
+
+  if (state.running && !state.gameOver) {
+    const stage = getStage();
+    if (stage.duration > ((performance.now() - state.startTime) / 1000) + 0.25) {
+      bgm.currentTime = 0;
+      bgm.play().catch(() => {
+        beatStatus.textContent = "음악 반복 재생이 막혔습니다. 박자음으로 진행합니다.";
+      });
+    }
   }
 });
 
@@ -871,17 +1625,28 @@ window.addEventListener("keydown", (event) => {
 
   if (event.code === "Space") {
     event.preventDefault();
+    state.spaceDown = true;
     handleSlashInput();
   }
 });
 
+window.addEventListener("keyup", (event) => {
+  if (event.code === "Space") {
+    event.preventDefault();
+    state.spaceDown = false;
+    handleSpaceRelease();
+  }
+});
+
+loadProgress();
+updateStageCards();
 updateTimer(0);
 updateHud();
 spawnEnemySquad();
-ensureDefaultMusic();
+applyStageMusic(1, false);
 updateStartNotice("ready");
 showJudgement("ENTER로 시작", "good");
 timingTip.textContent = "ENTER를 누르면 스테이지 선택으로 이동";
-beatStatus.textContent = "타이틀 화면에서 ENTER → Stage 1 클릭 순서로 시작됩니다";
+beatStatus.textContent = "Stage 1은 Night, Stage 2는 Bamboo 곡으로 분리되어 있습니다";
 
-// v21: 타이틀 화면 다음에 스테이지 선택 화면을 추가하고, Stage 1 마우스 hover 미리듣기 및 클릭 시작 흐름을 구현
+// v22: Stage 2 잠금/해금, Bamboo 전용 차트, HOLD/2연타 특수 노트, 야외 연무장 배경 추가

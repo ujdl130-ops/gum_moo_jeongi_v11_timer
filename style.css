@@ -1971,3 +1971,355 @@ button.need-music {
     width: 13px;
   }
 }
+
+
+/* v22: Stage 2 잠금 UI, 특수 노트, 야외 연무장 배경 */
+.stage-card-locked {
+  cursor: not-allowed;
+  filter: grayscale(.45) brightness(.68);
+  border-color: #3a2a3c;
+  background:
+    linear-gradient(135deg, rgba(120,120,140,.08), transparent 34%),
+    rgba(12, 9, 18, .95);
+}
+
+.stage-card-locked:hover,
+.stage-card-locked:focus-visible {
+  transform: none;
+  border-color: #3a2a3c;
+  box-shadow:
+    inset 0 0 0 4px rgba(255,255,255,.04),
+    8px 8px 0 rgba(0,0,0,.38);
+}
+
+.stage-card-unlocked {
+  border-color: #8fd7ff;
+}
+
+.stage-lock-mark {
+  position: absolute;
+  right: 25px;
+  top: 23px;
+  z-index: 3;
+  min-width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #171326;
+  background: #ffe184;
+  border: 4px solid #fff5c9;
+  box-shadow: 5px 5px 0 rgba(0,0,0,.35), 0 0 20px rgba(255,225,132,.4);
+  font-size: 26px;
+  font-weight: 900;
+}
+
+.stage-card-unlocked .stage-lock-mark {
+  color: #07121a;
+  background: #8fd7ff;
+  border-color: #dff6ff;
+}
+
+.stage-card-locked::after {
+  content: "LOCKED";
+  position: absolute;
+  right: 88px;
+  top: 37px;
+  padding: 5px 8px;
+  color: #ff8c8c;
+  background: #1b1524;
+  border: 3px solid #e24b4b;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 2px;
+}
+
+.stage-card-unlocked::after {
+  content: "OPEN";
+  position: absolute;
+  right: 88px;
+  top: 37px;
+  padding: 5px 8px;
+  color: #8fd7ff;
+  background: #1b1524;
+  border: 3px solid #8fd7ff;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 2px;
+}
+
+/* Stage 2: 어두운 야외 연무장 */
+.game.stage-two-active {
+  background: #070b16;
+}
+
+.game.stage-two-active .room-wall {
+  background:
+    radial-gradient(circle at 70% 28%, rgba(255, 242, 188, .95) 0 34px, rgba(255, 242, 188, .24) 35px 54px, transparent 55px),
+    linear-gradient(180deg, #050716 0%, #0b1230 55%, #132139 100%);
+}
+
+.game.stage-two-active .room-wall::before {
+  background: #101a2b;
+  box-shadow: 0 -4px 0 #263f56, 0 4px 0 #050711;
+}
+
+.game.stage-two-active .room-wall::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -6px;
+  height: 185px;
+  background:
+    linear-gradient(90deg, transparent 0 8%, rgba(22,61,48,.8) 8% 9%, transparent 9% 20%, rgba(22,61,48,.8) 20% 21%, transparent 21% 32%, rgba(22,61,48,.8) 32% 33%, transparent 33% 76%, rgba(22,61,48,.75) 76% 77%, transparent 77%),
+    linear-gradient(180deg, transparent 0 35%, rgba(9, 22, 25, .78) 35% 100%);
+  opacity: .9;
+}
+
+.game.stage-two-active .window-panel,
+.game.stage-two-active .lantern,
+.game.stage-two-active .wall-shelf,
+.game.stage-two-active .hanging-scroll {
+  display: none;
+}
+
+.game.stage-two-active .scene {
+  background:
+    linear-gradient(180deg, rgba(5,7,18,.1) 0 20%, rgba(10,18,24,.58) 20% 100%),
+    linear-gradient(90deg, #0e1a27, #172d39 48%, #0b1624);
+  border-top-color: #263f56;
+  border-bottom-color: #050711;
+}
+
+.game.stage-two-active .scene::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 62px;
+  height: 130px;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 36px, rgba(31, 88, 65, .46) 36px 45px, transparent 45px 72px),
+    linear-gradient(180deg, transparent, rgba(6, 18, 20, .55));
+  opacity: .72;
+  z-index: 1;
+}
+
+.game.stage-two-active .tatami {
+  border-color: rgba(6, 13, 18, .72);
+  background:
+    repeating-linear-gradient(0deg, transparent 0 16px, rgba(255,255,255,.035) 16px 20px),
+    linear-gradient(90deg, rgba(96, 110, 82, .22), rgba(0,0,0,.12));
+}
+
+.game.stage-two-active .tatami-a { background-color: #1b352b; }
+.game.stage-two-active .tatami-b { background-color: #254834; }
+.game.stage-two-active .tatami-c { background-color: #182e29; }
+
+.game.stage-two-active .beat-area.note-mode {
+  background: rgba(4, 8, 16, .74);
+  border-color: #1e4d5d;
+  box-shadow:
+    inset 0 0 0 4px rgba(255,255,255,.04),
+    6px 6px 0 rgba(0,0,0,.38),
+    0 0 28px rgba(143,215,255,.14);
+}
+
+.game.stage-two-active .rhythm-lane {
+  background:
+    repeating-linear-gradient(90deg, rgba(255,255,255,.04) 0 4px, transparent 4px 18px),
+    linear-gradient(90deg, rgba(25,78,76,.86) 0 14%, rgba(6,12,22,.92) 36% 72%, rgba(18,44,58,.82));
+  border-color: #1e4d5d;
+}
+
+.game.stage-two-active .lane-title {
+  color: #8fd7ff;
+}
+
+.game.stage-two-active .assassin .eye {
+  background: #8fd7ff;
+  box-shadow: 0 0 12px #8fd7ff;
+}
+
+/* Stage 2 특수 노트: HOLD */
+.ki-note.note-hold {
+  width: 112px;
+  height: 34px;
+  border-color: #ffe184;
+  background: rgba(247, 251, 255, .92);
+  box-shadow:
+    0 0 0 4px rgba(255,225,132,.17),
+    0 0 26px rgba(255,225,132,.7),
+    10px 0 0 rgba(255,255,255,.12);
+}
+
+.ki-note.note-hold::before,
+.ki-note.note-hold::after {
+  display: none;
+}
+
+.ki-note.note-hold .note-core {
+  left: 18px;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  background: #ffe184;
+  box-shadow: 0 0 12px #ffe184;
+  transform: translate(-50%, -50%);
+  z-index: 4;
+}
+
+.ki-note.note-hold .hold-tail {
+  left: 24px;
+  top: 50%;
+  width: 70px;
+  height: 8px;
+  transform: translateY(-50%);
+  background: rgba(143,215,255,.55);
+  box-shadow: 0 0 12px rgba(143,215,255,.68);
+  z-index: 2;
+}
+
+.ki-note.note-hold .hold-progress {
+  left: 24px;
+  top: 50%;
+  width: var(--hold-progress, 0%);
+  max-width: 70px;
+  height: 12px;
+  transform: translateY(-50%);
+  background: #8fd7ff;
+  box-shadow: 0 0 15px #8fd7ff;
+  z-index: 3;
+}
+
+.ki-note.note-hold .hold-label {
+  left: 74px;
+  top: -17px;
+  width: auto;
+  height: auto;
+  padding: 2px 5px;
+  color: #171326;
+  background: #ffe184;
+  border: 3px solid #fff5c9;
+  box-shadow: 3px 3px 0 rgba(0,0,0,.28);
+  font-size: 11px;
+  font-weight: 900;
+  transform: translateX(-50%);
+  z-index: 5;
+}
+
+.ki-note.note-hold.hold-active {
+  border-color: #ffffff;
+  box-shadow:
+    0 0 0 5px rgba(255,255,255,.18),
+    0 0 34px rgba(143,215,255,.9);
+  animation: holdActivePulse .22s steps(2, end) infinite;
+}
+
+@keyframes holdActivePulse {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.28); }
+}
+
+/* Stage 2 특수 노트: 2연타 */
+.ki-note.note-double {
+  width: 46px;
+  height: 46px;
+  border-color: #ff8c8c;
+  background: #fff5c9;
+  box-shadow:
+    0 0 0 4px rgba(255,140,140,.18),
+    0 0 28px rgba(255,84,84,.78);
+}
+
+.ki-note.note-double::before {
+  right: -22px;
+  width: 18px;
+  height: 8px;
+  background: rgba(255,140,140,.45);
+}
+
+.ki-note.note-double::after {
+  right: -40px;
+  width: 10px;
+  height: 6px;
+  background: rgba(255,140,140,.34);
+}
+
+.ki-note.note-double .note-core {
+  background: #ff5b5b;
+  box-shadow: 0 0 13px #ff5b5b;
+}
+
+.ki-note.note-double .double-label {
+  left: 50%;
+  top: -20px;
+  width: auto;
+  height: auto;
+  padding: 2px 6px;
+  color: #ffffff;
+  background: #8e2f3d;
+  border: 3px solid #ff8c8c;
+  font-size: 12px;
+  font-weight: 900;
+  transform: translateX(-50%);
+  z-index: 5;
+}
+
+.ki-note.note-double.double-armed {
+  border-color: #ffffff;
+  animation: doubleArmedPulse .18s steps(2, end) infinite;
+}
+
+.ki-note.note-double.double-armed .double-label {
+  content: "1/2";
+  color: #171326;
+  background: #ffe184;
+  border-color: #fff5c9;
+}
+
+@keyframes doubleArmedPulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  50% { transform: translate(-50%, -50%) scale(1.16); }
+}
+
+.ki-note.note-hold.vertical-sliced,
+.ki-note.note-double.vertical-sliced {
+  width: 42px;
+  height: 42px;
+}
+
+@media (max-width: 900px) {
+  .stage-lock-mark {
+    right: 18px;
+    top: 20px;
+    min-width: 40px;
+    height: 40px;
+    font-size: 21px;
+  }
+
+  .stage-card-locked::after,
+  .stage-card-unlocked::after {
+    right: 66px;
+    top: 31px;
+    font-size: 10px;
+  }
+
+  .ki-note.note-hold {
+    width: 88px;
+    height: 30px;
+  }
+
+  .ki-note.note-hold .hold-tail,
+  .ki-note.note-hold .hold-progress {
+    width: 50px;
+    max-width: 50px;
+  }
+
+  .ki-note.note-hold .hold-label {
+    left: 60px;
+    font-size: 10px;
+  }
+}
