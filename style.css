@@ -1259,7 +1259,7 @@ button.need-music {
 
 /* v13: 성공 판정 시 노트가 세로로 '챙!' 하고 좌우 반쪽으로 갈라지는 이펙트 */
 .ki-note.hit.vertical-sliced {
-  animation: verticalSlicedNoteHold 1.35s steps(7, end) forwards;
+  animation: verticalSlicedNoteHold .7s steps(5, end) forwards;
   background: transparent;
   border-color: transparent;
   box-shadow: none;
@@ -1297,7 +1297,7 @@ button.need-music {
   left: auto;
   border-right: 0;
   transform-origin: right center;
-  animation: verticalSliceLeft 1.28s steps(8, end) forwards;
+  animation: verticalSliceLeft .64s steps(5, end) forwards;
 }
 
 .ki-note.vertical-sliced .note-half-right {
@@ -1305,7 +1305,7 @@ button.need-music {
   right: auto;
   border-left: 0;
   transform-origin: left center;
-  animation: verticalSliceRight 1.28s steps(8, end) forwards;
+  animation: verticalSliceRight .64s steps(5, end) forwards;
 }
 
 .ki-note.heavy.vertical-sliced .note-half {
@@ -1351,33 +1351,29 @@ button.need-music {
 .ki-note.vertical-sliced .note-cut-vertical {
   left: 50%;
   top: 50%;
-  width: 14px;
-  height: 210px;
+  width: 10px;
+  height: 92px;
   background: #ffffff;
   box-shadow:
-    0 0 0 7px rgba(255,255,255,.24),
-    0 0 0 14px rgba(143,215,255,.18),
-    0 0 26px #ffffff,
-    0 0 58px #8fd7ff,
-    0 0 92px rgba(143,215,255,.72);
+    0 0 0 5px rgba(255,255,255,.24),
+    0 0 22px #ffffff,
+    0 0 40px #8fd7ff;
   transform: translate(-50%, -50%) scaleY(0);
   transform-origin: center center;
   z-index: 7;
-  animation: noteVerticalCutFlash .42s steps(4, end) forwards;
+  animation: noteVerticalCutFlash .28s steps(3, end) forwards;
 }
 
 .ki-note.vertical-sliced .note-cut-vertical::before {
   content: "";
   position: absolute;
-  left: -22px;
+  left: -13px;
   top: 50%;
-  width: 58px;
-  height: 12px;
+  width: 36px;
+  height: 10px;
   background: #ffffff;
   transform: translateY(-50%);
-  box-shadow:
-    0 0 24px #ffffff,
-    0 0 42px #8fd7ff;
+  box-shadow: 0 0 24px #ffffff;
 }
 
 .ki-note.vertical-sliced .cut-chang {
@@ -1412,7 +1408,7 @@ button.need-music {
   box-shadow: 0 0 12px #ffffff;
   transform: translate(-50%, -50%);
   z-index: 6;
-  animation: cutSparkBurst .7s steps(5, end) forwards;
+  animation: cutSparkBurst .48s steps(4, end) forwards;
 }
 
 .ki-note.vertical-sliced .spark-1 { --spark-x: -34px; --spark-y: -28px; background: #ffffff; }
@@ -1424,31 +1420,29 @@ button.need-music {
 
 @keyframes verticalSlicedNoteHold {
   0% { opacity: 1; }
-  82% { opacity: 1; }
+  78% { opacity: 1; }
   100% { opacity: 0; }
 }
 
 @keyframes noteVerticalCutFlash {
   0% { opacity: 0; transform: translate(-50%, -50%) scaleY(0); }
-  18% { opacity: 1; transform: translate(-50%, -50%) scaleY(1.22); }
-  55% { opacity: 1; transform: translate(-50%, -50%) scaleY(1); }
-  100% { opacity: 0; transform: translate(-50%, -50%) scaleY(.08); }
+  22% { opacity: 1; transform: translate(-50%, -50%) scaleY(1.18); }
+  54% { opacity: 1; transform: translate(-50%, -50%) scaleY(1); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scaleY(.12); }
 }
 
 @keyframes verticalSliceLeft {
-  0% { opacity: 1; transform: translateY(-50%) translateX(0) rotate(0deg); filter: brightness(1.35); }
-  18% { opacity: 1; transform: translateY(-50%) translateX(-10px) rotate(-4deg); filter: brightness(1.65); }
-  42% { opacity: 1; transform: translateY(-32%) translateX(-34px) rotate(-14deg); filter: brightness(1.15); }
-  72% { opacity: 1; transform: translateY(118px) translateX(-58px) rotate(-28deg); }
-  100% { opacity: 0; transform: translateY(238px) translateX(-78px) rotate(-42deg); }
+  0% { opacity: 1; transform: translateY(-50%) translateX(0) rotate(0deg); }
+  20% { opacity: 1; transform: translateY(-50%) translateX(-7px) rotate(-2deg); }
+  55% { opacity: 1; transform: translateY(-56%) translateX(-28px) rotate(-10deg); }
+  100% { opacity: 0; transform: translateY(-62%) translateX(-52px) rotate(-18deg); }
 }
 
 @keyframes verticalSliceRight {
-  0% { opacity: 1; transform: translateY(-50%) translateX(0) rotate(0deg); filter: brightness(1.35); }
-  18% { opacity: 1; transform: translateY(-50%) translateX(10px) rotate(4deg); filter: brightness(1.65); }
-  42% { opacity: 1; transform: translateY(-22%) translateX(34px) rotate(14deg); filter: brightness(1.15); }
-  72% { opacity: 1; transform: translateY(132px) translateX(58px) rotate(28deg); }
-  100% { opacity: 0; transform: translateY(254px) translateX(78px) rotate(42deg); }
+  0% { opacity: 1; transform: translateY(-50%) translateX(0) rotate(0deg); }
+  20% { opacity: 1; transform: translateY(-50%) translateX(7px) rotate(2deg); }
+  55% { opacity: 1; transform: translateY(-44%) translateX(28px) rotate(10deg); }
+  100% { opacity: 0; transform: translateY(-38%) translateX(52px) rotate(18deg); }
 }
 
 @keyframes cutChangPop {
@@ -1576,274 +1570,227 @@ button.need-music {
 /* v15: 기본 BGM을 Steel Against Night로 교체하고 ENTER 시작 후 게임 종료까지 무한 반복되도록 조정했습니다. */
 
 
-/* v16: 세로 참격을 길게 확장하고, 성공 판정 노트가 반으로 갈라진 뒤 아래로 낙하하도록 강화 */
+/* v20: GitHub 배포 진입용 타이틀 화면 */
+.title-screen {
+  position: absolute;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 34px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 25%, rgba(255, 225, 132, .16), transparent 22%),
+    radial-gradient(circle at 74% 65%, rgba(143, 215, 255, .12), transparent 26%),
+    linear-gradient(180deg, rgba(9, 7, 15, .92), rgba(18, 12, 27, .98));
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition: opacity .34s steps(4, end), visibility .34s steps(4, end);
+}
 
+.title-screen.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
 
-/* v17: 판정원 세로 참격이 직사각형 레인을 뚫고 지나가며, 잘린 노트 조각이 화면 아래로 낙하 */
+.title-screen::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 26px, rgba(255,255,255,.04) 26px 30px),
+    repeating-linear-gradient(0deg, transparent 0 26px, rgba(255,255,255,.03) 26px 30px);
+  opacity: .75;
+}
+
+.title-screen::after {
+  content: "";
+  position: absolute;
+  left: -10%;
+  right: -10%;
+  bottom: 92px;
+  height: 8px;
+  background: rgba(143,215,255,.35);
+  box-shadow:
+    0 -26px 0 rgba(255,225,132,.12),
+    0 26px 0 rgba(226,75,75,.12),
+    0 0 26px rgba(143,215,255,.32);
+}
+
+.title-moon {
+  position: absolute;
+  right: 130px;
+  top: 72px;
+  width: 78px;
+  height: 78px;
+  background: #ffe393;
+  box-shadow:
+    0 0 0 7px rgba(255,228,147,.14),
+    0 0 48px rgba(255,189,97,.6);
+}
+
+.title-slash {
+  position: absolute;
+  width: 520px;
+  height: 12px;
+  background: rgba(255,255,255,.9);
+  box-shadow:
+    0 0 0 8px rgba(143,215,255,.14),
+    0 0 38px rgba(143,215,255,.72);
+  opacity: .42;
+}
+
+.title-slash-a {
+  left: -120px;
+  top: 180px;
+  transform: rotate(-14deg);
+}
+
+.title-slash-b {
+  right: -150px;
+  bottom: 150px;
+  transform: rotate(-14deg);
+  opacity: .24;
+}
+
+.title-frame {
+  position: relative;
+  z-index: 2;
+  width: min(700px, calc(100% - 40px));
+  padding: 34px 38px 30px;
+  text-align: center;
+  background: rgba(20, 14, 28, .9);
+  border: 6px solid #8fd7ff;
+  box-shadow:
+    inset 0 0 0 5px rgba(255,255,255,.05),
+    0 0 0 7px rgba(143,215,255,.14),
+    12px 12px 0 rgba(0,0,0,.38),
+    0 0 44px rgba(143,215,255,.2);
+}
+
+.title-emblem {
+  width: 70px;
+  height: 70px;
+  margin: 0 auto 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #171326;
+  background: #ffe184;
+  border: 5px solid #fff5c9;
+  box-shadow: 0 0 26px rgba(255,225,132,.48), 6px 6px 0 rgba(0,0,0,.3);
+  font-size: 39px;
+  font-weight: 900;
+}
+
+.title-label {
+  margin: 0 0 10px;
+  color: #8fd7ff;
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 5px;
+  text-shadow: 2px 2px 0 #0a0810;
+}
+
+.title-frame h1 {
+  margin: 0;
+  color: #ffffff;
+  font-size: clamp(58px, 8vw, 94px);
+  line-height: 1;
+  letter-spacing: 10px;
+  text-shadow:
+    5px 5px 0 #24192c,
+    10px 10px 0 rgba(0,0,0,.42),
+    0 0 34px rgba(143,215,255,.3);
+}
+
+.title-subcopy {
+  margin: 22px auto 26px;
+  max-width: 560px;
+  color: #dfd0b6;
+  font-size: 16px;
+  line-height: 1.6;
+  text-shadow: 2px 2px 0 #0a0810;
+}
+
+.title-start-button {
+  min-width: 250px;
+  padding: 14px 24px;
+  border-color: #ffe184;
+  color: #171326;
+  background: #ffe184;
+  box-shadow:
+    0 0 0 5px rgba(255,225,132,.13),
+    6px 6px 0 rgba(0,0,0,.4);
+  font-size: 18px;
+  letter-spacing: 2px;
+  animation: titleStartPulse 1.05s steps(2, end) infinite;
+}
+
+.title-start-button:hover {
+  background: #fff5c9;
+  transform: translateY(-3px);
+}
+
+.title-guide-row {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.title-guide-row span {
+  padding: 7px 10px;
+  color: #fff5c9;
+  background: rgba(16, 11, 22, .78);
+  border: 3px solid #5d3c48;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+@keyframes titleStartPulse {
+  0%, 100% { box-shadow: 0 0 0 5px rgba(255,225,132,.13), 6px 6px 0 rgba(0,0,0,.4); }
+  50% { box-shadow: 0 0 0 9px rgba(255,225,132,.25), 6px 6px 0 rgba(0,0,0,.4); }
+}
+
+/* v20: 세로 참격은 직사각형 레인을 살짝만 뚫는 길이로 보정 */
 .beat-area.note-mode,
 .rhythm-lane,
 .note-container {
   overflow: visible;
 }
 
-.note-container {
-  z-index: 16;
-}
+.note-container { z-index: 16; }
+.hit-circle { z-index: 14; }
+.ki-note.hit.vertical-sliced { z-index: 22; }
 
-.hit-circle {
-  z-index: 14;
-}
-
-.ki-note.hit.vertical-sliced {
-  z-index: 22;
-  animation: verticalSlicedNoteHold 1.75s steps(9, end) forwards;
-}
-
-.ki-note.vertical-sliced .note-cut-vertical {
-  left: 50%;
-  top: 50%;
-  width: 18px;
-  height: 360px;
-  background:
-    linear-gradient(90deg, rgba(143,215,255,.35) 0 16%, #ffffff 16% 84%, rgba(143,215,255,.35) 84% 100%);
-  box-shadow:
-    0 0 0 7px rgba(255,255,255,.24),
-    0 0 0 18px rgba(0,211,255,.18),
-    0 0 30px #ffffff,
-    0 0 72px #00d8ff,
-    0 0 118px rgba(0,216,255,.78);
-  transform: translate(-50%, -50%) scaleY(0);
-  transform-origin: center center;
-  z-index: 30;
-  animation: noteVerticalCutFlash .58s steps(5, end) forwards;
-}
-
-.ki-note.vertical-sliced .note-cut-vertical::before {
-  content: "";
-  position: absolute;
-  left: -35px;
-  top: 50%;
-  width: 88px;
-  height: 16px;
-  background: #ffffff;
-  transform: translateY(-50%);
-  box-shadow:
-    0 0 26px #ffffff,
-    0 0 50px #00d8ff,
-    0 0 78px rgba(143,215,255,.7);
-}
-
-.ki-note.vertical-sliced .note-cut-vertical::after {
-  content: "";
-  position: absolute;
-  left: -42px;
-  top: 0;
-  width: 102px;
-  height: 100%;
-  background:
-    linear-gradient(90deg,
-      transparent 0%,
-      rgba(0,216,255,.08) 18%,
-      rgba(255,255,255,.26) 48%,
-      rgba(0,216,255,.08) 82%,
-      transparent 100%);
-  opacity: .95;
-  z-index: -1;
-}
-
-.ki-note.vertical-sliced .note-half {
-  z-index: 24;
-}
-
-.ki-note.vertical-sliced .note-half-left {
-  animation: verticalSliceLeft 1.68s steps(10, end) forwards;
-}
-
-.ki-note.vertical-sliced .note-half-right {
-  animation: verticalSliceRight 1.68s steps(10, end) forwards;
-}
-
-.ki-note.vertical-sliced .cut-spark {
-  width: 10px;
-  height: 10px;
-  animation: cutSparkBurst .82s steps(6, end) forwards;
-}
-
-.ki-note.vertical-sliced .spark-1 { --spark-x: -54px; --spark-y: -64px; }
-.ki-note.vertical-sliced .spark-2 { --spark-x: 54px; --spark-y: -58px; }
-.ki-note.vertical-sliced .spark-3 { --spark-x: -62px; --spark-y: 76px; }
-.ki-note.vertical-sliced .spark-4 { --spark-x: 62px; --spark-y: 84px; }
-.ki-note.vertical-sliced .spark-5 { --spark-x: -24px; --spark-y: -110px; }
-.ki-note.vertical-sliced .spark-6 { --spark-x: 24px; --spark-y: 118px; }
-
-@keyframes verticalSlicedNoteHold {
-  0% { opacity: 1; }
-  88% { opacity: 1; }
-  100% { opacity: 0; }
-}
-
-@keyframes noteVerticalCutFlash {
-  0% {
-    opacity: 0;
-    transform: translate(-50%, -50%) scaleY(0);
-    filter: brightness(1);
-  }
-  12% {
-    opacity: 1;
-    transform: translate(-50%, -50%) scaleY(1.22);
-    filter: brightness(1.8);
-  }
-  36% {
-    opacity: 1;
-    transform: translate(-50%, -50%) scaleY(1.05);
-    filter: brightness(1.45);
-  }
-  72% {
-    opacity: .9;
-    transform: translate(-50%, -50%) scaleY(.92);
-    filter: brightness(1.15);
-  }
-  100% {
-    opacity: 0;
-    transform: translate(-50%, -50%) scaleY(.06);
-    filter: brightness(1);
-  }
-}
-
-@keyframes verticalSliceLeft {
-  0% {
-    opacity: 1;
-    transform: translateY(-50%) translateX(0) rotate(0deg);
-    filter: brightness(1.45);
-  }
-  15% {
-    opacity: 1;
-    transform: translateY(-50%) translateX(-13px) rotate(-6deg);
-    filter: brightness(1.85);
-  }
-  34% {
-    opacity: 1;
-    transform: translateY(-30%) translateX(-44px) rotate(-17deg);
-    filter: brightness(1.25);
-  }
-  58% {
-    opacity: 1;
-    transform: translateY(165px) translateX(-72px) rotate(-34deg);
-  }
-  82% {
-    opacity: .9;
-    transform: translateY(330px) translateX(-96px) rotate(-52deg);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(470px) translateX(-118px) rotate(-68deg);
-  }
-}
-
-@keyframes verticalSliceRight {
-  0% {
-    opacity: 1;
-    transform: translateY(-50%) translateX(0) rotate(0deg);
-    filter: brightness(1.45);
-  }
-  15% {
-    opacity: 1;
-    transform: translateY(-50%) translateX(13px) rotate(6deg);
-    filter: brightness(1.85);
-  }
-  34% {
-    opacity: 1;
-    transform: translateY(-22%) translateX(44px) rotate(17deg);
-    filter: brightness(1.25);
-  }
-  58% {
-    opacity: 1;
-    transform: translateY(182px) translateX(72px) rotate(34deg);
-  }
-  82% {
-    opacity: .9;
-    transform: translateY(355px) translateX(96px) rotate(52deg);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(500px) translateX(118px) rotate(68deg);
-  }
-}
-
-/* v17 mobile: 모바일 화면에서도 참격이 레인을 뚫고 보이도록 높이를 유지 */
-@media (max-width: 900px) {
-  .beat-area.note-mode,
-  .rhythm-lane,
-  .note-container {
-    overflow: visible;
-  }
-
-  .ki-note.vertical-sliced .note-cut-vertical {
-    height: 300px;
-    width: 15px;
-  }
-
-  @keyframes verticalSliceLeft {
-    0% { opacity: 1; transform: translateY(-50%) translateX(0) rotate(0deg); filter: brightness(1.45); }
-    15% { opacity: 1; transform: translateY(-50%) translateX(-10px) rotate(-6deg); filter: brightness(1.85); }
-    34% { opacity: 1; transform: translateY(-30%) translateX(-34px) rotate(-17deg); filter: brightness(1.25); }
-    58% { opacity: 1; transform: translateY(130px) translateX(-52px) rotate(-34deg); }
-    82% { opacity: .9; transform: translateY(260px) translateX(-70px) rotate(-52deg); }
-    100% { opacity: 0; transform: translateY(380px) translateX(-88px) rotate(-68deg); }
-  }
-
-  @keyframes verticalSliceRight {
-    0% { opacity: 1; transform: translateY(-50%) translateX(0) rotate(0deg); filter: brightness(1.45); }
-    15% { opacity: 1; transform: translateY(-50%) translateX(10px) rotate(6deg); filter: brightness(1.85); }
-    34% { opacity: 1; transform: translateY(-22%) translateX(34px) rotate(17deg); filter: brightness(1.25); }
-    58% { opacity: 1; transform: translateY(144px) translateX(52px) rotate(34deg); }
-    82% { opacity: .9; transform: translateY(280px) translateX(70px) rotate(52deg); }
-    100% { opacity: 0; transform: translateY(410px) translateX(88px) rotate(68deg); }
-  }
-}
-
-/* v18: 세로 참격 길이 재조정 - 직사각형 라인을 살짝만 뚫는 정도로 축소 */
 .ki-note.vertical-sliced .note-cut-vertical {
   width: 14px;
   height: 146px;
   box-shadow:
-    0 0 0 5px rgba(255,255,255,.2),
-    0 0 0 11px rgba(0,211,255,.14),
-    0 0 24px #ffffff,
-    0 0 50px #00d8ff,
-    0 0 78px rgba(0,216,255,.62);
-  animation: noteVerticalCutFlash .46s steps(5, end) forwards;
+    0 0 0 6px rgba(255,255,255,.22),
+    0 0 0 12px rgba(143,215,255,.15),
+    0 0 28px #ffffff,
+    0 0 58px #8fd7ff;
 }
 
 .ki-note.vertical-sliced .note-cut-vertical::before {
-  left: -27px;
-  width: 68px;
-  height: 13px;
-  box-shadow:
-    0 0 22px #ffffff,
-    0 0 38px #00d8ff,
-    0 0 56px rgba(143,215,255,.58);
-}
-
-.ki-note.vertical-sliced .note-cut-vertical::after {
-  left: -32px;
-  width: 78px;
+  left: -22px;
+  width: 58px;
+  height: 12px;
 }
 
 @media (max-width: 900px) {
-  .ki-note.vertical-sliced .note-cut-vertical {
-    width: 12px;
-    height: 132px;
-  }
-
-  .ki-note.vertical-sliced .note-cut-vertical::before {
-    left: -24px;
-    width: 60px;
-    height: 11px;
-  }
-
-  .ki-note.vertical-sliced .note-cut-vertical::after {
-    left: -28px;
-    width: 68px;
-  }
+  .title-screen { padding: 22px; }
+  .title-frame { width: calc(100% - 20px); padding: 26px 18px 24px; }
+  .title-frame h1 { font-size: 50px; letter-spacing: 5px; }
+  .title-subcopy { font-size: 14px; }
+  .title-guide-row { gap: 6px; }
+  .title-guide-row span { font-size: 11px; padding: 6px 7px; }
+  .title-moon { right: 34px; top: 54px; width: 52px; height: 52px; }
+  .ki-note.vertical-sliced .note-cut-vertical { height: 132px; width: 13px; }
 }

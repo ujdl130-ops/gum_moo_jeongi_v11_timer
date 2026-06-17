@@ -3,11 +3,29 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>검무전기 - 자동 BGM 시작 버전</title>
+  <title>검무전기 - 타이틀 화면 버전</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <main class="game" id="game">
+
+    <section class="title-screen" id="titleScreen" aria-label="검무전기 타이틀 화면">
+      <div class="title-moon"></div>
+      <div class="title-slash title-slash-a"></div>
+      <div class="title-slash title-slash-b"></div>
+      <div class="title-frame">
+        <div class="title-emblem">劍</div>
+        <p class="title-label">MARTIAL RHYTHM ACTION</p>
+        <h1>검무전기</h1>
+        <p class="title-subcopy">검기 노트가 판정원에 겹치는 순간, 한 번의 발도로 베어라.</p>
+        <button class="title-start-button" id="titleStartButton" type="button">ENTER · 게임 시작</button>
+        <div class="title-guide-row">
+          <span>SPACE 검기 발사</span>
+          <span>ESC 일시정지</span>
+          <span>BGM 자동 재생</span>
+        </div>
+      </div>
+    </section>
     <div class="pixel-noise"></div>
     <div class="room-wall">
       <div class="lantern lantern-left"><span></span></div>

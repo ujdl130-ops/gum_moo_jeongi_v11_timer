@@ -28,8 +28,9 @@ const musicButton = document.getElementById("musicButton");
 const musicInput = document.getElementById("musicInput");
 const metronomeToggle = document.getElementById("metronomeToggle");
 const bgm = document.getElementById("bgm");
+const titleScreen = document.getElementById("titleScreen");
+const titleStartButton = document.getElementById("titleStartButton");
 const DEFAULT_BGM_PATH = "assets/Steel_Against_Night.mp3";
-const FALLBACK_BGM_PATH = "Steel_Against_Night.mp3";
 const DEFAULT_BGM_NAME = "Steel Against Night";
 
 const state = {
@@ -37,6 +38,7 @@ const state = {
   paused: false,
   pauseStart: 0,
   gameOver: false,
+  titleOpen: true,
   startTime: 0,
   score: 0,
   combo: 0,
@@ -104,6 +106,22 @@ function getRank(score) {
 
 function hideScoreBoard() {
   if (scoreBoard) scoreBoard.classList.add("hidden");
+}
+
+function hideTitleScreen() {
+  state.titleOpen = false;
+  if (!titleScreen) return;
+
+  titleScreen.classList.add("hidden");
+  titleScreen.setAttribute("aria-hidden", "true");
+}
+
+function showTitleScreen() {
+  state.titleOpen = true;
+  if (!titleScreen) return;
+
+  titleScreen.classList.remove("hidden");
+  titleScreen.setAttribute("aria-hidden", "false");
 }
 
 function showScoreBoard(reason = "게임 종료") {
@@ -273,6 +291,80 @@ function playTick(isTarget = false) {
     oscillator.stop(now + 0.07);
   } catch (error) {
     console.warn("박자음 재생 실패:", error);
+  }
+}
+
+function playSwordCutSound(kind = "참격") {
+  try {
+    if (!state.audioContext) {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      state.audioContext = new AudioContext();
+    }
+
+    const ctx = state.audioContext;
+    if (ctx.state === "suspended") ctx.resume();
+
+    const now = ctx.currentTime;
+    const isPerfect = kind === "일섬";
+    const masterGain = ctx.createGain();
+    const masterVolume = isPerfect ? 0.24 : 0.17;
+
+    masterGain.gain.setValueAtTime(masterVolume, now);
+    masterGain.gain.exponentialRampToValueAtTime(0.001, now + 0.42);
+    masterGain.connect(ctx.destination);
+
+    const noiseLength = Math.floor(ctx.sampleRate * 0.24);
+    const noiseBuffer = ctx.createBuffer(1, noiseLength, ctx.sampleRate);
+    const noiseData = noiseBuffer.getChannelData(0);
+
+    for (let i = 0; i < noiseLength; i += 1) {
+      const progress = i / noiseLength;
+      noiseData[i] = (Math.random() * 2 - 1) * Math.pow(1 - progress, 2.4);
+    }
+
+    const noise = ctx.createBufferSource();
+    noise.buffer = noiseBuffer;
+
+    const highPass = ctx.createBiquadFilter();
+    highPass.type = "highpass";
+    highPass.frequency.setValueAtTime(isPerfect ? 950 : 760, now);
+
+    const slashBand = ctx.createBiquadFilter();
+    slashBand.type = "bandpass";
+    slashBand.frequency.setValueAtTime(isPerfect ? 3200 : 2500, now);
+    slashBand.Q.setValueAtTime(0.9, now);
+
+    noise.connect(highPass);
+    highPass.connect(slashBand);
+    slashBand.connect(masterGain);
+    noise.start(now);
+    noise.stop(now + 0.24);
+
+    const bladeTone = ctx.createOscillator();
+    const bladeGain = ctx.createGain();
+    bladeTone.type = "sawtooth";
+    bladeTone.frequency.setValueAtTime(isPerfect ? 1650 : 1180, now);
+    bladeTone.frequency.exponentialRampToValueAtTime(isPerfect ? 420 : 340, now + 0.28);
+    bladeGain.gain.setValueAtTime(isPerfect ? 0.13 : 0.09, now);
+    bladeGain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+    bladeTone.connect(bladeGain);
+    bladeGain.connect(masterGain);
+    bladeTone.start(now);
+    bladeTone.stop(now + 0.31);
+
+    const metalRing = ctx.createOscillator();
+    const ringGain = ctx.createGain();
+    metalRing.type = "triangle";
+    metalRing.frequency.setValueAtTime(isPerfect ? 2850 : 2300, now + 0.018);
+    metalRing.frequency.exponentialRampToValueAtTime(isPerfect ? 920 : 760, now + 0.16);
+    ringGain.gain.setValueAtTime(isPerfect ? 0.08 : 0.055, now + 0.018);
+    ringGain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+    metalRing.connect(ringGain);
+    ringGain.connect(masterGain);
+    metalRing.start(now + 0.018);
+    metalRing.stop(now + 0.22);
+  } catch (error) {
+    console.warn("칼 베기 효과음 재생 실패:", error);
   }
 }
 
@@ -457,6 +549,7 @@ function resolveSuccess(note, kind, scoreGain) {
   note.resolved = true;
   note.scored = true;
   playNoteVerticalSliceEffect(note, kind);
+  playSwordCutSound(kind);
 
   state.combo += 1;
   state.maxCombo = Math.max(state.maxCombo, state.combo);
@@ -522,6 +615,7 @@ function resolveBadSlash() {
 function startGame() {
   if (!requireMusicBeforeStart()) return;
 
+  hideTitleScreen();
   updateStartNotice("hide");
   state.running = true;
   state.paused = false;
@@ -676,6 +770,7 @@ function update(now) {
 }
 
 startButton.addEventListener("click", startGame);
+if (titleStartButton) titleStartButton.addEventListener("click", startGame);
 pauseButton.addEventListener("click", togglePause);
 
 musicButton.addEventListener("click", () => {
@@ -700,21 +795,6 @@ musicInput.addEventListener("change", (event) => {
   showJudgement("ENTER로 시작", "good");
   timingTip.textContent = "음악 변경 완료 · ENTER로 시작";
   beatStatus.textContent = `변경한 음악: ${file.name} · ENTER로 시작`;
-});
-
-bgm.addEventListener("error", () => {
-  if (state.selectedMusicUrl) return;
-  if (bgm.getAttribute("src") === FALLBACK_BGM_PATH) return;
-
-  bgm.src = FALLBACK_BGM_PATH;
-  bgm.loop = true;
-  bgm.load();
-
-  if (state.running && !state.paused && !state.gameOver) {
-    bgm.play().catch(() => {
-      beatStatus.textContent = "기본 음악 파일을 찾는 중입니다. assets 폴더 또는 같은 폴더의 MP3 위치를 확인해주세요.";
-    });
-  }
 });
 
 bgm.addEventListener("ended", () => {
@@ -752,6 +832,6 @@ ensureDefaultMusic();
 updateStartNotice("ready");
 showJudgement("ENTER로 시작", "good");
 timingTip.textContent = "ENTER를 누르면 음악과 함께 시작";
-beatStatus.textContent = "ENTER를 누르면 Steel Against Night가 게임 종료까지 무한 반복 재생됩니다";
+beatStatus.textContent = "타이틀 화면에서 ENTER를 누르면 Steel Against Night가 무한 반복 재생됩니다";
 
-// v16: 기본 BGM 경로가 assets 폴더와 루트 폴더 둘 다 대응되도록 fallback 처리 추가
+// v20: GitHub 배포 진입 시 검무전기 타이틀 화면이 먼저 나오고 ENTER/버튼으로 게임이 시작되도록 추가
