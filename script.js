@@ -49,7 +49,7 @@ const STORAGE_STAGE3_RANKING = "gumMooJeongi_stage3_rankings_v1";
 const DEFAULT_STAGE_ID = 1;
 const STAGE3_BOSS_MAX_HP = 4500;
 
-const STAGE_TWO_CHART = [
+const RAW_STAGE_TWO_CHART = [
   {
     "time": 1.138,
     "type": "tap"
@@ -350,6 +350,34 @@ const STAGE_TWO_CHART = [
 ];
 
 
+function protectHoldSpacing(chart, options = {}) {
+  const lead = options.lead ?? 1.36;
+  const beforeGap = options.beforeGap ?? 0.18;
+  const afterGap = options.afterGap ?? 0.12;
+  const holds = chart.filter((note) => note.type === "hold");
+
+  return chart
+    .filter((note) => {
+      if (note.type === "hold") return true;
+
+      return !holds.some((hold) => {
+        const holdStart = hold.time;
+        const holdEnd = hold.time + (hold.duration || 0.6);
+        const protectedStart = holdStart - beforeGap;
+        const protectedEnd = holdEnd + lead + afterGap;
+        return note.time >= protectedStart && note.time < protectedEnd;
+      });
+    })
+    .sort((a, b) => a.time - b.time);
+}
+
+const STAGE_TWO_CHART = protectHoldSpacing(RAW_STAGE_TWO_CHART, {
+  lead: 1.36,
+  beforeGap: 0.18,
+  afterGap: 0.12
+});
+
+
 function buildStageThreeChart() {
   const bpm = 161.5;
   const beat = 60 / bpm;
@@ -358,9 +386,9 @@ function buildStageThreeChart() {
   let index = 0;
   let t = 1.35;
 
-  // v25: Stage 3 난이도 완화
-  // 기존처럼 0.5박/0.25박 추가 노트를 끼워 넣지 않고,
-  // 최소 1박 이상의 간격을 확보해서 한 번 실수해도 연속 피격이 덜 나도록 조정합니다.
+  // v27: Stage 3 HOLD 보호구간 적용
+  // HOLD 노트를 누르는 동안 다음 노트가 화면에 내려오지 않도록
+  // HOLD 종료 + 노트 리드 시간만큼 뒤 노트를 비워둡니다.
   while (t < 30.15) {
     let type = "tap";
     let duration = 0;
@@ -377,7 +405,11 @@ function buildStageThreeChart() {
     index += 1;
   }
 
-  return chart.sort((a, b) => a.time - b.time);
+  return protectHoldSpacing(chart.sort((a, b) => a.time - b.time), {
+    lead: 1.35,
+    beforeGap: 0.2,
+    afterGap: 0.14
+  });
 }
 
 const STAGE_THREE_CHART = buildStageThreeChart();
@@ -1186,7 +1218,9 @@ function createNote(noteData) {
     ticked: false,
     lockedX: null,
     holdStarted: false,
+    holdStartTime: null,
     holdEndTime: null,
+    holdClearedRate: 0,
     doubleStarted: false,
     doubleDeadline: null,
     tapCount: 0,
@@ -1199,11 +1233,14 @@ function createNote(noteData) {
 
   if (noteType === "hold") {
     note.el.innerHTML = `
-      <span class="hold-tail"></span>
-      <span class="hold-progress"></span>
-      <span class="note-core"></span>
+      <span class="hold-body">
+        <span class="hold-tail"></span>
+        <span class="note-core"></span>
+      </span>
+      <span class="hold-clear-edge"></span>
       <span class="hold-label">HOLD</span>
     `;
+    note.el.style.setProperty("--hold-clear", "0%");
   } else if (noteType === "double") {
     note.el.innerHTML = `
       <span class="note-core"></span>
@@ -1270,11 +1307,17 @@ function updateHoldVisual(note, gameTime) {
 
   note.lockedX = `${HIT_X}%`;
   note.el.style.left = note.lockedX;
-  const progress = clamp((gameTime - note.hitTime) / note.holdDuration, 0, 1);
-  note.el.style.setProperty("--hold-progress", `${Math.floor(progress * 100)}%`);
+
+  const safeDuration = Math.max(0.18, note.holdDuration || 0.6);
+  const progress = clamp((gameTime - note.hitTime) / safeDuration, 0, 1);
+  const clearRate = Math.floor(progress * 100);
+  note.holdClearedRate = clearRate;
+  note.el.style.setProperty("--hold-clear", `${clearRate}%`);
+  note.el.style.setProperty("--hold-progress", `${clearRate}%`);
 
   if (state.spaceDown && progress >= 0.98) {
     resolveHoldSuccess(note);
+    return;
   }
 
   if (!state.spaceDown && gameTime < note.holdEndTime - 0.08) {
@@ -1309,6 +1352,16 @@ function updateNotes(gameTime) {
       hitCircle.classList.remove("pulse");
       void hitCircle.offsetWidth;
       hitCircle.classList.add("pulse");
+    }
+
+    if (
+      note.type === "hold" &&
+      !note.holdStarted &&
+      !state.activeHoldNote &&
+      state.spaceDown &&
+      abs <= goodWindow
+    ) {
+      startHoldNote(note, gameTime, abs <= getPerfectWindow());
     }
 
     if (note.type === "hold" && note.holdStarted && !note.resolved) {
@@ -1357,7 +1410,7 @@ function updateTimingText(gameTime) {
   if (nearest.type === "hold" && abs <= goodWindow && !nearest.holdStarted) {
     timingTip.textContent = "HOLD! SPACE를 누른 채 유지";
   } else if (nearest.type === "hold" && nearest.holdStarted) {
-    timingTip.textContent = "계속 누르고 있어라";
+    timingTip.textContent = "앞부분부터 사라지는 동안 계속 누르고 있어라";
   } else if (nearest.type === "double" && nearest.doubleStarted) {
     timingTip.textContent = "한 번 더! SPACE 2연타";
   } else if (nearest.type === "double" && abs <= goodWindow) {
@@ -1532,16 +1585,18 @@ function resolveBadSlash() {
 function startHoldNote(note, gameTime, isPerfect) {
   note.holdStarted = true;
   note.hitQuality = isPerfect ? "perfect" : "good";
-  note.holdEndTime = note.hitTime + note.holdDuration;
+  note.holdStartTime = gameTime;
+  note.holdEndTime = note.hitTime + Math.max(0.18, note.holdDuration || 0.6);
   note.lockedX = `${HIT_X}%`;
   state.activeHoldNote = note;
   note.el.classList.remove("near", "perfect-zone");
   note.el.classList.add("hold-active");
+  note.el.style.setProperty("--hold-clear", "0%");
   note.el.style.setProperty("--hold-progress", "0%");
   launchSwordAura(false);
   playSwordCutSound(isPerfect ? "일섬" : "참격");
-  showJudgement("장참 준비", isPerfect ? "perfect" : "good");
-  beatStatus.textContent = "SPACE를 떼지 말고 끝까지 유지";
+  showJudgement("장참 시작", isPerfect ? "perfect" : "good");
+  beatStatus.textContent = "HOLD 중에는 다음 노트가 나오지 않으며 앞부분부터 사라집니다";
 }
 
 function resolveHoldSuccess(note) {
@@ -1705,9 +1760,9 @@ function startGame(stageId = state.selectedStage || DEFAULT_STAGE_ID) {
   spawnEnemySquad();
   showJudgement(stageId === 3 ? "맹주 출현" : stageId === 2 ? "월하죽림" : "검기를 준비해라", "");
   timingTip.textContent = stageId === 3
-    ? "보스 HP 4500 · 완벽 20 / 걸침 10 피해"
+    ? "보스 HP 4500 · HOLD는 저지박스에서 누르고 있으면 앞부분부터 사라짐"
     : stageId === 2
-      ? "HOLD는 꾹 누르고, 2x는 빠르게 두 번"
+      ? "HOLD 중 다음 노트 없음 · 2x는 빠르게 두 번"
       : "노트가 왼쪽 끝 판정원에 겹칠 때 SPACE";
   beatStatus.textContent = `${stage.songName} · ${stage.subtitle}`;
   pauseButton.textContent = "일시정지";
@@ -1953,4 +2008,4 @@ showJudgement("ENTER로 시작", "good");
 timingTip.textContent = "ENTER를 누르면 스테이지 선택으로 이동";
 beatStatus.textContent = "Stage 1은 Night, Stage 2는 Bamboo, Stage 3는 Seven Strikes of Honor 곡으로 분리되어 있습니다";
 
-// v25: Stage 3 난이도 완화, 노트 간격 확대, 판정 완화, 연속 피격 보호 추가
+// v27: Stage 2/3 HOLD 보호구간 추가 - HOLD 중 다른 노트가 내려오지 않도록 차트 간격 정리

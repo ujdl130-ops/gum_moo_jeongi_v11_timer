@@ -2398,3 +2398,131 @@ button.need-music {
   .boss-hud { top: 110px; right: 14px; width: min(330px, calc(100% - 28px)); }
   .ranking-board { top: 76px; width: min(390px, calc(100% - 36px)); }
 }
+
+
+/* v26: Stage 2/3 HOLD 노트 판정 연출 개선
+   저지박스에서 SPACE를 누르고 있으면 긴 노트의 시작 부분부터 자연스럽게 사라집니다. */
+.ki-note.note-hold {
+  width: 126px;
+  height: 36px;
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  overflow: visible;
+  --hold-clear: 0%;
+}
+
+.ki-note.note-hold .hold-body {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: none;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: rgba(247, 251, 255, .92);
+  border: 4px solid #ffe184;
+  box-shadow:
+    0 0 0 4px rgba(255,225,132,.17),
+    0 0 26px rgba(255,225,132,.7),
+    inset 0 0 0 3px rgba(255,255,255,.24);
+  clip-path: inset(0 0 0 var(--hold-clear));
+  transition: clip-path .055s linear;
+  z-index: 2;
+}
+
+.ki-note.note-hold .hold-body .hold-tail {
+  left: 18px;
+  top: 50%;
+  width: 86px;
+  height: 9px;
+  transform: translateY(-50%);
+  background: repeating-linear-gradient(90deg, rgba(143,215,255,.78) 0 10px, rgba(255,225,132,.72) 10px 18px);
+  box-shadow: 0 0 14px rgba(143,215,255,.72);
+  z-index: 2;
+}
+
+.ki-note.note-hold .hold-body .note-core {
+  left: 18px;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  background: #ffe184;
+  box-shadow: 0 0 14px #ffe184;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+}
+
+.ki-note.note-hold .hold-clear-edge {
+  left: var(--hold-clear);
+  top: 50%;
+  width: 6px;
+  height: 44px;
+  transform: translate(-50%, -50%);
+  background: #ffffff;
+  box-shadow:
+    0 0 12px #ffffff,
+    0 0 24px #8fd7ff;
+  opacity: 0;
+  z-index: 4;
+}
+
+.ki-note.note-hold.hold-active .hold-clear-edge {
+  opacity: .95;
+  animation: holdClearEdgePulse .18s steps(2, end) infinite;
+}
+
+.ki-note.note-hold .hold-progress {
+  display: none;
+}
+
+.ki-note.note-hold .hold-label {
+  left: 78px;
+  top: -20px;
+  z-index: 5;
+}
+
+.ki-note.note-hold.hold-active {
+  border-color: transparent;
+  box-shadow: none;
+  animation: none;
+}
+
+.ki-note.note-hold.hold-active .hold-body {
+  border-color: #ffffff;
+  box-shadow:
+    0 0 0 5px rgba(255,255,255,.18),
+    0 0 34px rgba(143,215,255,.9),
+    inset 0 0 0 3px rgba(255,255,255,.28);
+}
+
+@keyframes holdClearEdgePulse {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.55); }
+}
+
+@media (max-width: 900px) {
+  .ki-note.note-hold {
+    width: 98px;
+    height: 32px;
+  }
+
+  .ki-note.note-hold .hold-body .hold-tail {
+    left: 16px;
+    width: 62px;
+    height: 8px;
+  }
+
+  .ki-note.note-hold .hold-body .note-core {
+    left: 16px;
+    width: 12px;
+    height: 12px;
+  }
+
+  .ki-note.note-hold .hold-label {
+    left: 62px;
+  }
+}
+
+
+/* v27: HOLD 노트가 진행되는 동안 다른 노트가 겹치지 않도록 script.js에서 Stage 2/3 차트 보호구간을 적용했습니다. */
