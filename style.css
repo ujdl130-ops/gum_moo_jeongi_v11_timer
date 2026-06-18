@@ -2323,3 +2323,78 @@ button.need-music {
     font-size: 10px;
   }
 }
+
+
+/* v23: Stage 3 보스전, 무림맹주, 보스 HP, 랭킹 UI */
+.stage-screen {
+  align-items: flex-start;
+  overflow-y: auto;
+  padding-top: 18px;
+  padding-bottom: 18px;
+}
+.stage-frame { max-height: calc(100vh - 36px); overflow-y: auto; scrollbar-width: thin; }
+.stage-frame .stage-subcopy { margin-bottom: 18px; }
+.stage-frame .stage-card { padding-top: 18px; padding-bottom: 16px; margin-bottom: 12px; }
+.boss-stage-card { background: linear-gradient(135deg, rgba(226,75,75,.16), transparent 38%), rgba(17, 12, 24, .96); }
+.boss-stage-card.stage-card-unlocked { border-color: #e24b4b; box-shadow: inset 0 0 0 4px rgba(255,255,255,.05), 0 0 0 5px rgba(226,75,75,.14), 8px 8px 0 rgba(0,0,0,.38); }
+.boss-stage-card.stage-card-unlocked::after { content: "BOSS"; color: #ff8c8c; border-color: #e24b4b; }
+
+.boss-enemy { position: absolute; right: 98px; bottom: 32px; width: 210px; height: 278px; z-index: 13; pointer-events: none; transform-origin: 50% 100%; filter: drop-shadow(8px 14px 0 rgba(0,0,0,.32)); }
+.boss-enemy.hidden { display: none; }
+.boss-shadow { position: absolute; left: 18px; bottom: 0; width: 170px; height: 24px; background: rgba(0,0,0,.48); }
+.boss-cape { position: absolute; left: 32px; top: 80px; width: 146px; height: 168px; background: #421d2a; border: 5px solid #2a1420; box-shadow: inset -18px 0 0 rgba(0,0,0,.22); }
+.boss-head { position: absolute; left: 78px; top: 28px; width: 62px; height: 58px; background: #c79872; border: 5px solid #5b3534; box-shadow: inset -10px 0 0 rgba(72,38,36,.22); z-index: 6; }
+.boss-head::before { content: ""; position: absolute; left: -10px; right: -10px; top: -18px; height: 24px; background: #18101c; box-shadow: inset 0 -5px 0 #775b32; }
+.boss-eye { position: absolute; top: 26px; width: 12px; height: 5px; background: #ff4d4d; box-shadow: 0 0 12px #ff4d4d; }
+.boss-eye-left { left: 12px; } .boss-eye-right { right: 12px; }
+.boss-beard { position: absolute; left: 86px; top: 78px; width: 48px; height: 42px; background: #19121d; clip-path: polygon(0 0, 100% 0, 72% 100%, 28% 100%); z-index: 5; }
+.boss-body { position: absolute; left: 54px; top: 92px; width: 112px; height: 122px; background: linear-gradient(135deg, transparent 0 34%, rgba(255,225,132,.36) 34% 42%, transparent 42%), #252033; border: 6px solid #15111c; box-shadow: inset -18px 0 0 rgba(0,0,0,.28); z-index: 4; }
+.boss-belt { position: absolute; left: 48px; top: 168px; width: 124px; height: 18px; background: #91632e; border: 4px solid #3f2630; z-index: 7; }
+.boss-arm { position: absolute; top: 112px; width: 34px; height: 92px; background: #272135; border: 5px solid #15111c; z-index: 5; }
+.boss-arm-left { left: 20px; transform: rotate(14deg); } .boss-arm-right { right: 20px; transform: rotate(-14deg); }
+.boss-fist { position: absolute; top: 190px; width: 38px; height: 34px; background: #c79872; border: 5px solid #5b3534; z-index: 8; }
+.boss-fist-left { left: 14px; } .boss-fist-right { right: 14px; }
+.boss-leg { position: absolute; top: 208px; width: 42px; height: 54px; background: #1c1828; border: 5px solid #100d16; z-index: 3; }
+.boss-leg-left { left: 58px; } .boss-leg-right { right: 58px; }
+.boss-aura { position: absolute; left: 42px; top: 54px; width: 138px; height: 190px; border: 5px solid rgba(226,75,75,.28); box-shadow: 0 0 28px rgba(226,75,75,.34), inset 0 0 34px rgba(226,75,75,.14); opacity: .75; z-index: 1; animation: bossAuraPulse .9s steps(2, end) infinite; }
+@keyframes bossAuraPulse { 0%, 100% { opacity: .42; transform: scale(.96); } 50% { opacity: .82; transform: scale(1.04); } }
+.boss-enemy.boss-hit { animation: bossHit .24s steps(2, end); }
+@keyframes bossHit { 0%, 100% { transform: translateX(0) scale(1); filter: brightness(1) drop-shadow(8px 14px 0 rgba(0,0,0,.32)); } 45% { transform: translateX(18px) scale(1.03); filter: brightness(2.1) drop-shadow(12px 16px 0 rgba(0,0,0,.36)); } }
+.boss-enemy.boss-attack { animation: bossAttack .36s steps(3, end); }
+@keyframes bossAttack { 0%, 100% { transform: translateX(0) scale(1); } 38% { transform: translateX(-48px) scale(1.08); } 68% { transform: translateX(-26px) scale(1.02); } }
+
+.boss-hud { position: absolute; right: 30px; top: 20px; z-index: 27; width: min(390px, calc(100% - 60px)); padding: 11px 14px 13px; background: rgba(13, 8, 18, .92); border: 4px solid #e24b4b; box-shadow: 0 0 0 4px rgba(226,75,75,.14), 5px 5px 0 rgba(0,0,0,.36); }
+.boss-hud.hidden { display: none; }
+.boss-hud-title { display: flex; justify-content: space-between; color: #fff5c9; font-size: 14px; font-weight: 900; letter-spacing: 1px; margin-bottom: 8px; }
+.boss-hud-title strong { color: #ff8c8c; }
+.boss-hp-wrap { height: 18px; background: #170d14; border: 3px solid #4b2630; overflow: hidden; }
+.boss-hp-bar { width: 100%; height: 100%; background: repeating-linear-gradient(90deg, #e24b4b 0 18px, #ff8c8c 18px 36px); box-shadow: 0 0 18px rgba(226,75,75,.65); transition: width .18s steps(3, end); }
+
+.ranking-board { position: absolute; left: 50%; top: 58px; transform: translateX(-50%); z-index: 29; width: min(460px, calc(100% - 80px)); max-height: 520px; overflow-y: auto; padding: 18px 22px; color: #fff5c9; background: rgba(20, 14, 28, .96); border: 4px solid #ffe184; box-shadow: 0 0 0 4px rgba(255,225,132,.14), 6px 6px 0 rgba(0,0,0,.38); text-align: left; }
+.ranking-board.hidden { display: none; }
+.ranking-board strong { display: block; margin-bottom: 12px; color: white; font-size: 24px; text-align: center; letter-spacing: 2px; text-shadow: 3px 3px 0 #120d18; }
+.ranking-board ol { margin: 0; padding-left: 24px; }
+.ranking-board li { padding: 7px 0; border-top: 3px solid rgba(255,255,255,.08); font-size: 14px; }
+.ranking-board b { color: #ffe184; } .ranking-board span { color: #8fd7ff; }
+.ranking-board em { display: block; margin-top: 12px; text-align: center; color: #dfd0b6; font-style: normal; font-size: 12px; }
+
+.game.stage-three-active { background: #10070a; }
+.game.stage-three-active .room-wall { background: radial-gradient(circle at 72% 28%, rgba(255, 235, 178, .92) 0 36px, rgba(255, 235, 178, .22) 37px 62px, transparent 63px), linear-gradient(180deg, #100713 0%, #210d1b 56%, #381925 100%); }
+.game.stage-three-active .room-wall::before { background: #32131c; box-shadow: 0 -4px 0 #6d2632, 0 4px 0 #080408; }
+.game.stage-three-active .room-wall::after { content: ""; position: absolute; left: 0; right: 0; bottom: -6px; height: 160px; background: repeating-linear-gradient(90deg, transparent 0 66px, rgba(226,75,75,.38) 66px 82px, transparent 82px 132px), linear-gradient(180deg, transparent, rgba(17,6,10,.74)); opacity: .9; }
+.game.stage-three-active .window-panel, .game.stage-three-active .lantern, .game.stage-three-active .wall-shelf, .game.stage-three-active .hanging-scroll { display: none; }
+.game.stage-three-active .scene { background: linear-gradient(180deg, rgba(22,8,12,.25), rgba(10,6,10,.72)), linear-gradient(90deg, #231021, #402033 48%, #1b0d18); border-top-color: #6d2632; border-bottom-color: #09050a; }
+.game.stage-three-active .scene::before { content: ""; position: absolute; left: 0; right: 0; bottom: 76px; height: 118px; pointer-events: none; background: repeating-linear-gradient(90deg, transparent 0 42px, rgba(145,99,46,.32) 42px 52px, transparent 52px 84px), linear-gradient(180deg, transparent, rgba(11,5,8,.58)); z-index: 1; }
+.game.stage-three-active .tatami-a { background-color: #351c2c; } .game.stage-three-active .tatami-b { background-color: #4b2637; } .game.stage-three-active .tatami-c { background-color: #291623; }
+.game.stage-three-active .beat-area.note-mode { background: rgba(14, 6, 11, .78); border-color: #7b2d3b; box-shadow: inset 0 0 0 4px rgba(255,255,255,.04), 6px 6px 0 rgba(0,0,0,.38), 0 0 28px rgba(226,75,75,.15); }
+.game.stage-three-active .rhythm-lane { background: repeating-linear-gradient(90deg, rgba(255,255,255,.04) 0 4px, transparent 4px 16px), linear-gradient(90deg, rgba(111,42,54,.86) 0 14%, rgba(10,7,13,.94) 36% 72%, rgba(71,31,51,.84)); border-color: #7b2d3b; }
+.game.stage-three-active .lane-title { color: #ff8c8c; }
+.game.stage-three-active .enemy-group { display: none; }
+.game.stage-three-active .hero.hurt { animation: heroBossHurt .32s steps(3, end); }
+@keyframes heroBossHurt { 0%, 100% { transform: translateX(0); filter: brightness(1); } 33% { transform: translateX(-28px); filter: brightness(1.8); } 66% { transform: translateX(12px); filter: brightness(.8); } }
+
+@media (max-width: 900px) {
+  .boss-enemy { right: 22px; bottom: 50px; transform: scale(.74); }
+  .boss-hud { top: 110px; right: 14px; width: min(330px, calc(100% - 28px)); }
+  .ranking-board { top: 76px; width: min(390px, calc(100% - 36px)); }
+}

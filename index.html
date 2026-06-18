@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>검무전기 - 스테이지 선택 버전</title>
+  <title>검무전기 - Stage 3 보스전</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -32,7 +32,7 @@
       <div class="stage-frame">
         <p class="stage-label">SELECT STAGE</p>
         <h2>스테이지 선택</h2>
-        <p class="stage-subcopy">Stage 1을 클리어하면 Stage 2가 해금됩니다.</p>
+        <p class="stage-subcopy">Stage 1 → Stage 2를 클리어하면 보스 Stage 3가 해금됩니다.</p>
 
         <button class="stage-card" id="stageOneCard" type="button" data-stage="1">
           <span class="stage-number">STAGE 1</span>
@@ -49,6 +49,15 @@
           <em>Steel Against Bamboo</em>
           <span class="stage-difficulty">난이도 · 숙련</span>
           <span class="stage-hover-guide stage-two-guide">Stage 1 클리어 후 해금</span>
+        </button>
+
+        <button class="stage-card stage-card-locked boss-stage-card" id="stageThreeCard" type="button" data-stage="3" aria-disabled="true">
+          <span class="stage-lock-mark">🔒</span>
+          <span class="stage-number">STAGE 3 · BOSS</span>
+          <strong>무림맹주 결전</strong>
+          <em>Seven Strikes of Honor</em>
+          <span class="stage-difficulty">난이도 · 절정</span>
+          <span class="stage-hover-guide stage-three-guide">Stage 2 클리어 후 해금</span>
         </button>
 
         <p class="stage-preview-hint" id="stagePreviewHint">Stage 카드에 마우스를 올리면 해당 노래가 흘러나옵니다.</p>
@@ -115,6 +124,22 @@
 
       <div class="enemy-group" id="enemyGroup" aria-label="검은 무복 자객 무리"></div>
 
+      <div class="boss-enemy hidden" id="bossEnemy" aria-label="덩치 큰 무림맹주 보스">
+        <div class="boss-shadow"></div>
+        <div class="boss-cape"></div>
+        <div class="boss-head"><span class="boss-eye boss-eye-left"></span><span class="boss-eye boss-eye-right"></span></div>
+        <div class="boss-beard"></div>
+        <div class="boss-body"></div>
+        <div class="boss-belt"></div>
+        <div class="boss-arm boss-arm-left"></div>
+        <div class="boss-arm boss-arm-right"></div>
+        <div class="boss-fist boss-fist-left"></div>
+        <div class="boss-fist boss-fist-right"></div>
+        <div class="boss-leg boss-leg-left"></div>
+        <div class="boss-leg boss-leg-right"></div>
+        <div class="boss-aura"></div>
+      </div>
+
       <div class="slash-effect" id="slashEffect"></div>
       <div class="slash-flash" id="slashFlash"></div>
       <div class="blood-spark" id="bloodSpark"></div>
@@ -124,6 +149,10 @@
         <strong>전투 BGM 준비 완료</strong>
         <span>타이틀 화면에서 ENTER를 누른 뒤 Stage를 선택하면 해당 스테이지 곡이 자동 재생됩니다.</span>
       </div>
+      <div class="boss-hud hidden" id="bossHud" aria-live="polite">
+        <div class="boss-hud-title">무림맹주 HP <strong id="bossHpText">4500 / 4500</strong></div>
+        <div class="boss-hp-wrap"><div class="boss-hp-bar" id="bossHpBar"></div></div>
+      </div>
       <div class="score-board hidden" id="scoreBoard" aria-live="polite">
         <strong>점수 보드</strong>
         <div class="score-row"><span>최종 점수</span><b id="finalScore">0</b></div>
@@ -131,6 +160,11 @@
         <div class="score-row"><span>남은 내공</span><b id="finalPower">0</b></div>
         <div class="score-row"><span>등급</span><b id="finalRank">수련생</b></div>
         <em>ENTER로 재시작</em>
+      </div>
+      <div class="ranking-board hidden" id="rankingBoard" aria-live="polite">
+        <strong>Stage 3 Ranking</strong>
+        <ol id="rankingList"></ol>
+        <em>남은 HP가 높을수록 상위 랭킹</em>
       </div>
       <div class="timing-tip" id="timingTip">ENTER를 누르면 음악과 함께 시작</div>
     </section>
