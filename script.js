@@ -2030,3 +2030,26 @@ beatStatus.textContent = "Stage 1은 Night, Stage 2는 Bamboo, Stage 3는 Seven 
 
 
 // v28: 모바일/PWA 버전 - 저지박스 pointer 터치 입력과 터치 버튼 피드백을 추가했습니다.
+
+
+// v29: APK/PWA 실행 시 가로 화면 고정 시도
+// manifest의 orientation: landscape와 함께 사용합니다. 브라우저에서는 제한될 수 있지만,
+// PWABuilder APK/설치형 PWA에서는 첫 터치 이후 landscape lock이 적용될 수 있습니다.
+let lastLandscapeLockTry = 0;
+async function requestLandscapeLock() {
+  const now = Date.now();
+  if (now - lastLandscapeLockTry < 900) return;
+  lastLandscapeLockTry = now;
+
+  try {
+    if (screen.orientation && typeof screen.orientation.lock === "function") {
+      await screen.orientation.lock("landscape");
+    }
+  } catch (error) {
+    // 일반 모바일 브라우저에서는 보안 정책상 거절될 수 있습니다.
+    // APK/설치형 PWA에서는 manifest orientation 설정이 우선 적용됩니다.
+  }
+}
+
+window.addEventListener("load", requestLandscapeLock);
+document.addEventListener("pointerdown", requestLandscapeLock, { passive: true });

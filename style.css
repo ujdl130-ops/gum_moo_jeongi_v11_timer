@@ -2656,3 +2656,510 @@ button.touch-pressed,
     transform-origin: center center;
   }
 }
+
+
+/* v29: 모바일 가로 화면 UI 재배치 + 세로로 들어도 가로형으로 보이도록 보정 */
+@media (pointer: coarse) {
+  html,
+  body {
+    width: 100dvw;
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+    background: #08070d;
+  }
+
+  body {
+    align-items: stretch;
+  }
+
+  .game {
+    width: 100dvw !important;
+    height: 100dvh !important;
+    min-height: 0 !important;
+    border: 0;
+    box-shadow: none;
+  }
+
+  .hud {
+    left: calc(8px + env(safe-area-inset-left));
+    right: calc(8px + env(safe-area-inset-right));
+    top: calc(6px + env(safe-area-inset-top));
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .title-block {
+    flex: 0 0 170px;
+  }
+
+  .game-title {
+    font-size: 27px;
+    letter-spacing: 2px;
+    text-shadow: 3px 3px 0 #24192c, 6px 6px 0 rgba(0,0,0,.34);
+  }
+
+  .subtitle {
+    margin-top: 4px;
+    font-size: 10px;
+    letter-spacing: 1px;
+  }
+
+  .stat-panel {
+    gap: 5px;
+    flex-wrap: nowrap;
+    transform: scale(.74);
+    transform-origin: top right;
+  }
+
+  .stat {
+    min-width: 74px;
+    padding: 5px 6px;
+    border-width: 3px;
+    box-shadow: inset 0 0 0 3px rgba(255,255,255,.05), 3px 3px 0 rgba(0,0,0,.35);
+  }
+
+  .stat span {
+    margin-bottom: 2px;
+    font-size: 10px;
+  }
+
+  .stat strong {
+    font-size: 17px;
+  }
+
+  .timer-stat {
+    min-width: 78px;
+  }
+
+  .power-stat {
+    min-width: 142px;
+  }
+
+  .power-wrap {
+    height: 10px;
+    border-width: 2px;
+    margin: 2px 0;
+  }
+
+  .room-wall {
+    inset: 0 0 170px 0;
+  }
+
+  .room-wall::before {
+    height: 12px;
+    bottom: -7px;
+  }
+
+  .window-panel {
+    top: 20px;
+    width: 300px;
+    height: 112px;
+    border-width: 5px;
+    transform: translateX(-50%) scale(.72);
+    transform-origin: top center;
+  }
+
+  .lantern {
+    top: 18px;
+    width: 52px;
+    height: 50px;
+    border-width: 3px;
+    transform: scale(.72);
+    transform-origin: top center;
+  }
+
+  .lantern-left { left: 54px; }
+  .lantern-right { right: 54px; }
+
+  .wall-shelf,
+  .hanging-scroll {
+    display: none;
+  }
+
+  .scene {
+    top: 108px;
+    bottom: 84px;
+    border-top-width: 5px;
+    border-bottom-width: 5px;
+  }
+
+  .tatami {
+    height: 115px;
+    border-width: 3px;
+  }
+
+  .hero {
+    left: 58px;
+    bottom: -14px;
+    transform: scale(.54);
+  }
+
+  .pixel-shadow {
+    bottom: 13px;
+    height: 10px;
+  }
+
+  .hero-floor-shadow {
+    left: 64px;
+    width: 108px;
+  }
+
+  .enemy-floor-shadow {
+    right: 92px;
+    width: 250px;
+  }
+
+  .boss-enemy {
+    right: 44px !important;
+    bottom: -26px !important;
+    transform: scale(.48) !important;
+  }
+
+  .boss-hud {
+    top: calc(44px + env(safe-area-inset-top));
+    right: calc(8px + env(safe-area-inset-right));
+    width: min(300px, calc(100% - 18px));
+    padding: 7px 9px 8px;
+    border-width: 3px;
+    transform: scale(.86);
+    transform-origin: top right;
+  }
+
+  .boss-hud-title {
+    margin-bottom: 5px;
+    font-size: 11px;
+  }
+
+  .boss-hp-wrap {
+    height: 13px;
+    border-width: 2px;
+  }
+
+  .judgement {
+    top: calc(5px + env(safe-area-inset-top));
+    min-width: 170px;
+    padding: 5px 10px;
+    border-width: 3px;
+    font-size: 17px;
+    letter-spacing: 2px;
+  }
+
+  .start-notice,
+  .score-board,
+  .ranking-board {
+    width: min(360px, calc(100% - 46px));
+    max-height: calc(100% - 30px);
+    padding: 12px 16px;
+    border-width: 3px;
+    transform: translateX(-50%) scale(.78);
+    transform-origin: top center;
+  }
+
+  .start-notice,
+  .score-board {
+    top: 42px;
+  }
+
+  .ranking-board {
+    top: 34px;
+  }
+
+  .start-notice strong,
+  .score-board strong,
+  .ranking-board strong {
+    margin-bottom: 7px;
+    font-size: 19px;
+    letter-spacing: 2px;
+  }
+
+  .start-notice span,
+  .score-board em,
+  .ranking-board em {
+    font-size: 11px;
+    line-height: 1.35;
+  }
+
+  .score-row {
+    padding: 4px 0;
+    font-size: 12px;
+    border-top-width: 2px;
+  }
+
+  .score-row b {
+    font-size: 14px;
+  }
+
+  .ranking-board li {
+    padding: 4px 0;
+    font-size: 11px;
+    border-top-width: 2px;
+  }
+
+  .beat-area.note-mode {
+    width: calc(100% - 24px);
+    bottom: calc(38px + env(safe-area-inset-bottom));
+    padding: 4px 6px 6px;
+    border-width: 3px;
+  }
+
+  .lane-title {
+    margin-bottom: 2px;
+    padding-left: 7px;
+    font-size: 10px;
+    letter-spacing: 2px;
+  }
+
+  .rhythm-lane {
+    height: 64px;
+    border-width: 3px;
+  }
+
+  .hit-circle {
+    left: 7.5%;
+    width: 58px;
+    height: 58px;
+    border-width: 4px;
+  }
+
+  .hit-core {
+    width: 17px;
+    height: 17px;
+  }
+
+  .hit-circle::before {
+    top: -20px;
+    padding: 1px 5px;
+    border-width: 2px;
+    font-size: 9px;
+  }
+
+  .hit-circle span {
+    bottom: -23px;
+    padding: 1px 5px;
+    border-width: 2px;
+    font-size: 10px;
+  }
+
+  .ki-note {
+    width: 30px;
+    height: 30px;
+    border-width: 3px;
+  }
+
+  .ki-note.heavy,
+  .ki-note.note-double {
+    width: 38px;
+    height: 38px;
+  }
+
+  .ki-note.note-hold {
+    width: 88px;
+    height: 28px;
+  }
+
+  .ki-note.note-hold .hold-tail,
+  .ki-note.note-hold .hold-progress {
+    left: 18px;
+    width: 52px;
+    max-width: 52px;
+  }
+
+  .ki-note.note-hold .hold-label {
+    left: 58px;
+    top: -17px;
+    font-size: 9px;
+  }
+
+  .timing-tip {
+    bottom: calc(2px + env(safe-area-inset-bottom));
+    max-width: 58%;
+    padding: 4px 8px;
+    border-width: 3px;
+    font-size: 10px;
+    line-height: 1.2;
+    text-align: center;
+  }
+
+  .beat-status {
+    margin-top: 4px;
+    font-size: 10px;
+    line-height: 1.2;
+    min-height: 12px;
+  }
+
+  .controls {
+    right: calc(5px + env(safe-area-inset-right));
+    bottom: calc(3px + env(safe-area-inset-bottom));
+    gap: 4px;
+    max-width: 40%;
+    transform: scale(.82);
+    transform-origin: bottom right;
+  }
+
+  .controls button,
+  .metronome-toggle {
+    min-height: 30px;
+    padding: 4px 6px;
+    border-width: 2px;
+    font-size: 10px;
+    box-shadow: 2px 2px 0 rgba(0,0,0,.38);
+  }
+
+  .metronome-toggle {
+    gap: 3px;
+  }
+
+  .guide {
+    display: none;
+  }
+
+  .title-screen,
+  .stage-screen {
+    padding: 8px;
+  }
+
+  .title-frame,
+  .stage-frame {
+    width: min(650px, calc(100% - 14px));
+    max-height: calc(100% - 14px);
+    padding: 14px 18px;
+    border-width: 4px;
+    overflow-y: auto;
+    box-shadow:
+      inset 0 0 0 4px rgba(255,255,255,.05),
+      0 0 0 5px rgba(143,215,255,.14),
+      7px 7px 0 rgba(0,0,0,.38),
+      0 0 28px rgba(143,215,255,.2);
+  }
+
+  .title-emblem {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 8px;
+    border-width: 4px;
+    font-size: 28px;
+  }
+
+  .title-frame h1 {
+    font-size: clamp(38px, 7vw, 58px);
+    letter-spacing: 5px;
+  }
+
+  .stage-frame h2 {
+    font-size: clamp(28px, 5vw, 42px);
+    letter-spacing: 3px;
+  }
+
+  .title-label,
+  .stage-label {
+    margin-bottom: 5px;
+    font-size: 11px;
+    letter-spacing: 3px;
+  }
+
+  .title-subcopy,
+  .stage-subcopy {
+    margin: 8px auto 10px;
+    font-size: 11px;
+    line-height: 1.35;
+  }
+
+  .title-start-button,
+  .stage-back-button {
+    min-width: 170px;
+    min-height: 34px;
+    padding: 7px 12px;
+    border-width: 3px;
+    font-size: 12px;
+  }
+
+  .title-guide-row {
+    gap: 5px;
+    margin-top: 10px;
+  }
+
+  .title-guide-row span {
+    padding: 4px 6px;
+    border-width: 2px;
+    font-size: 10px;
+  }
+
+  .stage-card {
+    min-height: 78px;
+    margin-bottom: 7px;
+    padding: 10px 14px;
+    gap: 3px;
+    border-width: 3px;
+  }
+
+  .stage-card::before {
+    right: 14px;
+    top: 12px;
+    width: 32px;
+    height: 32px;
+    box-shadow:
+      inset 0 0 0 6px #fff5c9,
+      0 0 18px rgba(143,215,255,.65);
+  }
+
+  .stage-number {
+    font-size: 10px;
+    letter-spacing: 2px;
+  }
+
+  .stage-card strong {
+    font-size: 22px;
+    letter-spacing: 2px;
+  }
+
+  .stage-card em {
+    font-size: 12px;
+  }
+
+  .stage-difficulty,
+  .stage-hover-guide,
+  .stage-preview-hint {
+    font-size: 10px;
+  }
+
+  .stage-preview-hint {
+    min-height: 14px;
+    margin: 5px 0 8px;
+  }
+
+  .stage-lock-mark {
+    right: 14px;
+    top: 12px;
+    min-width: 32px;
+    height: 32px;
+    border-width: 3px;
+    font-size: 17px;
+  }
+
+  .stage-card-locked::after,
+  .stage-card-unlocked::after {
+    right: 54px;
+    top: 18px;
+    padding: 3px 5px;
+    border-width: 2px;
+    font-size: 9px;
+  }
+}
+
+@media (orientation: portrait) and (pointer: coarse) {
+  body {
+    display: block;
+    width: 100dvw;
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  .game {
+    width: 100dvh !important;
+    height: 100dvw !important;
+    min-height: 0 !important;
+    transform: rotate(90deg) translateY(-100%);
+    transform-origin: top left;
+  }
+}

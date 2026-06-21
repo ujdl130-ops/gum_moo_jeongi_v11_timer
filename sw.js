@@ -1,4 +1,4 @@
-const CACHE_NAME = "gum-moo-jeongi-pwa-v28";
+const CACHE_NAME = "gum-moo-jeongi-pwa-v29";
 const CORE_ASSETS = [
   "./",
   "./index.html",
