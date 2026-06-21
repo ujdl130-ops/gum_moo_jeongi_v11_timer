@@ -8,9 +8,9 @@
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="검무전기" />
-  <link rel="manifest" href="manifest.json?v=20260621-player-layer-1" />
+  <link rel="manifest" href="manifest.json?v=20260621-hold-spacing-1" />
   <title>검무전기 - 모바일 가로 고정 PWA</title>
-  <link rel="stylesheet" href="style.css?v=20260621-player-layer-1" />
+  <link rel="stylesheet" href="style.css?v=20260621-hold-spacing-1" />
 </head>
 <body>
   <main class="game" id="game">
@@ -204,7 +204,7 @@
       <span>노트가 왼쪽 끝 판정원에 겹치는 순간 저지박스를 터치</span>
     </footer>
   </main>
-  <script src="script.js?v=20260621-player-layer-1"></script>
+  <script src="script.js?v=20260621-hold-spacing-1"></script>
   <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
@@ -216,7 +216,7 @@
           window.location.reload();
         });
 
-        navigator.serviceWorker.register("./sw.js?v=20260621-player-layer-1").then((registration) => {
+        navigator.serviceWorker.register("./sw.js?v=20260621-hold-spacing-1").then((registration) => {
           registration.update();
         }).catch((error) => {
           console.warn("Service worker registration failed:", error);

@@ -349,6 +349,36 @@ const STAGE_TWO_CHART = [
   }
 ];
 
+const HOLD_NOTE_RELEASE_BUFFER = 0.18;
+const HOLD_NOTE_DEFAULT_DURATION = 0.62;
+
+function applyHoldSpacing(chart, leadTime = 1.42) {
+  const protectedChart = [];
+  let blockedUntil = -Infinity;
+
+  for (const source of chart.slice().sort((a, b) => a.time - b.time)) {
+    const note = { ...source };
+
+    if (note.time < blockedUntil) {
+      if (note.type !== "hold") {
+        continue;
+      }
+
+      note.time = Number(blockedUntil.toFixed(3));
+    }
+
+    protectedChart.push(note);
+
+    if (note.type === "hold") {
+      const duration = Number(note.duration) || HOLD_NOTE_DEFAULT_DURATION;
+      blockedUntil = note.time + duration + leadTime + HOLD_NOTE_RELEASE_BUFFER;
+    }
+  }
+
+  return protectedChart;
+}
+
+const STAGE_TWO_HOLD_SAFE_CHART = applyHoldSpacing(STAGE_TWO_CHART, 1.36);
 
 function buildStageThreeChart() {
   const bpm = 161.5;
@@ -380,7 +410,7 @@ function buildStageThreeChart() {
   return chart.sort((a, b) => a.time - b.time);
 }
 
-const STAGE_THREE_CHART = buildStageThreeChart();
+const STAGE_THREE_CHART = applyHoldSpacing(buildStageThreeChart(), 1.35);
 
 const STAGES = {
   1: {
@@ -414,7 +444,7 @@ const STAGES = {
     noteMode: "chart",
     noteLead: 1.36,
     noteSpeed: 76,
-    chart: STAGE_TWO_CHART,
+    chart: STAGE_TWO_HOLD_SAFE_CHART,
     perfectWindow: 0.062,
     goodWindow: 0.145,
     backgroundClass: "stage-two-active",
