@@ -8,9 +8,9 @@
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="검무전기" />
-  <link rel="manifest" href="manifest.json" />
+  <link rel="manifest" href="manifest.json?v=20260621-mobile-layout-2" />
   <title>검무전기 - 모바일 가로 고정 PWA</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=20260621-mobile-layout-2" />
 </head>
 <body>
   <main class="game" id="game">
@@ -204,11 +204,21 @@
       <span>노트가 왼쪽 끝 판정원에 겹치는 순간 저지박스를 터치</span>
     </footer>
   </main>
-  <script src="script.js"></script>
+  <script src="script.js?v=20260621-mobile-layout-2"></script>
   <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
-        navigator.serviceWorker.register("./sw.js").catch((error) => {
+        let refreshing = false;
+
+        navigator.serviceWorker.addEventListener("controllerchange", () => {
+          if (refreshing) return;
+          refreshing = true;
+          window.location.reload();
+        });
+
+        navigator.serviceWorker.register("./sw.js?v=20260621-mobile-layout-2").then((registration) => {
+          registration.update();
+        }).catch((error) => {
           console.warn("Service worker registration failed:", error);
         });
       });
