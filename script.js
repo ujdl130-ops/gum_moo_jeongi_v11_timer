@@ -49,7 +49,7 @@ const STORAGE_STAGE3_RANKING = "gumMooJeongi_stage3_rankings_v1";
 const DEFAULT_STAGE_ID = 1;
 const STAGE3_BOSS_MAX_HP = 4500;
 
-const RAW_STAGE_TWO_CHART = [
+const STAGE_TWO_CHART = [
   {
     "time": 1.138,
     "type": "tap"
@@ -350,34 +350,6 @@ const RAW_STAGE_TWO_CHART = [
 ];
 
 
-function protectHoldSpacing(chart, options = {}) {
-  const lead = options.lead ?? 1.36;
-  const beforeGap = options.beforeGap ?? 0.18;
-  const afterGap = options.afterGap ?? 0.12;
-  const holds = chart.filter((note) => note.type === "hold");
-
-  return chart
-    .filter((note) => {
-      if (note.type === "hold") return true;
-
-      return !holds.some((hold) => {
-        const holdStart = hold.time;
-        const holdEnd = hold.time + (hold.duration || 0.6);
-        const protectedStart = holdStart - beforeGap;
-        const protectedEnd = holdEnd + lead + afterGap;
-        return note.time >= protectedStart && note.time < protectedEnd;
-      });
-    })
-    .sort((a, b) => a.time - b.time);
-}
-
-const STAGE_TWO_CHART = protectHoldSpacing(RAW_STAGE_TWO_CHART, {
-  lead: 1.36,
-  beforeGap: 0.18,
-  afterGap: 0.12
-});
-
-
 function buildStageThreeChart() {
   const bpm = 161.5;
   const beat = 60 / bpm;
@@ -386,9 +358,9 @@ function buildStageThreeChart() {
   let index = 0;
   let t = 1.35;
 
-  // v27: Stage 3 HOLD 보호구간 적용
-  // HOLD 노트를 누르는 동안 다음 노트가 화면에 내려오지 않도록
-  // HOLD 종료 + 노트 리드 시간만큼 뒤 노트를 비워둡니다.
+  // v25: Stage 3 난이도 완화
+  // 기존처럼 0.5박/0.25박 추가 노트를 끼워 넣지 않고,
+  // 최소 1박 이상의 간격을 확보해서 한 번 실수해도 연속 피격이 덜 나도록 조정합니다.
   while (t < 30.15) {
     let type = "tap";
     let duration = 0;
@@ -405,11 +377,7 @@ function buildStageThreeChart() {
     index += 1;
   }
 
-  return protectHoldSpacing(chart.sort((a, b) => a.time - b.time), {
-    lead: 1.35,
-    beforeGap: 0.2,
-    afterGap: 0.14
-  });
+  return chart.sort((a, b) => a.time - b.time);
 }
 
 const STAGE_THREE_CHART = buildStageThreeChart();
@@ -511,7 +479,8 @@ const state = {
   bossDefeated: false,
   lastDamageAt: 0,
   spaceDown: false,
-  activeHoldNote: null
+  activeHoldNote: null,
+  activeTouchPointerId: null
 };
 
 const BAD_INPUT_DAMAGE = 7;
@@ -635,7 +604,7 @@ function updateStageCards() {
     const lockMark = card.querySelector(".stage-lock-mark");
     if (guide) {
       guide.textContent = unlocked
-        ? "마우스를 올리면 미리듣기 · 클릭하면 시작"
+        ? "터치하면 시작 · PC는 마우스 미리듣기"
         : `Stage ${stageId - 1} 클리어 후 해금`;
     }
     if (lockMark) lockMark.textContent = unlocked ? "解" : "🔒";
@@ -749,7 +718,7 @@ function showStageSelectScreen() {
   setBossVisible(false);
   showJudgement("STAGE SELECT", "good");
   timingTip.textContent = "Stage 1 → Stage 2 → Boss Stage 3 순서로 도전";
-  beatStatus.textContent = "Stage 카드에 마우스를 올리면 해당 곡을 미리들을 수 있습니다";
+  beatStatus.textContent = "Stage 카드를 터치하면 해당 곡으로 시작합니다";
 }
 
 function hideStageSelectScreen() {
@@ -774,7 +743,7 @@ function updateStartNotice(mode = "ready") {
   startNotice.classList.add("ready");
   startNotice.innerHTML = `
     <strong>전투 BGM 준비 완료</strong>
-    <span>${stage.songName} · 스테이지 선택 후 클릭하면 음악과 함께 게임이 시작됩니다.</span>
+    <span>${stage.songName} · 스테이지를 터치하면 음악과 함께 게임이 시작됩니다.</span>
   `;
 }
 
@@ -802,14 +771,14 @@ function playStagePreview(stageId) {
       playPromise.catch(() => {
         state.previewingStageId = null;
         if (stagePreviewHint) {
-          stagePreviewHint.textContent = "브라우저가 미리듣기를 막았습니다. 스테이지를 클릭하면 음악과 함께 시작됩니다.";
+          stagePreviewHint.textContent = "브라우저가 미리듣기를 막았습니다. 스테이지를 터치하면 음악과 함께 시작됩니다.";
         }
       });
     }
 
     if (stagePreviewHint) {
       const stage = getStage(stageId);
-      stagePreviewHint.textContent = `${stage.songName} 미리듣기 중 · 클릭하면 처음부터 시작`;
+      stagePreviewHint.textContent = `${stage.songName} 미리듣기 중 · 터치하면 처음부터 시작`;
     }
   } catch (error) {
     console.warn("스테이지 미리듣기 실패:", error);
@@ -826,7 +795,7 @@ function stopStagePreview() {
 
   state.previewingStageId = null;
   if (stagePreviewHint && state.stageSelectOpen) {
-    stagePreviewHint.textContent = "Stage 카드에 마우스를 올리면 해당 노래가 흘러나옵니다.";
+    stagePreviewHint.textContent = "Stage 카드를 터치하면 해당 노래와 함께 시작됩니다.";
   }
 }
 
@@ -1197,7 +1166,7 @@ function tryPlayMusic(stageId = state.currentStageId || DEFAULT_STAGE_ID) {
   const playPromise = bgm.play();
   if (playPromise && typeof playPromise.catch === "function") {
     playPromise.catch(() => {
-      beatStatus.textContent = "음악 재생이 막혔습니다. 화면을 한 번 클릭한 뒤 스테이지를 다시 선택해주세요.";
+      beatStatus.textContent = "음악 재생이 막혔습니다. 화면을 한 번 터치한 뒤 스테이지를 다시 선택해주세요.";
     });
   }
 
@@ -1218,9 +1187,7 @@ function createNote(noteData) {
     ticked: false,
     lockedX: null,
     holdStarted: false,
-    holdStartTime: null,
     holdEndTime: null,
-    holdClearedRate: 0,
     doubleStarted: false,
     doubleDeadline: null,
     tapCount: 0,
@@ -1233,14 +1200,11 @@ function createNote(noteData) {
 
   if (noteType === "hold") {
     note.el.innerHTML = `
-      <span class="hold-body">
-        <span class="hold-tail"></span>
-        <span class="note-core"></span>
-      </span>
-      <span class="hold-clear-edge"></span>
+      <span class="hold-tail"></span>
+      <span class="hold-progress"></span>
+      <span class="note-core"></span>
       <span class="hold-label">HOLD</span>
     `;
-    note.el.style.setProperty("--hold-clear", "0%");
   } else if (noteType === "double") {
     note.el.innerHTML = `
       <span class="note-core"></span>
@@ -1307,17 +1271,11 @@ function updateHoldVisual(note, gameTime) {
 
   note.lockedX = `${HIT_X}%`;
   note.el.style.left = note.lockedX;
-
-  const safeDuration = Math.max(0.18, note.holdDuration || 0.6);
-  const progress = clamp((gameTime - note.hitTime) / safeDuration, 0, 1);
-  const clearRate = Math.floor(progress * 100);
-  note.holdClearedRate = clearRate;
-  note.el.style.setProperty("--hold-clear", `${clearRate}%`);
-  note.el.style.setProperty("--hold-progress", `${clearRate}%`);
+  const progress = clamp((gameTime - note.hitTime) / note.holdDuration, 0, 1);
+  note.el.style.setProperty("--hold-progress", `${Math.floor(progress * 100)}%`);
 
   if (state.spaceDown && progress >= 0.98) {
     resolveHoldSuccess(note);
-    return;
   }
 
   if (!state.spaceDown && gameTime < note.holdEndTime - 0.08) {
@@ -1352,16 +1310,6 @@ function updateNotes(gameTime) {
       hitCircle.classList.remove("pulse");
       void hitCircle.offsetWidth;
       hitCircle.classList.add("pulse");
-    }
-
-    if (
-      note.type === "hold" &&
-      !note.holdStarted &&
-      !state.activeHoldNote &&
-      state.spaceDown &&
-      abs <= goodWindow
-    ) {
-      startHoldNote(note, gameTime, abs <= getPerfectWindow());
     }
 
     if (note.type === "hold" && note.holdStarted && !note.resolved) {
@@ -1408,15 +1356,15 @@ function updateTimingText(gameTime) {
   hero.classList.toggle("ready-glow", abs <= 0.28 && !nearest.resolved);
 
   if (nearest.type === "hold" && abs <= goodWindow && !nearest.holdStarted) {
-    timingTip.textContent = "HOLD! SPACE를 누른 채 유지";
+    timingTip.textContent = "HOLD! 저지박스를 누른 채 유지";
   } else if (nearest.type === "hold" && nearest.holdStarted) {
-    timingTip.textContent = "앞부분부터 사라지는 동안 계속 누르고 있어라";
+    timingTip.textContent = "계속 누르고 있어라";
   } else if (nearest.type === "double" && nearest.doubleStarted) {
-    timingTip.textContent = "한 번 더! SPACE 2연타";
+    timingTip.textContent = "한 번 더! 저지박스 2연타";
   } else if (nearest.type === "double" && abs <= goodWindow) {
-    timingTip.textContent = "2연타 노트! 빠르게 두 번";
+    timingTip.textContent = "2연타 노트! 저지박스를 빠르게 두 번";
   } else if (abs <= getPerfectWindow()) {
-    timingTip.textContent = "지금! 검기를 날려라";
+    timingTip.textContent = "지금! 저지박스를 터치";
   } else if (abs <= goodWindow) {
     timingTip.textContent = diff < 0 ? "조금만 더 기다려" : "조금 늦었다";
   } else if (diff < -0.55) {
@@ -1585,18 +1533,16 @@ function resolveBadSlash() {
 function startHoldNote(note, gameTime, isPerfect) {
   note.holdStarted = true;
   note.hitQuality = isPerfect ? "perfect" : "good";
-  note.holdStartTime = gameTime;
-  note.holdEndTime = note.hitTime + Math.max(0.18, note.holdDuration || 0.6);
+  note.holdEndTime = note.hitTime + note.holdDuration;
   note.lockedX = `${HIT_X}%`;
   state.activeHoldNote = note;
   note.el.classList.remove("near", "perfect-zone");
   note.el.classList.add("hold-active");
-  note.el.style.setProperty("--hold-clear", "0%");
   note.el.style.setProperty("--hold-progress", "0%");
   launchSwordAura(false);
   playSwordCutSound(isPerfect ? "일섬" : "참격");
-  showJudgement("장참 시작", isPerfect ? "perfect" : "good");
-  beatStatus.textContent = "HOLD 중에는 다음 노트가 나오지 않으며 앞부분부터 사라집니다";
+  showJudgement("장참 준비", isPerfect ? "perfect" : "good");
+  beatStatus.textContent = "저지박스를 떼지 말고 끝까지 유지";
 }
 
 function resolveHoldSuccess(note) {
@@ -1621,7 +1567,7 @@ function handleDoubleNote(note, gameTime, abs) {
     launchSwordAura(true);
     playSwordCutSound("참격");
     showJudgement("한 번 더!", "good");
-    beatStatus.textContent = "2연타 노트 · SPACE를 한 번 더!";
+    beatStatus.textContent = "2연타 노트 · 저지박스를 한 번 더 터치!";
     clearTimedVisuals();
     return;
   }
@@ -1661,6 +1607,9 @@ function handleSlashInput() {
   if (closest.type === "hold") {
     if (!closest.holdStarted && abs <= goodWindow) {
       startHoldNote(closest, gameTime, abs <= perfectWindow);
+    } else if (!closest.holdStarted && closest.hitTime > gameTime && abs <= 0.42) {
+      beatStatus.textContent = "HOLD 준비 · 저지박스를 누른 채 조금만 기다리세요";
+      timingTip.textContent = "긴 노트가 판정원에 들어오면 자동으로 HOLD가 시작됩니다";
     } else {
       resolveBadSlash();
     }
@@ -1760,10 +1709,10 @@ function startGame(stageId = state.selectedStage || DEFAULT_STAGE_ID) {
   spawnEnemySquad();
   showJudgement(stageId === 3 ? "맹주 출현" : stageId === 2 ? "월하죽림" : "검기를 준비해라", "");
   timingTip.textContent = stageId === 3
-    ? "보스 HP 4500 · HOLD는 저지박스에서 누르고 있으면 앞부분부터 사라짐"
+    ? "보스 HP 4500 · 완벽 20 / 걸침 10 피해"
     : stageId === 2
-      ? "HOLD 중 다음 노트 없음 · 2x는 빠르게 두 번"
-      : "노트가 왼쪽 끝 판정원에 겹칠 때 SPACE";
+      ? "HOLD는 꾹 누르고, 2x는 빠르게 두 번"
+      : "노트가 왼쪽 끝 판정원에 겹칠 때 저지박스 터치";
   beatStatus.textContent = `${stage.songName} · ${stage.subtitle}`;
   pauseButton.textContent = "일시정지";
   pauseButton.classList.remove("pause-active");
@@ -1806,10 +1755,10 @@ function endGame(reason = "게임 종료") {
   beatStatus.textContent = stage3Cleared
     ? `무림맹주 격파 · 남은 HP ${state.power} · 랭킹 등록 완료`
     : reason === "수련 종료" && state.currentStageId === 1
-      ? "Stage 1 Clear · Stage 2가 해금되었습니다 · ENTER로 스테이지 선택"
+      ? "Stage 1 Clear · Stage 2가 해금되었습니다 · 터치로 스테이지 선택"
       : reason === "수련 종료" && state.currentStageId === 2
-        ? "Stage 2 Clear · Boss Stage 3가 해금되었습니다 · ENTER로 스테이지 선택"
-        : `최종 점수 ${state.score.toLocaleString("ko-KR")}점 · ENTER로 스테이지 선택`;
+        ? "Stage 2 Clear · Boss Stage 3가 해금되었습니다 · 터치로 스테이지 선택"
+        : `최종 점수 ${state.score.toLocaleString("ko-KR")}점 · 터치로 스테이지 선택`;
   updateHud();
   showScoreBoard(reason);
   if (stage3Cleared) registerStage3Ranking();
@@ -1825,7 +1774,7 @@ function pauseGame() {
   pauseButton.classList.add("pause-active");
   hero.classList.remove("ready-glow");
   showJudgement("일시정지", "");
-  timingTip.textContent = "ESC 또는 계속하기 버튼으로 재개";
+  timingTip.textContent = "계속하기 버튼 또는 ESC로 재개";
   beatStatus.textContent = "검객이 호흡을 고르는 중";
 }
 
@@ -1839,7 +1788,7 @@ function resumeGame() {
   pauseButton.textContent = "일시정지";
   pauseButton.classList.remove("pause-active");
   showJudgement("다시 집중", "");
-  beatStatus.textContent = "왼쪽 끝 판정원에 겹치면 SPACE";
+  beatStatus.textContent = "왼쪽 끝 판정원에 겹치면 저지박스 터치";
 
   const playPromise = bgm.play();
   if (playPromise && typeof playPromise.catch === "function") {
@@ -1882,6 +1831,57 @@ function update(now) {
   requestAnimationFrame(update);
 }
 
+
+function handleJudgePointerDown(event) {
+  if (event.pointerType === "mouse" && event.button !== 0) return;
+  if (state.activeTouchPointerId !== null && state.activeTouchPointerId !== event.pointerId) return;
+
+  event.preventDefault();
+  state.activeTouchPointerId = event.pointerId;
+
+  if (rhythmLane && typeof rhythmLane.setPointerCapture === "function") {
+    try { rhythmLane.setPointerCapture(event.pointerId); } catch (error) {}
+  }
+
+  state.spaceDown = true;
+  handleSlashInput();
+}
+
+function handleJudgePointerUp(event) {
+  if (state.activeTouchPointerId !== null && state.activeTouchPointerId !== event.pointerId) return;
+
+  event.preventDefault();
+  state.spaceDown = false;
+  handleSpaceRelease();
+
+  if (rhythmLane && typeof rhythmLane.releasePointerCapture === "function") {
+    try { rhythmLane.releasePointerCapture(event.pointerId); } catch (error) {}
+  }
+
+  state.activeTouchPointerId = null;
+}
+
+function handleJudgePointerCancel(event) {
+  if (state.activeTouchPointerId !== null && event?.pointerId !== undefined && state.activeTouchPointerId !== event.pointerId) return;
+
+  state.spaceDown = false;
+  handleSpaceRelease();
+  state.activeTouchPointerId = null;
+}
+
+function addTouchButtonFeedback(button) {
+  if (!button) return;
+
+  button.addEventListener("pointerdown", () => {
+    button.classList.add("touch-pressed");
+  });
+
+  const clear = () => button.classList.remove("touch-pressed");
+  button.addEventListener("pointerup", clear);
+  button.addEventListener("pointercancel", clear);
+  button.addEventListener("pointerleave", clear);
+}
+
 startButton.addEventListener("click", handleStartFlow);
 if (titleStartButton) titleStartButton.addEventListener("click", showStageSelectScreen);
 
@@ -1911,6 +1911,24 @@ if (stageThreeCard) {
 
 if (stageBackButton) stageBackButton.addEventListener("click", showTitleScreen);
 pauseButton.addEventListener("click", togglePause);
+
+if (rhythmLane) {
+  rhythmLane.addEventListener("pointerdown", handleJudgePointerDown, { passive: false });
+  rhythmLane.addEventListener("pointerup", handleJudgePointerUp, { passive: false });
+  rhythmLane.addEventListener("pointercancel", handleJudgePointerCancel, { passive: false });
+  rhythmLane.addEventListener("lostpointercapture", handleJudgePointerCancel);
+}
+
+[
+  startButton,
+  pauseButton,
+  titleStartButton,
+  stageOneCard,
+  stageTwoCard,
+  stageThreeCard,
+  stageBackButton,
+  musicButton
+].forEach(addTouchButtonFeedback);
 
 if (musicButton) {
   musicButton.disabled = true;
@@ -2004,8 +2022,11 @@ setBossVisible(false);
 hideRankingBoard();
 applyStageMusic(1, false);
 updateStartNotice("ready");
-showJudgement("ENTER로 시작", "good");
-timingTip.textContent = "ENTER를 누르면 스테이지 선택으로 이동";
+showJudgement("터치로 시작", "good");
+timingTip.textContent = "타이틀 화면을 터치하면 스테이지 선택으로 이동";
 beatStatus.textContent = "Stage 1은 Night, Stage 2는 Bamboo, Stage 3는 Seven Strikes of Honor 곡으로 분리되어 있습니다";
 
-// v27: Stage 2/3 HOLD 보호구간 추가 - HOLD 중 다른 노트가 내려오지 않도록 차트 간격 정리
+// v25: Stage 3 난이도 완화, 노트 간격 확대, 판정 완화, 연속 피격 보호 추가
+
+
+// v28: 모바일/PWA 버전 - 저지박스 pointer 터치 입력과 터치 버튼 피드백을 추가했습니다.
