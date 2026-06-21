@@ -1,11 +1,11 @@
-const CACHE_NAME = "gum-moo-jeongi-pwa-v31-mobile-layout-2";
+const CACHE_NAME = "gum-moo-jeongi-pwa-v32-mobile-layout-3";
 const CORE_ASSETS = [
   "./",
   "./index.html",
-  "./index.html?v=20260621-mobile-layout-2",
-  "./style.css?v=20260621-mobile-layout-2",
-  "./script.js?v=20260621-mobile-layout-2",
-  "./manifest.json?v=20260621-mobile-layout-2",
+  "./index.html?v=20260621-mobile-layout-3",
+  "./style.css?v=20260621-mobile-layout-3",
+  "./script.js?v=20260621-mobile-layout-3",
+  "./manifest.json?v=20260621-mobile-layout-3",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
   "./assets/Steel_Against_Night.mp3",

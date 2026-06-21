@@ -3222,20 +3222,24 @@ button.touch-pressed,
   }
 
   .room-wall {
-    inset: 0 0 164px 0;
+    inset: 0 0 210px 0;
   }
 
   .window-panel {
-    top: 18px;
-    transform: translateX(-50%) scale(.72);
+    top: 8px;
+    width: 270px;
+    height: 96px;
+    border-width: 4px;
+    transform: translateX(-50%) scale(.68);
   }
 
   .lantern {
-    top: 16px;
+    top: 8px;
+    transform: scale(.62);
   }
 
   .scene {
-    top: 104px;
+    top: 78px;
     bottom: 82px;
   }
 
@@ -3248,7 +3252,7 @@ button.touch-pressed,
   }
 
   .judgement {
-    top: calc(28px + env(safe-area-inset-top));
+    top: calc(42px + env(safe-area-inset-top));
   }
 
   .beat-area.note-mode {
@@ -3320,21 +3324,24 @@ button.touch-pressed,
   }
 
   .room-wall {
-    inset: 0 0 140px 0;
+    inset: 0 0 188px 0;
   }
 
   .window-panel {
-    top: 10px;
-    transform: translateX(-50%) scale(.62);
+    top: 6px;
+    width: 250px;
+    height: 90px;
+    border-width: 4px;
+    transform: translateX(-50%) scale(.58);
   }
 
   .lantern {
-    top: 10px;
-    transform: scale(.62);
+    top: 6px;
+    transform: scale(.56);
   }
 
   .scene {
-    top: 88px;
+    top: 62px;
     bottom: 72px;
   }
 
@@ -3362,7 +3369,7 @@ button.touch-pressed,
   }
 
   .judgement {
-    top: calc(22px + env(safe-area-inset-top));
+    top: calc(36px + env(safe-area-inset-top));
     min-width: 150px;
     padding: 4px 8px;
     font-size: 15px;

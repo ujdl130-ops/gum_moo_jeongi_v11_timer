@@ -1035,14 +1035,14 @@ function getEnemyViewportTuning() {
   }
 
   if (height <= 430) {
-    return { scale: 0.52, rowScale: 0.22, rowShift: 62, bobScale: 0.38, pressureScale: 0.46 };
+    return { scale: 0.5, rowScale: 0.2, rowShift: 42, bobScale: 0.34, pressureScale: 0.42 };
   }
 
   if (height <= 540) {
-    return { scale: 0.58, rowScale: 0.26, rowShift: 84, bobScale: 0.44, pressureScale: 0.54 };
+    return { scale: 0.55, rowScale: 0.23, rowShift: 56, bobScale: 0.38, pressureScale: 0.5 };
   }
 
-  return { scale: 0.68, rowScale: 0.32, rowShift: 74, bobScale: 0.54, pressureScale: 0.62 };
+  return { scale: 0.63, rowScale: 0.28, rowShift: 58, bobScale: 0.48, pressureScale: 0.58 };
 }
 
 function updateEnemySquad(gameTime) {
