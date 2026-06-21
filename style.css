@@ -311,6 +311,8 @@ body {
   width: 128px;
   height: 216px;
   z-index: 12;
+  --hero-scale: 1;
+  transform: scale(var(--hero-scale));
   transform-origin: 58px 206px;
 }
 
@@ -517,10 +519,10 @@ body {
 .hero.hurt { animation: heroHurt .3s steps(2, end); }
 
 @keyframes heroSlash {
-  0% { transform: translateX(0); }
-  25% { transform: translateX(24px) translateY(-4px); }
-  55% { transform: translateX(58px) translateY(-3px); }
-  100% { transform: translateX(0); }
+  0% { transform: translateX(0) scale(var(--hero-scale)); }
+  25% { transform: translateX(24px) translateY(-4px) scale(var(--hero-scale)); }
+  55% { transform: translateX(58px) translateY(-3px) scale(var(--hero-scale)); }
+  100% { transform: translateX(0) scale(var(--hero-scale)); }
 }
 
 @keyframes bladeDraw {
@@ -531,9 +533,9 @@ body {
 }
 
 @keyframes heroHurt {
-  0%, 100% { transform: translateX(0); }
-  33% { transform: translateX(-18px); }
-  66% { transform: translateX(10px); }
+  0%, 100% { transform: translateX(0) scale(var(--hero-scale)); }
+  33% { transform: translateX(-18px) scale(var(--hero-scale)); }
+  66% { transform: translateX(10px) scale(var(--hero-scale)); }
 }
 
 .enemy-group {
@@ -986,7 +988,7 @@ button.pause-active { border-color: #8fd7ff; background: #26334a; color: white; 
   .game-title { font-size: 30px; }
   .stat-panel { flex-wrap: wrap; }
   .scene { top: 265px; }
-  .hero { left: 55px; transform: scale(.88); }
+  .hero { left: 55px; --hero-scale: .88; }
   
 .start-notice {
   position: absolute;
@@ -2391,7 +2393,11 @@ button.need-music {
 .game.stage-three-active .lane-title { color: #ff8c8c; }
 .game.stage-three-active .enemy-group { display: none; }
 .game.stage-three-active .hero.hurt { animation: heroBossHurt .32s steps(3, end); }
-@keyframes heroBossHurt { 0%, 100% { transform: translateX(0); filter: brightness(1); } 33% { transform: translateX(-28px); filter: brightness(1.8); } 66% { transform: translateX(12px); filter: brightness(.8); } }
+@keyframes heroBossHurt {
+  0%, 100% { transform: translateX(0) scale(var(--hero-scale)); filter: brightness(1); }
+  33% { transform: translateX(-28px) scale(var(--hero-scale)); filter: brightness(1.8); }
+  66% { transform: translateX(12px) scale(var(--hero-scale)); filter: brightness(.8); }
+}
 
 @media (max-width: 900px) {
   .boss-enemy { right: 22px; bottom: 50px; transform: scale(.74); }
@@ -2553,7 +2559,7 @@ button.touch-pressed,
   .hero {
     left: 56px;
     bottom: 12px;
-    transform: scale(.62);
+    --hero-scale: .62;
   }
 
   .enemy-floor-shadow,
@@ -2792,7 +2798,7 @@ button.touch-pressed,
   .hero {
     left: 58px;
     bottom: -14px;
-    transform: scale(.54);
+    --hero-scale: .54;
   }
 
   .pixel-shadow {
@@ -3242,7 +3248,7 @@ button.touch-pressed,
   }
 
   .judgement {
-    top: calc(4px + env(safe-area-inset-top));
+    top: calc(28px + env(safe-area-inset-top));
   }
 
   .beat-area.note-mode {
@@ -3338,7 +3344,7 @@ button.touch-pressed,
 
   .hero {
     bottom: -24px;
-    transform: scale(.48);
+    --hero-scale: .48;
   }
 
   .pixel-shadow {
@@ -3356,6 +3362,7 @@ button.touch-pressed,
   }
 
   .judgement {
+    top: calc(22px + env(safe-area-inset-top));
     min-width: 150px;
     padding: 4px 8px;
     font-size: 15px;

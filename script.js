@@ -1024,6 +1024,27 @@ function activeEnemies() {
   return state.enemies.filter((enemy) => !enemy.classList.contains("defeated"));
 }
 
+function getEnemyViewportTuning() {
+  const viewport = window.visualViewport;
+  const width = Math.min(window.innerWidth || 1280, viewport?.width || window.innerWidth || 1280);
+  const height = Math.min(window.innerHeight || 720, viewport?.height || window.innerHeight || 720);
+  const landscape = width > height;
+
+  if (!landscape || height > 640) {
+    return { scale: 1, rowScale: 1, rowShift: 0, bobScale: 1, pressureScale: 1 };
+  }
+
+  if (height <= 430) {
+    return { scale: 0.52, rowScale: 0.22, rowShift: 62, bobScale: 0.38, pressureScale: 0.46 };
+  }
+
+  if (height <= 540) {
+    return { scale: 0.58, rowScale: 0.26, rowShift: 84, bobScale: 0.44, pressureScale: 0.54 };
+  }
+
+  return { scale: 0.68, rowScale: 0.32, rowShift: 74, bobScale: 0.54, pressureScale: 0.62 };
+}
+
 function updateEnemySquad(gameTime) {
   if (getStage().bossMode) return;
 
@@ -1032,6 +1053,7 @@ function updateEnemySquad(gameTime) {
     ? Math.min(...unresolved.map((note) => Math.abs(note.hitTime - gameTime)))
     : 999;
   const pressure = clamp(1 - nearest / (state.currentStageId === 2 ? 0.82 : 1.0), 0, 1);
+  const viewportTuning = getEnemyViewportTuning();
 
   state.enemies.forEach((enemy, index) => {
     if (enemy.classList.contains("defeated")) return;
@@ -1040,11 +1062,12 @@ function updateEnemySquad(gameTime) {
     const baseScale = Number(enemy.dataset.scale);
     const baseX = state.currentStageId === 2 ? 68 + index * 5.6 : 70 + index * 6.3;
     const x = baseX - pressure * (state.currentStageId === 2 ? 12 + index * 1.4 : 8 + index * 1.1) + Math.sin(gameTime * 3.6 + index) * 0.7;
-    const bob = Math.sin(gameTime * 11 + index) * 4;
-    const scale = baseScale + pressure * (state.currentStageId === 2 ? 0.16 : 0.12);
+    const bob = Math.sin(gameTime * 11 + index) * 4 * viewportTuning.bobScale;
+    const scale = (baseScale + pressure * (state.currentStageId === 2 ? 0.16 : 0.12) * viewportTuning.pressureScale) * viewportTuning.scale;
+    const bottom = row * viewportTuning.rowScale + viewportTuning.rowShift + bob;
 
     enemy.style.left = `${x}%`;
-    enemy.style.bottom = `${row + bob}px`;
+    enemy.style.bottom = `${bottom}px`;
     enemy.style.transform = `scale(${scale})`;
     enemy.style.opacity = "1";
     enemy.style.filter = pressure > 0.72
@@ -1064,7 +1087,7 @@ function ensureAudioContext() {
 }
 
 function playTick(isTarget = false) {
-  if (!metronomeToggle.checked) return;
+  if (metronomeToggle && !metronomeToggle.checked) return;
 
   try {
     const ctx = ensureAudioContext();
