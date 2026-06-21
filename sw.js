@@ -1,11 +1,11 @@
-const CACHE_NAME = "gum-moo-jeongi-pwa-v37-hold-spacing-1";
+const CACHE_NAME = "gum-moo-jeongi-pwa-v38-clear-touch-1";
 const CORE_ASSETS = [
   "./",
   "./index.html",
-  "./index.html?v=20260621-hold-spacing-1",
-  "./style.css?v=20260621-hold-spacing-1",
-  "./script.js?v=20260621-hold-spacing-1",
-  "./manifest.json?v=20260621-hold-spacing-1",
+  "./index.html?v=20260621-clear-touch-1",
+  "./style.css?v=20260621-clear-touch-1",
+  "./script.js?v=20260621-clear-touch-1",
+  "./manifest.json?v=20260621-clear-touch-1",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
   "./assets/Steel_Against_Night.mp3",

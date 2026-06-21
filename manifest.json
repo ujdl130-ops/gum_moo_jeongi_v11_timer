@@ -2,7 +2,7 @@
   "name": "검무전기",
   "short_name": "검무전기",
   "description": "동양 무협 검술 리듬 액션 웹게임",
-  "start_url": "./index.html?v=20260621-hold-spacing-1",
+  "start_url": "./index.html?v=20260621-clear-touch-1",
   "scope": "./",
   "display": "standalone",
   "orientation": "landscape",

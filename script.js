@@ -884,6 +884,9 @@ function showScoreBoard(reason = "게임 종료") {
   }
 
   scoreBoard.classList.remove("hidden");
+
+  const actionHint = scoreBoard.querySelector("em");
+  if (actionHint) actionHint.textContent = "터치로 스테이지 선택";
 }
 
 function updateHud() {
@@ -1935,6 +1938,17 @@ function handleJudgePointerCancel(event) {
   state.activeTouchPointerId = null;
 }
 
+function handleResultScreenPointerDown(event) {
+  if (!state.gameOver || state.running || state.stageSelectOpen || state.titleOpen) return;
+  if (event.pointerType === "mouse" && event.button !== 0) return;
+
+  event.preventDefault();
+  event.stopPropagation();
+  state.spaceDown = false;
+  state.activeTouchPointerId = null;
+  showStageSelectScreen();
+}
+
 function addTouchButtonFeedback(button) {
   if (!button) return;
 
@@ -1984,6 +1998,8 @@ if (rhythmLane) {
   rhythmLane.addEventListener("pointercancel", handleJudgePointerCancel, { passive: false });
   rhythmLane.addEventListener("lostpointercapture", handleJudgePointerCancel);
 }
+
+document.addEventListener("pointerdown", handleResultScreenPointerDown, { capture: true, passive: false });
 
 [
   startButton,
