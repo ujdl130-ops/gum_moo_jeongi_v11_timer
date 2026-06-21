@@ -3147,6 +3147,274 @@ button.touch-pressed,
   }
 }
 
+/* Mobile landscape: keep the full playfield visible in browser chrome. */
+@media (pointer: coarse) and (orientation: landscape),
+  (orientation: landscape) and (max-height: 640px) {
+  body {
+    justify-content: center;
+    align-items: stretch;
+  }
+
+  .game {
+    width: 100dvw !important;
+    height: 100dvh !important;
+    min-height: 0 !important;
+    border: 0;
+    box-shadow: none;
+  }
+
+  .hud {
+    left: calc(10px + env(safe-area-inset-left));
+    right: calc(10px + env(safe-area-inset-right));
+    top: calc(7px + env(safe-area-inset-top));
+    width: auto;
+    max-width: none;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+    transform: none;
+  }
+
+  .title-block {
+    flex: 0 1 210px;
+    min-width: 140px;
+  }
+
+  .game-title {
+    font-size: clamp(22px, 4.2vw, 34px);
+    letter-spacing: 2px;
+  }
+
+  .subtitle {
+    max-width: 230px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .stat-panel {
+    flex: 0 0 auto;
+    margin-left: auto;
+    gap: 5px;
+    flex-wrap: nowrap;
+    transform: scale(.78);
+    transform-origin: top right;
+  }
+
+  .stat {
+    min-width: 72px;
+    padding: 5px 6px;
+  }
+
+  .timer-stat {
+    min-width: 78px;
+  }
+
+  .power-stat {
+    min-width: 142px;
+  }
+
+  .room-wall {
+    inset: 0 0 164px 0;
+  }
+
+  .window-panel {
+    top: 18px;
+    transform: translateX(-50%) scale(.72);
+  }
+
+  .lantern {
+    top: 16px;
+  }
+
+  .scene {
+    top: 104px;
+    bottom: 82px;
+  }
+
+  .hero {
+    bottom: -12px;
+  }
+
+  .boss-enemy {
+    bottom: -24px !important;
+  }
+
+  .judgement {
+    top: calc(4px + env(safe-area-inset-top));
+  }
+
+  .beat-area.note-mode {
+    bottom: calc(36px + env(safe-area-inset-bottom));
+  }
+
+  .controls {
+    max-width: none;
+    flex-wrap: nowrap;
+    transform: scale(.78);
+    transform-origin: bottom right;
+  }
+
+  .timing-tip {
+    max-width: 52%;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 430px) {
+  .hud {
+    left: calc(7px + env(safe-area-inset-left));
+    right: calc(7px + env(safe-area-inset-right));
+    top: calc(4px + env(safe-area-inset-top));
+    gap: 5px;
+  }
+
+  .title-block {
+    flex-basis: 160px;
+    min-width: 126px;
+  }
+
+  .game-title {
+    font-size: 21px;
+    letter-spacing: 1px;
+  }
+
+  .subtitle {
+    max-width: 170px;
+    font-size: 9px;
+  }
+
+  .stat-panel {
+    transform: scale(.66);
+  }
+
+  .stat {
+    min-width: 68px;
+    padding: 4px 5px;
+  }
+
+  .stat span {
+    font-size: 9px;
+  }
+
+  .stat strong {
+    font-size: 15px;
+  }
+
+  .timer-stat {
+    min-width: 72px;
+  }
+
+  .power-stat {
+    min-width: 124px;
+  }
+
+  .power-wrap {
+    height: 8px;
+  }
+
+  .room-wall {
+    inset: 0 0 140px 0;
+  }
+
+  .window-panel {
+    top: 10px;
+    transform: translateX(-50%) scale(.62);
+  }
+
+  .lantern {
+    top: 10px;
+    transform: scale(.62);
+  }
+
+  .scene {
+    top: 88px;
+    bottom: 72px;
+  }
+
+  .tatami {
+    height: 96px;
+  }
+
+  .hero {
+    bottom: -24px;
+    transform: scale(.48);
+  }
+
+  .pixel-shadow {
+    bottom: 9px;
+  }
+
+  .boss-enemy {
+    bottom: -36px !important;
+    transform: scale(.42) !important;
+  }
+
+  .boss-hud {
+    top: calc(34px + env(safe-area-inset-top));
+    transform: scale(.76);
+  }
+
+  .judgement {
+    min-width: 150px;
+    padding: 4px 8px;
+    font-size: 15px;
+  }
+
+  .start-notice,
+  .score-board {
+    top: 32px;
+    transform: translateX(-50%) scale(.7);
+  }
+
+  .beat-area.note-mode {
+    bottom: calc(29px + env(safe-area-inset-bottom));
+    padding: 3px 5px 5px;
+  }
+
+  .rhythm-lane {
+    height: 56px;
+  }
+
+  .hit-circle {
+    width: 50px;
+    height: 50px;
+  }
+
+  .hit-core {
+    width: 15px;
+    height: 15px;
+  }
+
+  .hit-circle::before {
+    top: -17px;
+    font-size: 8px;
+  }
+
+  .hit-circle span {
+    bottom: -20px;
+    font-size: 9px;
+  }
+
+  .controls {
+    transform: scale(.7);
+  }
+
+  .controls button,
+  .metronome-toggle {
+    min-height: 28px;
+    padding: 3px 5px;
+    font-size: 9px;
+  }
+
+  .timing-tip {
+    bottom: calc(1px + env(safe-area-inset-bottom));
+    max-width: 44%;
+    padding: 3px 6px;
+    font-size: 9px;
+  }
+}
+
 @media (orientation: portrait) and (pointer: coarse) {
   body {
     display: block;
