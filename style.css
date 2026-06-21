@@ -2149,17 +2149,52 @@ button.need-music {
 .ki-note.note-hold {
   width: 112px;
   height: 34px;
-  border-color: #ffe184;
-  background: rgba(247, 251, 255, .92);
-  box-shadow:
-    0 0 0 4px rgba(255,225,132,.17),
-    0 0 26px rgba(255,225,132,.7),
-    10px 0 0 rgba(255,255,255,.12);
+  --hold-clear: 0%;
+  --hold-progress: 0%;
+  --hold-wipe-opacity: 0;
+  --hold-core-opacity: 1;
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+  transform: translate(0, -50%);
+  overflow: visible;
+}
+
+.ki-note.note-hold.perfect-zone {
+  transform: translate(0, -50%) scale(1.04);
+}
+
+.ki-note.note-hold.miss {
+  animation: holdNoteMiss .44s steps(3, end) forwards;
+}
+
+@keyframes holdNoteMiss {
+  0% { opacity: 1; filter: brightness(1); transform: translate(0, -50%); }
+  45% { opacity: 1; filter: brightness(.55) saturate(1.8); }
+  100% { opacity: 0; transform: translate(0, -50%) scale(.8); }
 }
 
 .ki-note.note-hold::before,
 .ki-note.note-hold::after {
   display: none;
+}
+
+.ki-note.note-hold .hold-body {
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  transform: none;
+  background: rgba(247, 251, 255, .92);
+  border: 4px solid #ffe184;
+  box-shadow:
+    0 0 0 4px rgba(255,225,132,.17),
+    0 0 26px rgba(255,225,132,.7),
+    10px 0 0 rgba(255,255,255,.12),
+    inset 0 0 0 3px rgba(255,255,255,.2);
+  clip-path: inset(0 0 0 var(--hold-clear));
+  transition: clip-path .05s linear;
+  z-index: 1;
 }
 
 .ki-note.note-hold .note-core {
@@ -2170,6 +2205,8 @@ button.need-music {
   background: #ffe184;
   box-shadow: 0 0 12px #ffe184;
   transform: translate(-50%, -50%);
+  opacity: var(--hold-core-opacity);
+  transition: opacity .08s linear;
   z-index: 4;
 }
 
@@ -2185,14 +2222,18 @@ button.need-music {
 }
 
 .ki-note.note-hold .hold-progress {
-  left: 24px;
+  left: var(--hold-progress);
   top: 50%;
-  width: var(--hold-progress, 0%);
-  max-width: 70px;
-  height: 12px;
-  transform: translateY(-50%);
-  background: #8fd7ff;
-  box-shadow: 0 0 15px #8fd7ff;
+  width: 6px;
+  height: 42px;
+  transform: translate(-50%, -50%);
+  background: #ffffff;
+  box-shadow:
+    0 0 0 4px rgba(255,255,255,.18),
+    0 0 18px #ffffff,
+    0 0 26px #8fd7ff;
+  opacity: var(--hold-wipe-opacity);
+  transition: left .05s linear, opacity .08s linear;
   z-index: 3;
 }
 
@@ -2213,11 +2254,15 @@ button.need-music {
 }
 
 .ki-note.note-hold.hold-active {
+  animation: holdActivePulse .22s steps(2, end) infinite;
+}
+
+.ki-note.note-hold.hold-active .hold-body {
   border-color: #ffffff;
   box-shadow:
     0 0 0 5px rgba(255,255,255,.18),
-    0 0 34px rgba(143,215,255,.9);
-  animation: holdActivePulse .22s steps(2, end) infinite;
+    0 0 34px rgba(143,215,255,.9),
+    inset 0 0 0 3px rgba(143,215,255,.28);
 }
 
 @keyframes holdActivePulse {
@@ -2293,6 +2338,10 @@ button.need-music {
   height: 42px;
 }
 
+.ki-note.note-hold.vertical-sliced {
+  transform: translate(-50%, -50%);
+}
+
 @media (max-width: 900px) {
   .stage-lock-mark {
     right: 18px;
@@ -2314,10 +2363,18 @@ button.need-music {
     height: 30px;
   }
 
-  .ki-note.note-hold .hold-tail,
-  .ki-note.note-hold .hold-progress {
+  .ki-note.note-hold .note-core {
+    left: 16px;
+  }
+
+  .ki-note.note-hold .hold-tail {
+    left: 20px;
     width: 50px;
-    max-width: 50px;
+  }
+
+  .ki-note.note-hold .hold-progress {
+    width: 5px;
+    height: 38px;
   }
 
   .ki-note.note-hold .hold-label {
@@ -2341,7 +2398,7 @@ button.need-music {
 .boss-stage-card.stage-card-unlocked { border-color: #e24b4b; box-shadow: inset 0 0 0 4px rgba(255,255,255,.05), 0 0 0 5px rgba(226,75,75,.14), 8px 8px 0 rgba(0,0,0,.38); }
 .boss-stage-card.stage-card-unlocked::after { content: "BOSS"; color: #ff8c8c; border-color: #e24b4b; }
 
-.boss-enemy { position: absolute; right: 98px; bottom: 32px; width: 210px; height: 278px; z-index: 13; pointer-events: none; transform-origin: 50% 100%; filter: drop-shadow(8px 14px 0 rgba(0,0,0,.32)); }
+.boss-enemy { position: absolute; right: 98px; bottom: 32px; width: 210px; height: 278px; z-index: 13; pointer-events: none; --boss-scale: 1; transform: scale(var(--boss-scale)); transform-origin: 50% 100%; filter: drop-shadow(8px 14px 0 rgba(0,0,0,.32)); }
 .boss-enemy.hidden { display: none; }
 .boss-shadow { position: absolute; left: 18px; bottom: 0; width: 170px; height: 24px; background: rgba(0,0,0,.48); }
 .boss-cape { position: absolute; left: 32px; top: 80px; width: 146px; height: 168px; background: #421d2a; border: 5px solid #2a1420; box-shadow: inset -18px 0 0 rgba(0,0,0,.22); }
@@ -2361,9 +2418,16 @@ button.need-music {
 .boss-aura { position: absolute; left: 42px; top: 54px; width: 138px; height: 190px; border: 5px solid rgba(226,75,75,.28); box-shadow: 0 0 28px rgba(226,75,75,.34), inset 0 0 34px rgba(226,75,75,.14); opacity: .75; z-index: 1; animation: bossAuraPulse .9s steps(2, end) infinite; }
 @keyframes bossAuraPulse { 0%, 100% { opacity: .42; transform: scale(.96); } 50% { opacity: .82; transform: scale(1.04); } }
 .boss-enemy.boss-hit { animation: bossHit .24s steps(2, end); }
-@keyframes bossHit { 0%, 100% { transform: translateX(0) scale(1); filter: brightness(1) drop-shadow(8px 14px 0 rgba(0,0,0,.32)); } 45% { transform: translateX(18px) scale(1.03); filter: brightness(2.1) drop-shadow(12px 16px 0 rgba(0,0,0,.36)); } }
+@keyframes bossHit {
+  0%, 100% { transform: translateX(0) scale(var(--boss-scale)); filter: brightness(1) drop-shadow(8px 14px 0 rgba(0,0,0,.32)); }
+  45% { transform: translateX(18px) scale(var(--boss-scale)); filter: brightness(2.1) drop-shadow(12px 16px 0 rgba(0,0,0,.36)); }
+}
 .boss-enemy.boss-attack { animation: bossAttack .36s steps(3, end); }
-@keyframes bossAttack { 0%, 100% { transform: translateX(0) scale(1); } 38% { transform: translateX(-48px) scale(1.08); } 68% { transform: translateX(-26px) scale(1.02); } }
+@keyframes bossAttack {
+  0%, 100% { transform: translateX(0) scale(var(--boss-scale)); }
+  38% { transform: translateX(-48px) scale(var(--boss-scale)); }
+  68% { transform: translateX(-26px) scale(var(--boss-scale)); }
+}
 
 .boss-hud { position: absolute; right: 30px; top: 20px; z-index: 27; width: min(390px, calc(100% - 60px)); padding: 11px 14px 13px; background: rgba(13, 8, 18, .92); border: 4px solid #e24b4b; box-shadow: 0 0 0 4px rgba(226,75,75,.14), 5px 5px 0 rgba(0,0,0,.36); }
 .boss-hud.hidden { display: none; }
@@ -2964,11 +3028,21 @@ button.touch-pressed,
     height: 28px;
   }
 
-  .ki-note.note-hold .hold-tail,
-  .ki-note.note-hold .hold-progress {
+  .ki-note.note-hold .note-core {
+    left: 14px;
+    width: 10px;
+    height: 10px;
+  }
+
+  .ki-note.note-hold .hold-tail {
     left: 18px;
     width: 52px;
-    max-width: 52px;
+    height: 7px;
+  }
+
+  .ki-note.note-hold .hold-progress {
+    width: 5px;
+    height: 36px;
   }
 
   .ki-note.note-hold .hold-label {
@@ -3244,11 +3318,38 @@ button.touch-pressed,
   }
 
   .hero {
-    bottom: -12px;
+    bottom: 40px;
+    --hero-scale: .58;
+    z-index: 12;
   }
 
   .boss-enemy {
-    bottom: -24px !important;
+    right: calc(18px + env(safe-area-inset-right)) !important;
+    bottom: 76px !important;
+    --boss-scale: .36;
+    transform: scale(var(--boss-scale)) !important;
+    z-index: 18;
+  }
+
+  .boss-hud {
+    top: calc(44px + env(safe-area-inset-top));
+    right: calc(8px + env(safe-area-inset-right));
+    width: min(270px, calc(100% - 18px));
+    padding: 6px 8px 7px;
+    border-width: 3px;
+    transform: scale(.78);
+    transform-origin: top right;
+  }
+
+  .boss-hud-title {
+    margin-bottom: 5px;
+    font-size: 10px;
+    letter-spacing: 1px;
+  }
+
+  .boss-hp-wrap {
+    height: 10px;
+    border-width: 2px;
   }
 
   .judgement {
@@ -3350,8 +3451,9 @@ button.touch-pressed,
   }
 
   .hero {
-    bottom: -24px;
-    --hero-scale: .48;
+    bottom: 28px;
+    --hero-scale: .52;
+    z-index: 12;
   }
 
   .pixel-shadow {
@@ -3359,13 +3461,27 @@ button.touch-pressed,
   }
 
   .boss-enemy {
-    bottom: -36px !important;
-    transform: scale(.42) !important;
+    right: calc(10px + env(safe-area-inset-right)) !important;
+    bottom: 58px !important;
+    --boss-scale: .3;
+    transform: scale(var(--boss-scale)) !important;
   }
 
   .boss-hud {
-    top: calc(34px + env(safe-area-inset-top));
-    transform: scale(.76);
+    top: calc(30px + env(safe-area-inset-top));
+    right: calc(6px + env(safe-area-inset-right));
+    width: min(236px, calc(100% - 14px));
+    padding: 5px 7px 6px;
+    transform: scale(.72);
+  }
+
+  .boss-hud-title {
+    font-size: 9px;
+    margin-bottom: 4px;
+  }
+
+  .boss-hp-wrap {
+    height: 9px;
   }
 
   .judgement {

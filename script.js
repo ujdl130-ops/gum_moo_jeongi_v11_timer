@@ -1223,9 +1223,11 @@ function createNote(noteData) {
 
   if (noteType === "hold") {
     note.el.innerHTML = `
-      <span class="hold-tail"></span>
+      <span class="hold-body">
+        <span class="hold-tail"></span>
+        <span class="note-core"></span>
+      </span>
       <span class="hold-progress"></span>
-      <span class="note-core"></span>
       <span class="hold-label">HOLD</span>
     `;
   } else if (noteType === "double") {
@@ -1295,7 +1297,11 @@ function updateHoldVisual(note, gameTime) {
   note.lockedX = `${HIT_X}%`;
   note.el.style.left = note.lockedX;
   const progress = clamp((gameTime - note.hitTime) / note.holdDuration, 0, 1);
-  note.el.style.setProperty("--hold-progress", `${Math.floor(progress * 100)}%`);
+  const progressPercent = `${Math.floor(progress * 100)}%`;
+  note.el.style.setProperty("--hold-clear", progressPercent);
+  note.el.style.setProperty("--hold-progress", progressPercent);
+  note.el.style.setProperty("--hold-wipe-opacity", progress < 0.98 ? "1" : "0");
+  note.el.style.setProperty("--hold-core-opacity", progress < 0.22 ? "1" : "0");
 
   if (state.spaceDown && progress >= 0.98) {
     resolveHoldSuccess(note);
@@ -1337,6 +1343,10 @@ function updateNotes(gameTime) {
 
     if (note.type === "hold" && note.holdStarted && !note.resolved) {
       updateHoldVisual(note, gameTime);
+    }
+
+    if (note.type === "hold" && !note.holdStarted && !note.resolved && state.spaceDown && abs <= goodWindow) {
+      startHoldNote(note, gameTime, abs <= getPerfectWindow());
     }
 
     if (note.type === "double" && note.doubleStarted && !note.resolved && gameTime > note.doubleDeadline) {
@@ -1561,7 +1571,10 @@ function startHoldNote(note, gameTime, isPerfect) {
   state.activeHoldNote = note;
   note.el.classList.remove("near", "perfect-zone");
   note.el.classList.add("hold-active");
+  note.el.style.setProperty("--hold-clear", "0%");
   note.el.style.setProperty("--hold-progress", "0%");
+  note.el.style.setProperty("--hold-wipe-opacity", "1");
+  note.el.style.setProperty("--hold-core-opacity", "1");
   launchSwordAura(false);
   playSwordCutSound(isPerfect ? "일섬" : "참격");
   showJudgement("장참 준비", isPerfect ? "perfect" : "good");
